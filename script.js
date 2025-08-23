@@ -155,8 +155,19 @@ const soundEffects = new SoundEffects();
 // UI更新関数
 function updateUI() {
     elements.playerLevel.textContent = gameState.player.level;
-    elements.battleCount.textContent = `${gameState.battle.battleCount}/${gameState.battle.maxBattles}`;
     
+    // 新しいHTML構造に対応
+    const chapterDisplay = document.getElementById('chapterDisplay');
+    const maxBattlesDisplay = document.getElementById('maxBattles');
+    
+    if (chapterDisplay) {
+        chapterDisplay.textContent = `${gameState.battle.chapter}章`;
+    }
+    if (maxBattlesDisplay) {
+        maxBattlesDisplay.textContent = gameState.battle.maxBattles;
+    }
+    
+    elements.battleCount.textContent = gameState.battle.battleCount;
     elements.enemyName.textContent = gameState.enemy.name;
     
     // 敵画像を更新
@@ -170,7 +181,7 @@ function updateUI() {
             this.style.display = 'flex';
             this.style.alignItems = 'center';
             this.style.justifyContent = 'center';
-            this.innerHTML = `<span>${gameState.enemy.name}</span>`;
+            this.innerHTML = `<div class="placeholder-text">${gameState.enemy.name}</div>`;
         };
     }
     
@@ -429,9 +440,66 @@ function handlePlayerDefeat() {
     gameState.player.gold -= lostGold;
     
     setTimeout(() => {
-        alert(`敗北しました。経験値${lostExp}、${lostGold}ゴールドを失い、章の最初からやり直しです。`);
-        resetChapter();
+        showDefeatModal(lostExp, lostGold);
     }, 1500);
+}
+
+// 敗北モーダル表示
+function showDefeatModal(lostExp, lostGold) {
+    const modal = document.createElement('div');
+    modal.className = 'modal defeat-modal';
+    modal.innerHTML = `
+        <div class="modal-content defeat-content">
+            <div class="defeat-header">
+                <h2>💀 敗北...</h2>
+            </div>
+            <div class="defeat-body">
+                <div class="defeat-image">
+                    <div class="defeat-icon">⚰️</div>
+                </div>
+                <div class="defeat-message">
+                    <p class="main-message">戦闘に敗北してしまいました...</p>
+                    <p class="sub-message">しかし、これで終わりではありません。</p>
+                </div>
+                <div class="defeat-losses">
+                    <h4>📉 失ったもの</h4>
+                    <div class="loss-items">
+                        <div class="loss-item">
+                            <span class="loss-type">💡 経験値</span>
+                            <span class="loss-value">${lostExp}</span>
+                        </div>
+                        <div class="loss-item">
+                            <span class="loss-type">💰 ゴールド</span>
+                            <span class="loss-value">${lostGold}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="defeat-hope">
+                    <p>💪 残った力で再び立ち上がり、この章の最初から挑戦しましょう！</p>
+                </div>
+                <button class="command-btn retry-btn" id="retryBtn">
+                    <span class="btn-text">🔄 再挑戦</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 再挑戦ボタンのイベントリスナー
+    document.getElementById('retryBtn').addEventListener('click', () => {
+        soundEffects.playClick();
+        document.body.removeChild(modal);
+        resetChapter();
+    });
+    
+    // モーダル外クリックで再挑戦
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+            resetChapter();
+        }
+    });
 }
 
 // 状態異常を適用

@@ -8,18 +8,22 @@
 </head>
 <body>
     <div class="game-container">
-        <!-- ヘッダー情報 -->
-        <div class="header-info">
-            <div class="player-level">Lv: <span id="playerLevel">1</span></div>
-            <div class="chapter-info">1章 - 戦闘 <span id="battleCount">1</span>/10</div>
-        </div>
+        <!-- 新しいゲーム画面レイアウト -->
+        <div class="game-main">
+            <!-- 左エリア：主人公立ち絵 -->
+            <div class="player-portrait-area">
+                <img id="playerImage" src="./assets/images/characters/player_idle.png" alt="主人公" class="player-portrait" 
+                     onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
+                <div class="chapter-info">
+                    <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
+                </div>
+            </div>
 
-        <!-- 戦闘画面メイン -->
-        <div class="battle-screen">
-            <!-- 敵キャラクター表示エリア -->
+            <!-- 中央エリア：敵キャラクター -->
             <div class="enemy-area">
                 <div class="enemy-container">
-                    <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" onerror="this.style.backgroundColor='#FF6BF5'; this.alt='画像読み込みエラー'">
+                    <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" 
+                         onerror="this.style.backgroundColor='#FF6BF5'; this.innerHTML='<div class=\'placeholder-text\'>敵</div>'">
                     <div class="enemy-info">
                         <div class="enemy-name" id="enemyName">スライム</div>
                         <div class="enemy-hp-bar">
@@ -32,55 +36,59 @@
                 </div>
             </div>
 
-            <!-- プレイヤー情報エリア -->
-            <div class="player-area">
-                <div class="player-stats">
-                    <div class="player-name">プレイヤー</div>
+            <!-- 右エリア：ステータス＋コマンド -->
+            <div class="right-panel">
+                <!-- ヘッダー情報 -->
+                <div class="player-level-info">
+                    Lv: <span id="playerLevel">1</span>
+                </div>
+
+                <!-- プレイヤーステータス -->
+                <div class="player-stats-compact">
+                    <div class="player-name">プレイヤーのステータス</div>
+                    
                     <div class="stat-row">
-                        <div class="hp-info">
-                            <span>HP:</span>
+                        <span class="stat-label">HP</span>
+                        <div class="stat-bar-container">
                             <div class="hp-bar-bg">
                                 <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
                             </div>
-                            <span id="playerHpText">100/100</span>
+                            <span class="stat-value" id="playerHpText">100/100</span>
                         </div>
                     </div>
+                    
                     <div class="stat-row">
-                        <div class="mp-info">
-                            <span>MP:</span>
+                        <span class="stat-label">MP</span>
+                        <div class="stat-bar-container">
                             <div class="mp-bar-bg">
                                 <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
                             </div>
-                            <span id="playerMpText">30/30</span>
+                            <span class="stat-value" id="playerMpText">30/30</span>
                         </div>
                     </div>
-                    <div class="detailed-stats">
-                        <div class="stat">攻撃: <span id="playerAttack">20</span></div>
-                        <div class="stat">防御: <span id="playerDefense">10</span></div>
-                        <div class="stat">魔力: <span id="playerMagic">15</span></div>
-                        <div class="stat">素早: <span id="playerSpeed">12</span></div>
+
+                    <div class="detailed-stats-compact">
+                        <div class="stat-item">攻撃: <span id="playerAttack">20</span></div>
+                        <div class="stat-item">防御: <span id="playerDefense">10</span></div>
+                        <div class="stat-item">魔力: <span id="playerMagic">15</span></div>
+                        <div class="stat-item">素早: <span id="playerSpeed">12</span></div>
+                    </div>
+                </div>
+
+                <!-- コマンドエリア -->
+                <div class="command-section">
+                    <div class="command-label">コマンド</div>
+                    <div class="command-buttons">
+                        <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
+                        <button class="command-btn skill-btn" id="skillBtn">スキル</button>
+                        <button class="command-btn item-btn" id="itemBtn">アイテム</button>
+                        <button class="command-btn auto-btn" id="autoBtn">オート</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- コマンドエリア -->
-        <div class="command-area">
-            <button class="command-btn attack-btn" id="attackBtn">
-                <span class="btn-text">攻撃</span>
-            </button>
-            <button class="command-btn skill-btn" id="skillBtn">
-                <span class="btn-text">スキル</span>
-            </button>
-            <button class="command-btn item-btn" id="itemBtn">
-                <span class="btn-text">アイテム</span>
-            </button>
-            <button class="command-btn auto-btn" id="autoBtn">
-                <span class="btn-text">オート</span>
-            </button>
-        </div>
-
-        <!-- バトルログエリア -->
+        <!-- 下部：戦闘ログ -->
         <div class="battle-log">
             <div class="log-header">戦闘ログ</div>
             <div class="log-content" id="battleLogContent">

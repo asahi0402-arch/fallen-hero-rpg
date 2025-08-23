@@ -13,52 +13,77 @@ body {
 }
 
 .game-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* ヘッダー情報 */
-.header-info {
+/* 新しいメインレイアウト */
+.game-main {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 15px 25px;
+    height: 70vh;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* 左エリア：主人公立ち絵 */
+.player-portrait-area {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
-    margin-bottom: 20px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.player-portrait {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    max-height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-weight: bold;
+    text-align: center;
+}
+
+.placeholder-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
     font-size: 18px;
 }
 
-.player-level {
-    color: #4a5568;
-}
-
 .chapter-info {
+    margin-top: 15px;
+    font-weight: bold;
     color: #2d3748;
+    text-align: center;
+    background: rgba(103, 126, 234, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
 }
 
-/* 戦闘画面メイン */
-.battle-screen {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-/* 敵エリア */
+/* 中央エリア：敵キャラクター */
 .enemy-area {
+    flex: 2;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    min-height: 300px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,6 +120,127 @@ body {
     font-weight: bold;
     color: #2d3748;
     margin-bottom: 15px;
+}
+
+/* 右エリア：ステータス＋コマンド */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player-level-info {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #4a5568;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.player-stats-compact {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.player-stats-compact .player-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 12px;
+    text-align: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.player-stats-compact .stat-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.stat-label {
+    min-width: 25px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #4a5568;
+}
+
+.stat-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-bar-container .hp-bar-bg,
+.stat-bar-container .mp-bar-bg {
+    flex: 1;
+    height: 12px;
+    max-width: 80px;
+}
+
+.stat-value {
+    min-width: 50px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #2d3748;
+    text-align: right;
+}
+
+.detailed-stats-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.stat-item {
+    font-size: 11px;
+    font-weight: bold;
+    color: #4a5568;
+    background: rgba(247, 250, 252, 0.8);
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.command-section {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.command-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.command-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.command-buttons .command-btn {
+    padding: 12px 8px;
+    font-size: 13px;
+    border-radius: 8px;
 }
 
 /* HPバー共通スタイル */
@@ -252,7 +398,8 @@ body {
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    max-height: 200px;
+    height: 25vh;
+    min-height: 150px;
 }
 
 .log-header {
@@ -411,34 +558,62 @@ body {
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
-    .game-container {
-        padding: 10px;
-    }
-    
-    .command-area {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .command-btn {
-        padding: 15px;
-        font-size: 16px;
-    }
-    
-    .detailed-stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    
-    .header-info {
+    .game-main {
         flex-direction: column;
-        gap: 10px;
-        text-align: center;
+        height: auto;
+        gap: 15px;
+    }
+    
+    .player-portrait-area {
+        order: 3;
+        flex: none;
+        height: 200px;
+    }
+    
+    .enemy-area {
+        order: 1;
+        flex: none;
+        min-height: 250px;
+    }
+    
+    .right-panel {
+        order: 2;
+        flex: none;
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .player-stats-compact {
+        flex: 2;
+    }
+    
+    .command-section {
+        flex: 1;
+    }
+    
+    .command-buttons {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .command-buttons .command-btn {
+        padding: 8px;
+        font-size: 12px;
+    }
+    
+    .battle-log {
+        height: 20vh;
+        min-height: 120px;
+    }
+    
+    .player-portrait {
+        max-width: 120px;
+        max-height: 150px;
     }
     
     .enemy-image {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
     }
 }
 
@@ -510,4 +685,129 @@ body {
     margin-top: 20px;
     font-size: 16px;
     padding: 15px 30px;
+}
+
+/* 敗北モーダル専用スタイル */
+.defeat-modal .modal-content {
+    max-width: 500px;
+    width: 90%;
+    animation: defeatShake 0.5s ease-in-out;
+}
+
+@keyframes defeatShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.defeat-header {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+}
+
+.defeat-header h2 {
+    margin: 0;
+    font-size: 28px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.defeat-body {
+    padding: 30px;
+    text-align: center;
+    background: #f7fafc;
+}
+
+.defeat-image {
+    margin-bottom: 20px;
+}
+
+.defeat-icon {
+    font-size: 60px;
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.3));
+    animation: defeatPulse 2s infinite;
+}
+
+@keyframes defeatPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.defeat-message {
+    margin-bottom: 25px;
+}
+
+.main-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.sub-message {
+    font-size: 14px;
+    color: #718096;
+    font-style: italic;
+}
+
+.defeat-losses {
+    background: rgba(229, 62, 62, 0.1);
+    border: 2px solid #fc8181;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.defeat-losses h4 {
+    color: #c53030;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+}
+
+.loss-items {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.loss-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loss-type {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.loss-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #c53030;
+}
+
+.defeat-hope {
+    background: rgba(72, 187, 120, 0.1);
+    border: 2px solid #68d391;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.defeat-hope p {
+    color: #2f855a;
+    font-weight: bold;
+    margin: 0;
+    font-size: 14px;
+}
+
+.retry-btn {
+    background: linear-gradient(135deg, #f56565, #e53e3e) !important;
+    font-size: 18px;
+    padding: 15px 30px;
+    margin-top: 20px;
 }
