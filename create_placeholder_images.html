@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プレースホルダー画像生成ツール</title>
+</head>
+<body>
+    <h1>プレースホルダー画像生成ツール</h1>
+    <p>このツールを使って、ゲーム用のプレースホルダー画像を生成してください。</p>
+    
+    <canvas id="canvas" width="200" height="200" style="border: 1px solid #000; display: none;"></canvas>
+    
+    <div>
+        <button onclick="generateAllImages()">全ての画像を生成してダウンロード</button>
+    </div>
+    
+    <div id="downloads" style="margin-top: 20px;"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 画像生成関数
+        function createPlaceholderImage(width, height, bgColor, text, textColor = '#000') {
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 背景色を設定
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, width, height);
+            
+            // テキストを描画
+            ctx.fillStyle = textColor;
+            ctx.font = `${Math.min(width, height) / 8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, height / 2);
+            
+            return canvas.toDataURL('image/png');
+        }
+
+        // ダウンロードリンクを作成
+        function createDownloadLink(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = dataUrl;
+            link.textContent = `${filename} をダウンロード`;
+            link.style.display = 'block';
+            link.style.marginBottom = '10px';
+            return link;
+        }
+
+        // 全画像を生成
+        function generateAllImages() {
+            const downloadsDiv = document.getElementById('downloads');
+            downloadsDiv.innerHTML = '';
+
+            // 敵キャラクター画像
+            const enemies = [
+                { name: 'slime.png', text: 'スライム', color: '#4ED84A' },
+                { name: 'goblin.png', text: 'ゴブリン', color: '#8FBC8F' },
+                { name: 'orc.png', text: 'オーク', color: '#CD853F' },
+                { name: 'skeleton.png', text: 'スケルトン', color: '#F5F5DC' },
+                { name: 'dark_elf.png', text: 'ダークエルフ', color: '#2F2F2F' },
+                { name: 'ogre.png', text: 'オーガ', color: '#8B4513' },
+                { name: 'vampire.png', text: 'バンパイア', color: '#8B0000' },
+                { name: 'harpy.png', text: 'ハーピー', color: '#FF69B4' },
+                { name: 'dragon_knight.png', text: 'ドラゴンナイト', color: '#FF4500' },
+                { name: 'succubus.png', text: 'サキュバス', color: '#9370DB' },
+                { name: 'angel_fallen.png', text: '堕天使', color: '#FFD700' },
+                { name: 'demon_lord.png', text: '魔王軍幹部', color: '#8B0000' },
+                { name: 'final_boss_1.png', text: '偽りの魔王', color: '#4B0082' },
+                { name: 'final_boss_2.png', text: '真の支配者', color: '#000000' }
+            ];
+
+            enemies.forEach(enemy => {
+                const dataUrl = createPlaceholderImage(200, 200, enemy.color, enemy.text, '#FFF');
+                const link = createDownloadLink(dataUrl, enemy.name);
+                downloadsDiv.appendChild(link);
+            });
+
+            // キャラクター画像
+            const characters = [
+                { name: 'player_portrait.png', text: '主人公', color: '#87CEEB' },
+                { name: 'shop_keeper.png', text: '武器商人', color: '#DEB887' },
+                { name: 'mysterious_girl.png', text: '謎の少女', color: '#FFB6C1' },
+                { name: 'dark_lord.png', text: '魔王', color: '#8B0000' },
+                { name: 'true_enemy.png', text: '真の敵', color: '#000000' }
+            ];
+
+            characters.forEach(character => {
+                const dataUrl = createPlaceholderImage(200, 200, character.color, character.text, character.color === '#000000' ? '#FFF' : '#000');
+                const link = createDownloadLink(dataUrl, character.name);
+                downloadsDiv.appendChild(link);
+            });
+
+            // アイテム画像（64x64）
+            const items = [
+                { name: 'potion.png', text: 'ポーション', color: '#FF69B4' },
+                { name: 'hi_potion.png', text: 'ハイポーション', color: '#FF1493' },
+                { name: 'ether.png', text: 'エーテル', color: '#1E90FF' },
+                { name: 'elixir.png', text: 'エリクサー', color: '#FFD700' }
+            ];
+
+            items.forEach(item => {
+                const dataUrl = createPlaceholderImage(64, 64, item.color, item.text, '#FFF');
+                const link = createDownloadLink(dataUrl, item.name);
+                downloadsDiv.appendChild(link);
+            });
+
+            // 背景画像（800x600）
+            const backgrounds = [
+                { name: 'plains_bg.png', text: '平原の道', color: '#98FB98' },
+                { name: 'dark_forest_bg.png', text: '暗黒の森', color: '#228B22' },
+                { name: 'cave_bg.png', text: '魔の洞窟', color: '#696969' },
+                { name: 'sky_tower_bg.png', text: '天空の塔', color: '#87CEEB' },
+                { name: 'demon_castle_bg.png', text: '魔王の城', color: '#8B0000' },
+                { name: 'void_space_bg.png', text: '虚無の間', color: '#2F2F2F' },
+                { name: 'reality_bg.png', text: '真実の世界', color: '#4B0082' }
+            ];
+
+            backgrounds.forEach(bg => {
+                const dataUrl = createPlaceholderImage(800, 600, bg.color, bg.text, bg.color === '#2F2F2F' || bg.color === '#4B0082' ? '#FFF' : '#000');
+                const link = createDownloadLink(dataUrl, bg.name);
+                downloadsDiv.appendChild(link);
+            });
+        }
+    </script>
+</body>
+</html>

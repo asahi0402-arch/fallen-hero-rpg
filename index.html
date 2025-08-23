@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堕ちた英雄</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- ヘッダー情報 -->
+        <div class="header-info">
+            <div class="player-level">Lv: <span id="playerLevel">1</span></div>
+            <div class="chapter-info">1章 - 戦闘 <span id="battleCount">1</span>/10</div>
+        </div>
+
+        <!-- 戦闘画面メイン -->
+        <div class="battle-screen">
+            <!-- 敵キャラクター表示エリア -->
+            <div class="enemy-area">
+                <div class="enemy-container">
+                    <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" onerror="this.style.backgroundColor='#FF6BF5'; this.alt='画像読み込みエラー'">
+                    <div class="enemy-info">
+                        <div class="enemy-name" id="enemyName">スライム</div>
+                        <div class="enemy-hp-bar">
+                            <div class="hp-bar-bg">
+                                <div class="hp-bar-fill" id="enemyHpBar" style="width: 100%"></div>
+                            </div>
+                            <div class="hp-text" id="enemyHpText">50/50</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プレイヤー情報エリア -->
+            <div class="player-area">
+                <div class="player-stats">
+                    <div class="player-name">プレイヤー</div>
+                    <div class="stat-row">
+                        <div class="hp-info">
+                            <span>HP:</span>
+                            <div class="hp-bar-bg">
+                                <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
+                            </div>
+                            <span id="playerHpText">100/100</span>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="mp-info">
+                            <span>MP:</span>
+                            <div class="mp-bar-bg">
+                                <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
+                            </div>
+                            <span id="playerMpText">30/30</span>
+                        </div>
+                    </div>
+                    <div class="detailed-stats">
+                        <div class="stat">攻撃: <span id="playerAttack">20</span></div>
+                        <div class="stat">防御: <span id="playerDefense">10</span></div>
+                        <div class="stat">魔力: <span id="playerMagic">15</span></div>
+                        <div class="stat">素早: <span id="playerSpeed">12</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- コマンドエリア -->
+        <div class="command-area">
+            <button class="command-btn attack-btn" id="attackBtn">
+                <span class="btn-text">攻撃</span>
+            </button>
+            <button class="command-btn skill-btn" id="skillBtn">
+                <span class="btn-text">スキル</span>
+            </button>
+            <button class="command-btn item-btn" id="itemBtn">
+                <span class="btn-text">アイテム</span>
+            </button>
+            <button class="command-btn auto-btn" id="autoBtn">
+                <span class="btn-text">オート</span>
+            </button>
+        </div>
+
+        <!-- バトルログエリア -->
+        <div class="battle-log">
+            <div class="log-header">戦闘ログ</div>
+            <div class="log-content" id="battleLogContent">
+                <div class="log-entry">戦闘が開始されました</div>
+            </div>
+        </div>
+
+        <!-- スキル選択モーダル -->
+        <div class="modal" id="skillModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>スキル選択</h3>
+                    <button class="close-btn" id="closeSkillModal">&times;</button>
+                </div>
+                <div class="skill-list">
+                    <button class="skill-option" data-skill="fireball">
+                        <div class="skill-name">ファイアボール</div>
+                        <div class="skill-cost">MP: 10</div>
+                        <div class="skill-desc">炎属性の魔法攻撃</div>
+                    </button>
+                    <button class="skill-option" data-skill="heal">
+                        <div class="skill-name">ヒール</div>
+                        <div class="skill-cost">MP: 8</div>
+                        <div class="skill-desc">HPを回復する</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- アイテム選択モーダル -->
+        <div class="modal" id="itemModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>アイテム使用</h3>
+                    <button class="close-btn" id="closeItemModal">&times;</button>
+                </div>
+                <div class="item-list">
+                    <button class="item-option" data-item="potion">
+                        <div class="item-name">ポーション</div>
+                        <div class="item-count">所持数: 3</div>
+                        <div class="item-desc">HPを50回復</div>
+                    </button>
+                    <button class="item-option" data-item="ether">
+                        <div class="item-name">エーテル</div>
+                        <div class="item-count">所持数: 1</div>
+                        <div class="item-desc">MPを30回復</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data_manager.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+/* 基本設定 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ヘッダー情報 */
+.header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.player-level {
+    color: #4a5568;
+}
+
+.chapter-info {
+    color: #2d3748;
+}
+
+/* 戦闘画面メイン */
+.battle-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* 敵エリア */
+.enemy-area {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.enemy-container {
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.enemy-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.enemy-image:hover {
+    transform: scale(1.05);
+}
+
+.enemy-info {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.enemy-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+/* HPバー共通スタイル */
+.hp-bar-bg, .mp-bar-bg {
+    width: 100%;
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    transition: width 0.5s ease;
+    border-radius: 10px;
+}
+
+.player-hp {
+    background: linear-gradient(90deg, #4299e1, #3182ce);
+}
+
+.mp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #805ad5, #6b46c1);
+    transition: width 0.5s ease;
+    border-radius: 10px;
+}
+
+.hp-text {
+    font-weight: bold;
+    color: #2d3748;
+    margin-top: 8px;
+}
+
+/* プレイヤーエリア */
+.player-area {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.player-stats {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.player-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.stat-row {
+    margin-bottom: 15px;
+}
+
+.hp-info, .mp-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+}
+
+.hp-info span:first-child,
+.mp-info span:first-child {
+    min-width: 30px;
+    color: #4a5568;
+}
+
+.hp-info span:last-child,
+.mp-info span:last-child {
+    min-width: 80px;
+    color: #2d3748;
+}
+
+.detailed-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #e2e8f0;
+}
+
+.stat {
+    font-weight: bold;
+    color: #4a5568;
+    padding: 10px;
+    background: rgba(247, 250, 252, 0.8);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* コマンドエリア */
+.command-area {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.command-btn {
+    padding: 20px;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.command-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.command-btn:active {
+    transform: translateY(-1px);
+}
+
+.attack-btn {
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+}
+
+.skill-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+.item-btn {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+}
+
+.auto-btn {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+}
+
+.btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+/* バトルログ */
+.battle-log {
+    background: rgba(45, 55, 72, 0.95);
+    color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    max-height: 200px;
+}
+
+.log-header {
+    background: rgba(26, 32, 44, 0.9);
+    padding: 15px 20px;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-content {
+    padding: 20px;
+    max-height: 140px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.log-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.log-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.5s ease;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* モーダル */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.skill-list, .item-list {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.skill-option, .item-option {
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.skill-option:hover, .item-option:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.skill-name, .item-name {
+    font-weight: bold;
+    color: #2d3748;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.skill-cost, .item-count {
+    color: #4a5568;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.skill-desc, .item-desc {
+    color: #718096;
+    font-size: 13px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 10px;
+    }
+    
+    .command-area {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .command-btn {
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    .detailed-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .header-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .enemy-image {
+        width: 150px;
+        height: 150px;
+    }
+}
