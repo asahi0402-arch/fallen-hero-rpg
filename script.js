@@ -148,9 +148,46 @@ class SoundEffects {
         oscillator.start(this.audioContext.currentTime);
         oscillator.stop(this.audioContext.currentTime + 0.4);
     }
+
+    playHurt() {
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(80, this.audioContext.currentTime + 0.3);
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, this.audioContext.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.3);
+        
+        gainNode.gain.setValueAtTime(0.4, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.3);
+    }
 }
 
 const soundEffects = new SoundEffects();
+// スクリーンシェイク機能
+function screenShake(intensity = 10, duration = 500) {
+    const gameContainer = document.querySelector('.game-container');
+    gameContainer.classList.add('screen-shake');
+    
+    // CSSカスタムプロパティでシェイクの強度を設定
+    gameContainer.style.setProperty('--shake-intensity', `${intensity}px`);
+    
+    setTimeout(() => {
+        gameContainer.classList.remove('screen-shake');
+        gameContainer.style.removeProperty('--shake-intensity');
+    }, duration);
+}
 
 // UI更新関数
 function updateUI() {
@@ -169,6 +206,9 @@ function updateUI() {
     
     elements.battleCount.textContent = gameState.battle.battleCount;
     elements.enemyName.textContent = gameState.enemy.name;
+    
+    // 章に応じた背景画像を更新
+    updateStageBackground();
     
     // 敵画像を更新
     if (gameState.enemy && gameState.enemy.image) {
@@ -201,6 +241,37 @@ function updateUI() {
     elements.playerDefense.textContent = gameState.player.defense;
     elements.playerMagic.textContent = gameState.player.magic;
     elements.playerSpeed.textContent = gameState.player.speed;
+}
+
+// 章に応じた背景画像更新
+function updateStageBackground() {
+    const stageBackground = document.getElementById('stageBackground');
+    if (!stageBackground || !dataManager.loaded) return;
+    
+    const stageInfo = dataManager.getStageInfo(gameState.battle.chapter);
+    if (stageInfo && stageInfo.background_image) {
+        const backgroundPath = `./assets/images/backgrounds/${stageInfo.background_image}`;
+        stageBackground.src = backgroundPath;
+        stageBackground.onerror = function() {
+            // 背景画像読み込み失敗時のフォールバック
+            this.style.backgroundColor = getChapterBackgroundColor(gameState.battle.chapter);
+            this.innerHTML = `<div class="placeholder-text">${stageInfo.stage_name}<br>背景</div>`;
+        };
+    }
+}
+
+// 章ごとのフォールバック背景色
+function getChapterBackgroundColor(chapter) {
+    const colors = {
+        1: '#87CEEB', // 平原：空色
+        2: '#2F4F4F', // 暗黒の森：暗緑
+        3: '#8B4513', // 魔の洞窟：茶色
+        4: '#E6E6FA', // 天空の塔：薄紫
+        5: '#8B0000', // 魔王の城：暗赤
+        6: '#2F2F2F', // 虚無の間：灰色
+        7: '#FFD700'  // 真実の世界：金色
+    };
+    return colors[chapter] || '#87CEEB';
 }
 
 // ログ追加関数
@@ -335,14 +406,7 @@ function enemyTurn() {
     } else {
         // フォールバック：従来の行動パターン
         if (Math.random() < 0.8) {
-            const result = calculateDamage(gameState.enemy, gameState.player);
-            gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
-            
-            let message = `${gameState.enemy.name}の攻撃！ ${result.damage}のダメージを受けた！`;
-            if (result.critical) {
-                message += " 急所に当たった！";
-            }
-            addBattleLog(message);
+            executeEnemyAttack();
             
             if (gameState.player.hp <= 0) {
                 handlePlayerDefeat();
@@ -378,9 +442,7 @@ function executeEnemyAction(action) {
                     executeEnemySkill(skill);
                 } else {
                     // フォールバック：通常攻撃
-                    const result = calculateDamage(gameState.enemy, gameState.player);
-                    gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
-                    addBattleLog(`${gameState.enemy.name}の攻撃！ ${result.damage}のダメージを受けた！`);
+                    executeEnemyAttack();
                 }
             }
             break;
@@ -398,15 +460,34 @@ function executeEnemyAction(action) {
     }
 }
 
+// 敵の通常攻撃処理（ダメージSE+シェイク付き）
+function executeEnemyAttack() {
+    const result = calculateDamage(gameState.enemy, gameState.player);
+    gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
+    
+    // ダメージSE再生
+    soundEffects.playHurt();
+    
+    // スクリーンシェイク（ダメージ量に応じて強度調整）
+    const shakeIntensity = Math.min(15, Math.max(5, result.damage / 5));
+    screenShake(shakeIntensity, 400);
+    
+    let message = `${gameState.enemy.name}の攻撃！ ${result.damage}のダメージを受けた！`;
+    if (result.critical) {
+        message += " 急所に当たった！";
+        // クリティカル時は追加シェイク
+        setTimeout(() => screenShake(20, 300), 200);
+    }
+    addBattleLog(message);
+}
+
 // 敵のスキル実行
 function executeEnemySkill(skill) {
     // MP消費チェック（敵にMPがある場合）
     if (skill.mp_cost > 0 && gameState.enemy.mp !== undefined) {
         if (gameState.enemy.mp < skill.mp_cost) {
             // MP不足の場合は通常攻撃
-            const result = calculateDamage(gameState.enemy, gameState.player);
-            gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
-            addBattleLog(`${gameState.enemy.name}の攻撃！ ${result.damage}のダメージを受けた！`);
+            executeEnemyAttack();
             return;
         }
         gameState.enemy.mp -= skill.mp_cost;
@@ -415,6 +496,14 @@ function executeEnemySkill(skill) {
     if (skill.type === 'attack') {
         const damage = dataManager.calculateSkillDamage(skill, gameState.enemy, gameState.player);
         gameState.player.hp = Math.max(0, gameState.player.hp - damage);
+        
+        // ダメージSE再生
+        soundEffects.playHurt();
+        
+        // スキル攻撃用の強めなシェイク
+        const shakeIntensity = Math.min(20, Math.max(8, damage / 4));
+        screenShake(shakeIntensity, 500);
+        
         addBattleLog(`${gameState.enemy.name}の${skill.name}！ ${damage}のダメージを受けた！`);
         
         // 状態異常効果

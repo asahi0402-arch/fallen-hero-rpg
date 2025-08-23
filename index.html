@@ -12,7 +12,7 @@
         <div class="game-main">
             <!-- 左エリア：主人公立ち絵 -->
             <div class="player-portrait-area">
-                <img id="playerImage" src="./assets/images/characters/player_idle.png" alt="主人公" class="player-portrait" 
+                <img id="playerImage" src="./assets/images/characters/player_portrait.png" alt="主人公" class="player-portrait" 
                      onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
                 <div class="chapter-info">
                     <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
@@ -21,6 +21,10 @@
 
             <!-- 中央エリア：敵キャラクター -->
             <div class="enemy-area">
+                <div class="stage-background">
+                    <img id="stageBackground" src="./assets/images/backgrounds/plains_bg.jpg" alt="ステージ背景" class="background-image"
+                         onerror="this.style.backgroundColor='#87CEEB'; this.innerHTML='<div class=\'placeholder-text\'>背景</div>'">
+                </div>
                 <div class="enemy-container">
                     <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" 
                          onerror="this.style.backgroundColor='#FF6BF5'; this.innerHTML='<div class=\'placeholder-text\'>敵</div>'">
