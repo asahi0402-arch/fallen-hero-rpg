@@ -445,25 +445,36 @@ function applyStatusEffect(target, effect, duration) {
 
 // 次の戦闘
 function nextBattle() {
-    gameState.battle.battleCount++;
+    // 経験値・ゴールド獲得処理
+    if (gameState.enemy.exp_reward) {
+        gameState.player.exp += gameState.enemy.exp_reward;
+        addBattleLog(`経験値${gameState.enemy.exp_reward}を獲得！`);
+    }
+    if (gameState.enemy.gold_reward) {
+        gameState.player.gold += gameState.enemy.gold_reward;
+        addBattleLog(`${gameState.enemy.gold_reward}ゴールドを獲得！`);
+    }
     
-    const currentStage = dataManager.getStage(gameState.battle.chapter);
-    const maxBattles = currentStage ? currentStage.max_battles : 10;
-    
-    if (gameState.battle.battleCount > maxBattles) {
-        addBattleLog("章をクリアしました！");
-        // 経験値と金の獲得
+    // ボス戦後の章クリア判定
+    if (gameState.enemy.isBoss) {
+        addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
+        addBattleLog("章クリア！");
+        
+        const currentStage = dataManager.getStageInfo(gameState.battle.chapter);
         if (currentStage) {
-            gameState.player.exp += currentStage.reward_exp;
-            gameState.player.gold += currentStage.reward_gold;
-            addBattleLog(`経験値${currentStage.reward_exp}、${currentStage.reward_gold}ゴールドを獲得！`);
+            gameState.player.exp += parseInt(currentStage.reward_exp) || 0;
+            gameState.player.gold += parseInt(currentStage.reward_gold) || 0;
+            addBattleLog(`ボーナス報酬：経験値${currentStage.reward_exp}、${currentStage.reward_gold}ゴールドを獲得！`);
         }
+        
         setTimeout(() => {
-            alert(`${gameState.battle.chapter}章クリア！次の章に進みます。`);
-            nextChapter();
-        }, 1500);
+            showChapterClearDialog();
+        }, 2000);
         return;
     }
+    
+    // 通常敵の場合の戦闘継続
+    gameState.battle.battleCount++;
     
     // CSVから新しい敵を生成
     generateNewEnemy();
@@ -471,6 +482,72 @@ function nextBattle() {
     gameState.battle.isPlayerTurn = true;
     addBattleLog(`${gameState.enemy.name}が現れた！`);
     updateUI();
+}
+
+// 章クリア会話画面表示
+function showChapterClearDialog() {
+    const currentStage = dataManager.getStageInfo(gameState.battle.chapter);
+    const chapterName = currentStage ? currentStage.stage_name : `第${gameState.battle.chapter}章`;
+    
+    // モーダルを作成
+    const modal = document.createElement('div');
+    modal.className = 'modal chapter-clear-modal';
+    modal.innerHTML = `
+        <div class="modal-content chapter-clear-content">
+            <div class="modal-header chapter-clear-header">
+                <h3>🏆 ${chapterName} クリア！</h3>
+            </div>
+            <div class="chapter-clear-body">
+                <div class="clear-message">
+                    <p>お疲れ様でした！<br>
+                    ${gameState.battle.chapter}章のボスを見事に撃破しました。</p>
+                </div>
+                <div class="chapter-story">
+                    <p>"${getChapterStoryText(gameState.battle.chapter)}"</p>
+                </div>
+                <div class="chapter-rewards">
+                    <h4>📊 戦闘結果</h4>
+                    <p>倒した敵の数: ${gameState.battle.battleCount - 1}体</p>
+                    <p>現在のレベル: ${gameState.player.level}</p>
+                    <p>所持ゴールド: ${gameState.player.gold}G</p>
+                </div>
+                <button class="command-btn next-chapter-btn" id="nextChapterBtn">
+                    <span class="btn-text">次の章へ進む</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 次の章ボタンのイベントリスナー
+    document.getElementById('nextChapterBtn').addEventListener('click', () => {
+        soundEffects.playClick();
+        document.body.removeChild(modal);
+        nextChapter();
+    });
+    
+    // モーダル外クリックで進む
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+            nextChapter();
+        }
+    });
+}
+
+// 章ごとのストーリーテキスト
+function getChapterStoryText(chapter) {
+    const storyTexts = {
+        1: "平原の魔物たちを退けた主人公。しかし、これは長い戦いの始まりに過ぎなかった...",
+        2: "暗黒の森を抜けた主人公。深い闇の奥で、より強大な敵の気配を感じ取る。",
+        3: "魔の洞窟の奥で古代の秘宝を発見。しかし、それは更なる謎への手がかりだった。",
+        4: "天空の塔を制覇した主人公。雲の上から見えた世界の真実とは...？",
+        5: "魔王の城を攻略！だが、倒した魔王は本物だったのだろうか...？",
+        6: "全ての真実が明かされる時が来た。世界の本当の支配者との最終決戦が始まる。"
+    };
+    
+    return storyTexts[chapter] || "新たな冒険が待っている...";
 }
 
 // 新しい敵を生成（CSV駆動）
@@ -490,6 +567,36 @@ function generateNewEnemy() {
         return;
     }
 
+    // 章の最大戦闘数を取得
+    gameState.battle.maxBattles = dataManager.getChapterMaxBattles(gameState.battle.chapter);
+    
+    // ボス戦の判定
+    if (gameState.battle.battleCount > gameState.battle.maxBattles) {
+        // ボス敵を生成
+        const bossData = dataManager.getBossEnemy(gameState.battle.chapter);
+        if (bossData) {
+            gameState.enemy = {
+                id: bossData.id,
+                name: bossData.name + ' (ボス)',
+                hp: bossData.hp,
+                maxHp: bossData.hp,
+                attack: bossData.attack,
+                defense: bossData.defense,
+                magic: bossData.magic || 0,
+                speed: bossData.speed,
+                exp_reward: bossData.exp_reward || 100,
+                gold_reward: bossData.gold_reward || 50,
+                drop_rate: bossData.drop_rate || 0,
+                drop_item: bossData.drop_item,
+                image: bossData.image || 'boss.png',
+                isBoss: true
+            };
+            addBattleLog(`章ボス「${gameState.enemy.name}」が現れた！`);
+            return;
+        }
+    }
+
+    // 通常敵を生成
     const enemyData = dataManager.generateRandomEnemy(gameState.battle.chapter);
     if (enemyData) {
         gameState.enemy = {
@@ -505,7 +612,8 @@ function generateNewEnemy() {
             gold_reward: enemyData.gold_reward || 5,
             drop_rate: enemyData.drop_rate || 0,
             drop_item: enemyData.drop_item,
-            image: enemyData.image || 'slime.png'
+            image: enemyData.image || 'slime.png',
+            isBoss: false
         };
     }
 }

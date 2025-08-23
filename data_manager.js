@@ -139,11 +139,31 @@ class DataManager {
 
     // 章の敵プールを取得
     getChapterEnemies(chapter) {
-        const stage = this.data.stages.find(s => s.chapter === chapter);
-        if (!stage || !stage.enemy_pool) return [];
+        const stage = this.data.stages.find(s => parseInt(s.chapter) === parseInt(chapter));
+        if (!stage || !stage.enemy_pool) {
+            // フォールバック：該当章の敵を直接検索
+            return this.data.enemies.filter(enemy => parseInt(enemy.chapter) === parseInt(chapter));
+        }
         
         const enemyIds = stage.enemy_pool.split(',').map(id => id.trim());
         return enemyIds.map(id => this.getEnemy(id)).filter(enemy => enemy);
+    }
+
+    getBossEnemy(chapter) {
+        const stage = this.data.stages.find(s => parseInt(s.chapter) === parseInt(chapter));
+        if (stage && stage.boss_enemy) {
+            return this.getEnemy(stage.boss_enemy);
+        }
+        return null;
+    }
+    
+    getChapterMaxBattles(chapter) {
+        const stage = this.data.stages.find(s => parseInt(s.chapter) === parseInt(chapter));
+        return stage ? parseInt(stage.max_battles) : 10;
+    }
+    
+    getStageInfo(chapter) {
+        return this.data.stages.find(s => parseInt(s.chapter) === parseInt(chapter));
     }
 
     // 敵の行動パターンを取得
