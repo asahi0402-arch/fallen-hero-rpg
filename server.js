@@ -54,12 +54,12 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log('🎮 堕ちた英雄 ゲームサーバー起動中...');
-    console.log(`🌐 ブラウザで http://localhost:${PORT} にアクセスしてください`);
-    console.log('🛑 サーバーを停止するには Ctrl+C を押してください');
+    console.log(`Game Server starting on port ${PORT}...`);
+    console.log(`Open your browser and go to: http://localhost:${PORT}`);
+    console.log('Press Ctrl+C to stop the server');
 });
 
 process.on('SIGINT', () => {
-    console.log('\n✅ サーバーを停止しました');
+    console.log('\nServer stopped.');
     process.exit(0);
 });

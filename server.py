@@ -28,11 +28,11 @@ if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     
     with socketserver.TCPServer(("", PORT), CORSRequestHandler) as httpd:
-        print("🎮 堕ちた英雄 ゲームサーバー起動中...")
-        print(f"🌐 ブラウザで http://localhost:{PORT} にアクセスしてください")
-        print("🛑 サーバーを停止するには Ctrl+C を押してください")
+        print(f"Game Server starting on port {PORT}...")
+        print(f"Open your browser and go to: http://localhost:{PORT}")
+        print("Press Ctrl+C to stop the server")
         
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n✅ サーバーを停止しました")
+            print("\nServer stopped.")
