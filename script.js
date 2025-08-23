@@ -390,9 +390,39 @@ function useItem(itemName) {
         return;
     }
     
+    // アイテム表示を更新
+    updateItemDisplay();
     updateUI();
     gameState.battle.isPlayerTurn = false;
     setTimeout(enemyTurn, 1000);
+}
+
+// アイテム表示更新関数
+function updateItemDisplay() {
+    // ポーションの表示更新
+    const potionOption = document.querySelector('.item-option[data-item="potion"] .item-count');
+    if (potionOption) {
+        potionOption.textContent = `所持数: ${gameState.inventory.potion}`;
+    }
+    
+    // エーテルの表示更新
+    const etherOption = document.querySelector('.item-option[data-item="ether"] .item-count');
+    if (etherOption) {
+        etherOption.textContent = `所持数: ${gameState.inventory.ether}`;
+    }
+    
+    // アイテムが0個の場合は無効化
+    const potionButton = document.querySelector('.item-option[data-item="potion"]');
+    if (potionButton) {
+        potionButton.style.opacity = gameState.inventory.potion > 0 ? '1' : '0.5';
+        potionButton.style.pointerEvents = gameState.inventory.potion > 0 ? 'auto' : 'none';
+    }
+    
+    const etherButton = document.querySelector('.item-option[data-item="ether"]');
+    if (etherButton) {
+        etherButton.style.opacity = gameState.inventory.ether > 0 ? '1' : '0.5';
+        etherButton.style.pointerEvents = gameState.inventory.ether > 0 ? 'auto' : 'none';
+    }
 }
 
 // 敵のターン（CSV駆動）

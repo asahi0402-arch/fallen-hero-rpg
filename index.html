@@ -14,8 +14,16 @@
             <div class="player-portrait-area">
                 <img id="playerImage" src="./assets/images/characters/player_portrait.png" alt="主人公" class="player-portrait" 
                      onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
-                <div class="chapter-info">
-                    <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
+                
+                <!-- プレイヤーステータス（立ち絵下に移動） -->
+                <div class="player-stats-left">
+                    <div class="stat-title">プレイヤーステータス</div>
+                    <div class="detailed-stats-left">
+                        <div class="stat-item-left">攻撃: <span id="playerAttack">20</span></div>
+                        <div class="stat-item-left">防御: <span id="playerDefense">10</span></div>
+                        <div class="stat-item-left">魔力: <span id="playerMagic">15</span></div>
+                        <div class="stat-item-left">素早: <span id="playerSpeed">12</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -37,45 +45,34 @@
                             <div class="hp-text" id="enemyHpText">50/50</div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- 右エリア：ステータス＋コマンド -->
-            <div class="right-panel">
-                <!-- ヘッダー情報 -->
-                <div class="player-level-info">
-                    Lv: <span id="playerLevel">1</span>
-                </div>
-
-                <!-- プレイヤーステータス -->
-                <div class="player-stats-compact">
-                    <div class="player-name">プレイヤーのステータス</div>
                     
-                    <div class="stat-row">
-                        <span class="stat-label">HP</span>
-                        <div class="stat-bar-container">
+                    <!-- プレイヤーHP/MPゲージ（敵HPの下に移動） -->
+                    <div class="player-bars-center">
+                        <div class="player-bar-row">
+                            <span class="bar-label">プレイヤーHP</span>
                             <div class="hp-bar-bg">
                                 <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
                             </div>
-                            <span class="stat-value" id="playerHpText">100/100</span>
+                            <span class="bar-value" id="playerHpText">100/100</span>
                         </div>
-                    </div>
-                    
-                    <div class="stat-row">
-                        <span class="stat-label">MP</span>
-                        <div class="stat-bar-container">
+                        <div class="player-bar-row">
+                            <span class="bar-label">プレイヤーMP</span>
                             <div class="mp-bar-bg">
                                 <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
                             </div>
-                            <span class="stat-value" id="playerMpText">30/30</span>
+                            <span class="bar-value" id="playerMpText">30/30</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="detailed-stats-compact">
-                        <div class="stat-item">攻撃: <span id="playerAttack">20</span></div>
-                        <div class="stat-item">防御: <span id="playerDefense">10</span></div>
-                        <div class="stat-item">魔力: <span id="playerMagic">15</span></div>
-                        <div class="stat-item">素早: <span id="playerSpeed">12</span></div>
+            <!-- 右エリア：章情報＋コマンド -->
+            <div class="right-panel">
+                <!-- 章情報（右に移動） -->
+                <div class="chapter-info-right">
+                    <div class="level-info">Lv: <span id="playerLevel">1</span></div>
+                    <div class="battle-info">
+                        <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
                     </div>
                 </div>
 
