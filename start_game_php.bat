@@ -2,7 +2,7 @@
 echo PHPゲームサーバー起動
 echo.
 echo サーバーを起動中...
-php -S localhost:8000
+php -S localhost:8080
 
 echo.
 echo サーバーが停止しました

@@ -37,12 +37,12 @@ node server.js
 **方法3: PHP**
 ```bash
 # start_game_php.bat をダブルクリック、または：
-php -S localhost:8000
+php -S localhost:8080
 ```
 
 **プレイ手順：**
 1. 上記いずれかのサーバーを起動
-2. ブラウザで `http://localhost:8000` にアクセス
+2. ブラウザで `http://localhost:8080` にアクセス
 3. 戦闘開始！攻撃・スキル・アイテムを駆使して敵を倒そう
 4. 章をクリアして物語を進める
 5. 最終的に真実にたどり着けるか？

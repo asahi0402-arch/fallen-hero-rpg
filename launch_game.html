@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堕ちた英雄 - ゲーム起動</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            color: white;
+        }
+        .launcher {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            color: #2d3748;
+        }
+        h1 { color: #667eea; margin-bottom: 30px; }
+        .error-box {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .solution-box {
+            background: #c6f6d5;
+            border: 2px solid #68d391;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .command {
+            background: #2d3748;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        .btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="launcher">
+        <h1>🎮 堕ちた英雄</h1>
+        
+        <div class="error-box">
+            <h3>⚠️ CORS エラーが発生しています</h3>
+            <p>CSVファイルを読み込むために、HTTPサーバーを起動する必要があります。</p>
+        </div>
+        
+        <div class="solution-box">
+            <h3>🚀 解決方法</h3>
+            <p>以下のどれかの方法でサーバーを起動してください：</p>
+            
+            <div style="margin: 20px 0;">
+                <strong>方法1: Python（推奨）</strong><br>
+                <div class="command">python server.py</div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <strong>方法2: Node.js</strong><br>
+                <div class="command">node server.js</div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <strong>方法3: PHP</strong><br>
+                <div class="command">php -S localhost:8080</div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <strong>方法4: バッチファイル</strong><br>
+                <div class="command">start_server_python.bat をダブルクリック</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <p>サーバー起動後、こちらにアクセス：</p>
+            <button class="btn" onclick="window.location.href='http://localhost:8080'">
+                🌐 http://localhost:8080 でゲーム開始
+            </button>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 14px; color: #718096;">
+            <p>💡 ヒント: コマンドプロンプトでサーバー起動後、上のボタンをクリック</p>
+        </div>
+    </div>
+</body>
+</html>

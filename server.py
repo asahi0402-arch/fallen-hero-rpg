@@ -22,7 +22,7 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
 if __name__ == "__main__":
-    PORT = 8000
+    PORT = 8080
     
     # ゲームディレクトリをサーバーのルートに設定
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
