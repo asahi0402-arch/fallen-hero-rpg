@@ -33,7 +33,7 @@ body {
 .game-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 10px;
+    padding: 5px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -249,13 +249,26 @@ body {
     width: 500px;
     height: 500px;
     border-radius: 15px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    border: none;
+    outline: none;
     margin-bottom: 15px;
     transition: transform 0.3s ease;
 }
 
 .enemy-image:hover {
     transform: scale(1.05);
+}
+
+/* 敵攻撃時の拡大エフェクト */
+.enemy-image.enemy-attack {
+    animation: enemyAttack 0.4s ease-in-out;
+}
+
+@keyframes enemyAttack {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
 }
 
 .enemy-info {
@@ -346,26 +359,264 @@ body {
     border-radius: 8px;
 }
 
-/* 下部のプレイヤーコントロール */
+/* 下部の左右分割レイアウト */
+.bottom-controls {
+    display: flex;
+    gap: 15px;
+    margin: 8px 15px;
+}
+
+/* 左側のプレイヤーコントロール */
+.player-controls-left {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    padding: 12px 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 下部のプレイヤーコントロール（予備） */
 .player-controls-bottom {
     background: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
-    padding: 15px 20px;
-    margin: 10px 15px;
+    padding: 12px 20px;
+    margin: 8px 15px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .player-bars-bottom {
     display: flex;
-    gap: 30px;
+    gap: 20px;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+}
+
+.player-bar-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 120px;
+}
+
+.player-bar-column .bar-label {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.player-bar-column .bar-value {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.player-bar-column .hp-bar-bg,
+.player-bar-column .mp-bar-bg {
+    width: 100px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* 状態異常エリア */
+.status-effects-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 120px;
+    flex: 1;
+}
+
+.status-label {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.status-effects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
     justify-content: center;
-    margin-bottom: 15px;
+    min-height: 40px;
+    align-items: center;
+}
+
+.status-effect {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.status-effect.poison {
+    background: rgba(128, 0, 128, 0.7);
+    border-color: rgba(128, 0, 128, 0.9);
+}
+
+.status-effect.paralysis {
+    background: rgba(255, 255, 0, 0.7);
+    color: black;
+    border-color: rgba(255, 255, 0, 0.9);
+}
+
+.status-effect.sleep {
+    background: rgba(100, 149, 237, 0.7);
+    border-color: rgba(100, 149, 237, 0.9);
+}
+
+.status-effect.burn {
+    background: rgba(255, 69, 0, 0.7);
+    border-color: rgba(255, 69, 0, 0.9);
+}
+
+/* 攻撃エフェクト */
+.attack-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    display: none;
+}
+
+.attack-effect.show {
+    display: block;
+    animation: attackFlash 0.6s ease-out;
+}
+
+.slash-line {
+    position: absolute;
+    background: linear-gradient(45deg, transparent, #ffffff, #ffff00, #ffffff, transparent);
+    border-radius: 2px;
+    opacity: 0;
+}
+
+.slash-1 {
+    width: 80%;
+    height: 6px;
+    top: 30%;
+    left: 10%;
+    transform: rotate(-45deg);
+    animation: slash1 0.6s ease-out;
+}
+
+.slash-2 {
+    width: 70%;
+    height: 4px;
+    top: 50%;
+    left: 15%;
+    transform: rotate(45deg);
+    animation: slash2 0.6s ease-out 0.1s;
+}
+
+.slash-sparkles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.sparkle {
+    position: absolute;
+    color: #ffff00;
+    font-size: 20px;
+    opacity: 0;
+    animation: sparkleAnim 0.8s ease-out;
+}
+
+.sparkle-1 {
+    top: 20%;
+    left: 30%;
+    animation-delay: 0.2s;
+}
+
+.sparkle-2 {
+    top: 60%;
+    left: 70%;
+    animation-delay: 0.3s;
+}
+
+.sparkle-3 {
+    top: 40%;
+    left: 50%;
+    animation-delay: 0.4s;
+}
+
+@keyframes attackFlash {
+    0% { background: rgba(255, 255, 255, 0); }
+    20% { background: rgba(255, 255, 255, 0.3); }
+    100% { background: rgba(255, 255, 255, 0); }
+}
+
+@keyframes slash1 {
+    0% { 
+        opacity: 0;
+        transform: rotate(-45deg) translateX(-100%);
+    }
+    20% { 
+        opacity: 1;
+        transform: rotate(-45deg) translateX(0%);
+    }
+    80% { 
+        opacity: 1;
+        transform: rotate(-45deg) translateX(0%);
+    }
+    100% { 
+        opacity: 0;
+        transform: rotate(-45deg) translateX(100%);
+    }
+}
+
+@keyframes slash2 {
+    0% { 
+        opacity: 0;
+        transform: rotate(45deg) translateX(-100%);
+    }
+    20% { 
+        opacity: 1;
+        transform: rotate(45deg) translateX(0%);
+    }
+    80% { 
+        opacity: 1;
+        transform: rotate(45deg) translateX(0%);
+    }
+    100% { 
+        opacity: 0;
+        transform: rotate(45deg) translateX(100%);
+    }
+}
+
+@keyframes sparkleAnim {
+    0% { 
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0) rotate(360deg);
+    }
 }
 
 .command-section-bottom {
     border-top: 2px solid rgba(255, 255, 255, 0.3);
-    padding-top: 15px;
+    padding-top: 10px;
 }
 
 .command-buttons-bottom {
@@ -376,9 +627,9 @@ body {
 }
 
 .command-buttons-bottom .command-btn {
-    padding: 12px 18px;
+    padding: 10px 16px;
     font-size: 14px;
-    min-width: 80px;
+    min-width: 75px;
 }
 
 /* 敵画像上のオーバーレイ情報 */
@@ -387,11 +638,11 @@ body {
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 255, 255, 0.95) !important;
     border-radius: 8px;
     padding: 8px 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -401,7 +652,7 @@ body {
 }
 
 .enemy-info-overlay .enemy-name {
-    color: white;
+    color: #2d3748;
     font-size: 14px;
     font-weight: bold;
     margin: 0;
@@ -420,7 +671,7 @@ body {
 }
 
 .enemy-info-overlay .hp-text {
-    color: white;
+    color: #2d3748;
     font-size: 10px;
     margin: 0;
     text-align: center;
@@ -896,27 +1147,39 @@ body {
     z-index: 2;
 }
 
-/* バトルログ */
+/* 右側の戦闘ログ */
+.battle-log-right {
+    flex: 1;
+    background: rgba(45, 55, 72, 0.95);
+    color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    height: 130px;
+}
+
+/* バトルログ（元の全幅用・予備） */
 .battle-log {
     background: rgba(45, 55, 72, 0.95);
     color: white;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    height: 15vh;
-    min-height: 120px;
+    height: 100px;
+    margin: 8px 15px;
 }
 
 .log-header {
     background: rgba(26, 32, 44, 0.9);
-    padding: 15px 20px;
+    padding: 8px 15px;
     font-weight: bold;
+    font-size: 14px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .log-content {
-    padding: 20px;
-    max-height: 140px;
+    padding: 10px 15px;
+    max-height: 90px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
@@ -936,8 +1199,9 @@ body {
 }
 
 .log-entry {
-    margin-bottom: 8px;
-    padding: 8px 0;
+    margin-bottom: 4px;
+    padding: 4px 0;
+    font-size: 13px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     animation: fadeIn 0.5s ease;
 }

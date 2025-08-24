@@ -258,8 +258,7 @@ function updateUI() {
         const timestamp = Date.now();
         const imagePath = `./assets/images/enemies/${gameState.enemy.image}?v=${timestamp}`;
         
-        // 画像読み込み前にローディング状態を設定
-        elements.enemyImage.style.backgroundColor = '#4a5568';
+        // 画像読み込み前にローディング状態を設定（背景色なし）
         elements.enemyImage.innerHTML = '<div class="placeholder-text">読み込み中...</div>';
         
         elements.enemyImage.src = imagePath;
@@ -551,7 +550,16 @@ function calculateDamage(attacker, defender, isSkill = false, skillMultiplier = 
 
 // プレイヤーの攻撃
 function playerAttack() {
-    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
+    console.log('🎯 playerAttack関数が呼ばれました！');
+    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) {
+        console.log('❌ プレイヤーのターンではない、または戦闘終了済み');
+        return;
+    }
+    
+    console.log('✅ 戦闘条件OK、エフェクト実行中...');
+    
+    // 攻撃エフェクトを表示
+    showPlayerAttackEffect();
     
     soundEffects.playAttack();
     const result = calculateDamage(gameState.player, gameState.enemy);
@@ -822,15 +830,26 @@ function updateItemDisplay() {
 
 // 敵のターン（CSV駆動）
 function enemyTurn() {
-    if (gameState.battle.battleEnded) return;
+    console.log('🔄 enemyTurn関数が呼ばれました！');
+    if (gameState.battle.battleEnded) {
+        console.log('❌ 戦闘終了済みのため敵ターンをスキップ');
+        return;
+    }
+    
+    console.log('📊 dataManager.loaded:', dataManager.loaded);
+    console.log('👹 gameState.enemy:', gameState.enemy);
     
     // CSV駆動の敵行動選択
     if (dataManager.loaded && gameState.enemy && gameState.enemy.id) {
+        console.log('✅ CSV駆動の敵行動を実行');
         const action = dataManager.selectEnemyAction(gameState.enemy.id);
+        console.log('🎲 選択された行動:', action);
         executeEnemyAction(action);
     } else {
+        console.log('⚠️ フォールバック：従来の行動パターン');
         // フォールバック：従来の行動パターン
         if (Math.random() < 0.8) {
+            console.log('✅ executeEnemyAttack()を実行');
             executeEnemyAttack();
             
             if (gameState.player.hp <= 0) {
@@ -838,6 +857,7 @@ function enemyTurn() {
                 return;
             }
         } else {
+            console.log('😴 敵は様子見');
             addBattleLog(`${gameState.enemy.name}は様子を見ている...`);
         }
     }
@@ -857,15 +877,25 @@ function enemyTurn() {
 
 // 敵の行動を実行
 function executeEnemyAction(action) {
-    if (!action) return;
+    console.log('⚔️ executeEnemyAction関数が呼ばれました！');
+    console.log('🎲 受け取った行動:', action);
+    
+    if (!action) {
+        console.log('❌ 行動データがnullまたはundefined');
+        return;
+    }
 
+    console.log('🔍 行動タイプ:', action.action_type);
+    
     switch (action.action_type) {
         case 'skill':
+            console.log('🪄 スキル行動を実行');
             if (action.skill_id) {
                 const skill = dataManager.getSkill(action.skill_id);
                 if (skill) {
                     executeEnemySkill(skill);
                 } else {
+                    console.log('⚠️ スキルが見つからないため通常攻撃に切り替え');
                     // フォールバック：通常攻撃
                     executeEnemyAttack();
                 }
@@ -873,10 +903,12 @@ function executeEnemyAction(action) {
             break;
             
         case 'wait':
+            console.log('😴 敵は様子見');
             addBattleLog(`${gameState.enemy.name}は様子を見ている...`);
             break;
             
         default:
+            console.log('❓ 不明な行動タイプ、何もしない');
             addBattleLog(`${gameState.enemy.name}は何もしなかった...`);
     }
     
@@ -887,6 +919,11 @@ function executeEnemyAction(action) {
 
 // 敵の通常攻撃処理（ダメージSE+シェイク付き）
 function executeEnemyAttack() {
+    console.log('👹 executeEnemyAttack関数が呼ばれました！');
+    
+    // 敵攻撃エフェクトを表示
+    showEnemyAttackEffect();
+    
     const result = calculateDamage(gameState.enemy, gameState.player);
     gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
     
@@ -908,9 +945,13 @@ function executeEnemyAttack() {
 
 // 敵のスキル実行
 function executeEnemySkill(skill) {
+    console.log('🪄 executeEnemySkill関数が呼ばれました！');
+    console.log('📋 スキルデータ:', skill);
+    
     // MP消費チェック（敵にMPがある場合）
     if (skill.mp_cost > 0 && gameState.enemy.mp !== undefined) {
         if (gameState.enemy.mp < skill.mp_cost) {
+            console.log('⚠️ MP不足のため通常攻撃に切り替え');
             // MP不足の場合は通常攻撃
             executeEnemyAttack();
             return;
@@ -918,7 +959,14 @@ function executeEnemySkill(skill) {
         gameState.enemy.mp -= skill.mp_cost;
     }
 
+    console.log('🔍 スキルタイプ:', skill.type);
+    
     if (skill.type === 'attack') {
+        console.log('⚔️ 攻撃スキルを実行中');
+        
+        // 敵攻撃エフェクトを表示
+        showEnemyAttackEffect();
+        
         const damage = dataManager.calculateSkillDamage(skill, gameState.enemy, gameState.player);
         gameState.player.hp = Math.max(0, gameState.player.hp - damage);
         
@@ -936,9 +984,12 @@ function executeEnemySkill(skill) {
             applyStatusEffect(gameState.player, skill.status_effect, skill.status_duration);
         }
     } else if (skill.type === 'healing') {
+        console.log('💚 回復スキルを実行中');
         const healAmount = skill.base_power || 50;
         gameState.enemy.hp = Math.min(gameState.enemy.maxHp, gameState.enemy.hp + healAmount);
         addBattleLog(`${gameState.enemy.name}の${skill.name}！ HPを${healAmount}回復した！`);
+    } else {
+        console.log('❓ 不明なスキルタイプ:', skill.type);
     }
 }
 
@@ -2130,5 +2181,38 @@ document.addEventListener('keydown', async (e) => {
         }
     }
 });
+
+// エフェクト関数
+function showPlayerAttackEffect() {
+    console.log('🗡️ プレイヤー攻撃エフェクト実行！');
+    const attackEffect = document.getElementById('attackEffect');
+    if (attackEffect) {
+        console.log('✅ attackEffect要素が見つかりました');
+        attackEffect.classList.add('show');
+        console.log('✅ showクラスを追加しました');
+        setTimeout(() => {
+            attackEffect.classList.remove('show');
+            console.log('✅ showクラスを削除しました');
+        }, 600);
+    } else {
+        console.error('❌ attackEffect要素が見つかりません！');
+    }
+}
+
+function showEnemyAttackEffect() {
+    console.log('👹 敵攻撃エフェクト実行！');
+    const enemyImage = document.getElementById('enemyImage');
+    if (enemyImage) {
+        console.log('✅ enemyImage要素が見つかりました');
+        enemyImage.classList.add('enemy-attack');
+        console.log('✅ enemy-attackクラスを追加しました');
+        setTimeout(() => {
+            enemyImage.classList.remove('enemy-attack');
+            console.log('✅ enemy-attackクラスを削除しました');
+        }, 400);
+    } else {
+        console.error('❌ enemyImage要素が見つかりません！');
+    }
+}
 
 document.addEventListener('DOMContentLoaded', initGame);

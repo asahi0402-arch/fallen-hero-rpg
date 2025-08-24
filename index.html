@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>堕ちた英雄</title>
-    <link rel="stylesheet" href="style.css?v=20250824">
+    <link rel="stylesheet" href="style.css?v=20250824_fix2">
 </head>
 <body>
     <div class="game-container">
@@ -76,6 +76,17 @@
                     <!-- 敵キャラ（背景の前に配置） -->
                     <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" 
                          onerror="this.style.backgroundColor='#FF6BF5'; this.innerHTML='<div class=\'placeholder-text\'>敵</div>'">
+                    
+                    <!-- 攻撃エフェクト（剣で切る） -->
+                    <div class="attack-effect" id="attackEffect">
+                        <div class="slash-line slash-1"></div>
+                        <div class="slash-line slash-2"></div>
+                        <div class="slash-sparkles">
+                            <div class="sparkle sparkle-1">✦</div>
+                            <div class="sparkle sparkle-2">✧</div>
+                            <div class="sparkle sparkle-3">✦</div>
+                        </div>
+                    </div>
                     
                     <!-- 敵情報（敵画像の上に小さく表示） -->
                     <div class="enemy-info-overlay">
@@ -153,44 +164,56 @@
             </div>
         </div>
 
-        <!-- プレイヤーHP/MPとコマンド -->
-        <div class="player-controls-bottom">
-            <div class="player-bars-bottom">
-                <div class="player-bar-row">
-                    <span class="bar-label">プレイヤーHP</span>
-                    <div class="hp-bar-bg">
-                        <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
+        <!-- 下部：プレイヤーコントロール＋戦闘ログ -->
+        <div class="bottom-controls">
+            <!-- 左側：プレイヤーHP/MPとコマンド -->
+            <div class="player-controls-left">
+                <div class="player-bars-bottom">
+                    <div class="player-bar-column">
+                        <span class="bar-label">プレイヤーHP</span>
+                        <span class="bar-value" id="playerHpText">100/100</span>
+                        <div class="hp-bar-bg">
+                            <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
+                        </div>
                     </div>
-                    <span class="bar-value" id="playerHpText">100/100</span>
+                    <div class="player-bar-column">
+                        <span class="bar-label">プレイヤーMP</span>
+                        <span class="bar-value" id="playerMpText">30/30</span>
+                        <div class="mp-bar-bg">
+                            <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="status-effects-area">
+                        <span class="status-label">状態</span>
+                        <div class="status-effects" id="playerStatusEffects">
+                            <!-- 状態異常がある時のみ表示される -->
+                        </div>
+                    </div>
                 </div>
-                <div class="player-bar-row">
-                    <span class="bar-label">プレイヤーMP</span>
-                    <div class="mp-bar-bg">
-                        <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
+                
+                <!-- コマンドエリア -->
+                <div class="command-section-bottom">
+                    <div class="command-buttons-bottom">
+                        <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
+                        <button class="command-btn skill-btn" id="skillBtn">スキル</button>
+                        <button class="command-btn item-btn" id="itemBtn">アイテム</button>
+                        <button class="command-btn flee-btn" id="fleeBtn">逃げる</button>
+                        <button class="command-btn auto-btn" id="autoBtn">オート</button>
                     </div>
-                    <span class="bar-value" id="playerMpText">30/30</span>
                 </div>
             </div>
             
-            <!-- コマンドエリア -->
-            <div class="command-section-bottom">
-                <div class="command-buttons-bottom">
-                    <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
-                    <button class="command-btn skill-btn" id="skillBtn">スキル</button>
-                    <button class="command-btn item-btn" id="itemBtn">アイテム</button>
-                    <button class="command-btn flee-btn" id="fleeBtn">逃げる</button>
-                    <button class="command-btn auto-btn" id="autoBtn">オート</button>
+            <!-- 右側：戦闘ログ -->
+            <div class="battle-log-right">
+                <div class="log-header">戦闘ログ</div>
+                <div class="log-content" id="battleLogContent">
+                    <div class="log-entry">戦闘が開始されました</div>
+                    <div class="log-entry">プレイヤーの攻撃！</div>
+                    <div class="log-entry">スライムに15ダメージ</div>
                 </div>
             </div>
         </div>
 
-        <!-- 下部：戦闘ログ -->
-        <div class="battle-log">
-            <div class="log-header">戦闘ログ</div>
-            <div class="log-content" id="battleLogContent">
-                <div class="log-entry">戦闘が開始されました</div>
-            </div>
-        </div>
 
         <!-- スキル選択モーダル -->
         <div class="modal" id="skillModal" style="display: none;">
