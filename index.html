@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>堕ちた英雄</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20250824">
 </head>
 <body>
     <div class="game-container">
@@ -122,6 +122,16 @@
                         <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
                     </div>
                 </div>
+                
+                <!-- フィールド/ダンジョン選択 -->
+                <div class="location-selection">
+                    <div class="location-label">探索場所</div>
+                    <div class="location-buttons">
+                        <button class="location-btn active" id="fieldBtn">フィールド</button>
+                        <button class="location-btn" id="dungeonBtn">ダンジョン</button>
+                    </div>
+                    <div class="location-info" id="locationInfo">フィールドで安全に戦闘</div>
+                </div>
 
                 <!-- ショップエリア -->
                 <div class="shop-section">
@@ -130,6 +140,29 @@
                         <span class="btn-text">🏪 ショップに入る</span>
                     </button>
                     <p class="shop-note">※ショップ利用後は<br>敵が1体目に戻ります</p>
+                </div>
+
+                <!-- 宿屋エリア -->
+                <div class="inn-section">
+                    <div class="inn-label">宿屋</div>
+                    <button class="inn-btn" id="innBtn">
+                        <span class="btn-text">🏨 宿屋に泊まる</span>
+                    </button>
+                    <p class="inn-price">100ゴールドでHP/MP全回復</p>
+                    <p class="inn-note">※フィールドからのみ利用可能</p>
+                </div>
+
+                <!-- ガチャショップエリア -->
+                <div class="gacha-section">
+                    <div class="gacha-label">ガチャショップ</div>
+                    <button class="gacha-btn equipment-gacha-btn" id="equipmentGachaBtn">
+                        <span class="btn-text">⚔️ 装備ガチャ</span>
+                    </button>
+                    <p class="gacha-price">500ゴールド</p>
+                    <button class="gacha-btn illustration-gacha-btn" id="illustrationGachaBtn">
+                        <span class="btn-text">🖼️ イラストガチャ</span>
+                    </button>
+                    <p class="gacha-price">100ゴールド</p>
                 </div>
             </div>
         </div>

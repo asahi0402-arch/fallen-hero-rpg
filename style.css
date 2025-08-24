@@ -42,7 +42,7 @@ body {
 /* 新しいメインレイアウト */
 .game-main {
     display: flex;
-    height: 75vh;
+    height: 82vh;
     gap: 10px;
     margin-bottom: 5px;
 }
@@ -398,52 +398,140 @@ body {
     border-radius: 8px;
 }
 
-/* ショップエリア */
-.shop-section {
+/* 右エリアの共通スタイル */
+.shop-section, .inn-section, .gacha-section {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    min-height: 120px;
 }
 
-.shop-label {
-    font-size: 16px;
+.shop-label, .inn-label, .gacha-label {
+    font-size: 14px;
     font-weight: bold;
     color: #2d3748;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+}
+
+/* 統一ボタンスタイル */
+.shop-btn, .inn-btn, .gacha-btn, .location-btn {
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 4px;
 }
 
 .shop-btn {
     background: linear-gradient(135deg, #ed8936, #dd6b20);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 15px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.shop-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+.shop-btn:hover, .inn-btn:hover:not(:disabled), .gacha-btn:hover:not(:disabled), .location-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.shop-note {
-    font-size: 11px;
-    color: #718096;
-    margin-top: 10px;
+.shop-note, .inn-price, .inn-note, .gacha-price {
+    font-size: 12px;
+    color: #2d3748;
+    margin-top: 6px;
     line-height: 1.4;
+    font-weight: 600;
+}
+
+/* 宿屋ボタン固有スタイル */
+.inn-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+.inn-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.inn-price {
+    color: #4299e1;
+    font-weight: bold;
+}
+
+/* ガチャボタン固有スタイル */
+.equipment-gacha-btn {
+    background: linear-gradient(135deg, #9f7aea, #805ad5);
+}
+
+.illustration-gacha-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.gacha-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.gacha-price {
+    color: #9f7aea;
+    font-weight: bold;
+}
+
+/* 探索場所選択エリア */
+.location-selection {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.location-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+}
+
+.location-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.location-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #38a169, #2f855a);
+}
+
+.location-btn.active {
+    background: linear-gradient(135deg, #805ad5, #6b46c1);
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+    font-weight: bold;
+}
+
+.location-info {
+    font-size: 10px;
+    color: #718096;
+    line-height: 1.3;
 }
 
 .player-level-info {
@@ -714,8 +802,8 @@ body {
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    height: 25vh;
-    min-height: 150px;
+    height: 15vh;
+    min-height: 120px;
 }
 
 .log-header {

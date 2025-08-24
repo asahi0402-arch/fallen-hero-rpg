@@ -1,0 +1,11 @@
+﻿location_type,location_id,chapter,location_name,background_image,description
+field,field_1,1,緑の平原,plains_bg.jpg,平和な草原で安全に戦闘練習ができます
+dungeon,dungeon_1,1,スライムの洞窟,cave_bg.jpg,スライムが住む暗い洞窟です
+field,field_2,2,暗い森,dark_forest_bg.jpg,薄暗い森で少し危険な敵が出現します
+dungeon,dungeon_2,2,ゴブリンの巣窟,goblin_cave_bg.jpg,ゴブリンが群れる危険な洞窟です
+field,field_3,3,荒野,wasteland_bg.jpg,荒涼とした大地に強敵が潜んでいます
+dungeon,dungeon_3,3,古代遺跡,ruins_bg.jpg,古い魔法が残る神秘的な遺跡です
+field,field_4,4,雪山,snow_mountain_bg.jpg,雪に覆われた険しい山脈です
+dungeon,dungeon_4,4,氷の神殿,ice_temple_bg.jpg,氷の魔法に守られた神殿です
+field,field_5,5,火山,volcano_bg.jpg,溶岩が流れる危険な火山地帯です
+dungeon,dungeon_5,5,竜の巣,dragon_lair_bg.jpg,伝説の竜が眠ると言われる洞窟です

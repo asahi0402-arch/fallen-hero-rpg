@@ -9,7 +9,8 @@ class DataManager {
             items: [],
             equipment: [],
             stages: [],
-            shop: []
+            shop: [],
+            locations: []
         };
         this.loaded = false;
     }
@@ -107,7 +108,8 @@ class DataManager {
                 this.loadCSV('./data/items.csv'),
                 this.loadCSV('./data/equipment.csv'),
                 this.loadCSV('./data/stages.csv'),
-                this.loadCSV('./data/shop.csv')
+                this.loadCSV('./data/shop.csv'),
+                this.loadCSV('./data/locations.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -120,6 +122,7 @@ class DataManager {
             this.data.equipment = results[5];
             this.data.stages = results[6];
             this.data.shop = results[7];
+            this.data.locations = results[8];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -202,6 +205,32 @@ class DataManager {
     // ショップアイテムを取得
     getShopItem(itemId) {
         return this.data.shop.find(item => item.item_id === itemId);
+    }
+    
+    // ロケーション情報を取得
+    getLocation(locationType, chapter) {
+        return this.data.locations.find(location => 
+            location.location_type === locationType && 
+            parseInt(location.chapter) === chapter
+        );
+    }
+    
+    // フィールド情報を取得
+    getFieldLocation(chapter) {
+        return this.getLocation('field', chapter);
+    }
+    
+    // ダンジョン情報を取得
+    getDungeonLocation(chapter) {
+        return this.getLocation('dungeon', chapter);
+    }
+    
+    // 現在の章のロケーション情報を取得
+    getCurrentLocations(chapter) {
+        return {
+            field: this.getFieldLocation(chapter),
+            dungeon: this.getDungeonLocation(chapter)
+        };
     }
 
     // 敵の行動を選択（確率に基づく）
