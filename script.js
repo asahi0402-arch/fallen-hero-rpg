@@ -12,7 +12,14 @@ let gameState = {
         magic: 15,
         speed: 12,
         exp: 0,
-        gold: 100
+        gold: 100,
+        statPoints: 0,
+        equipment: {
+            weapon: null,     // 武器
+            shield: null,     // 盾
+            head: null,       // 頭防具
+            body: null        // 胴防具
+        }
     },
     enemy: null, // CSVから動的に生成
     battle: {
@@ -25,7 +32,18 @@ let gameState = {
     },
     inventory: {
         potion: 3,
-        ether: 1
+        ether: 1,
+        'hi-potion': 0,
+        'bomb-stone': 0,
+        'power-crystal': 0,
+        'shield-stone': 0,
+        'magic-gem': 0,
+        'speed-boots': 0,
+        'life-crystal': 0,
+        'mana-crystal': 0,
+        'antidote': 0,
+        'paralysis-cure': 0,
+        'phoenix-down': 0
     },
     dataLoaded: false
 };
@@ -46,6 +64,13 @@ const elements = {
     playerDefense: document.getElementById('playerDefense'),
     playerMagic: document.getElementById('playerMagic'),
     playerSpeed: document.getElementById('playerSpeed'),
+    playerExp: document.getElementById('playerExp'),
+    playerGold: document.getElementById('playerGold'),
+    nextLevelExp: document.getElementById('nextLevelExp'),
+    equippedWeapon: document.getElementById('equippedWeapon'),
+    equippedShield: document.getElementById('equippedShield'),
+    equippedHead: document.getElementById('equippedHead'),
+    equippedBody: document.getElementById('equippedBody'),
     battleLogContent: document.getElementById('battleLogContent'),
     attackBtn: document.getElementById('attackBtn'),
     skillBtn: document.getElementById('skillBtn'),
@@ -54,7 +79,17 @@ const elements = {
     skillModal: document.getElementById('skillModal'),
     itemModal: document.getElementById('itemModal'),
     closeSkillModal: document.getElementById('closeSkillModal'),
-    closeItemModal: document.getElementById('closeItemModal')
+    closeItemModal: document.getElementById('closeItemModal'),
+    shopBtn: document.getElementById('shopBtn'),
+    shopModal: document.getElementById('shopModal'),
+    closeShopModal: document.getElementById('closeShopModal'),
+    shopPlayerGold: document.getElementById('shopPlayerGold'),
+    shopItemsList: document.getElementById('shopItemsList'),
+    itemList: document.getElementById('itemList'),
+    levelUpModal: document.getElementById('levelUpModal'),
+    levelUpDisplay: document.getElementById('levelUpDisplay'),
+    availablePoints: document.getElementById('availablePoints'),
+    confirmLevelUp: document.getElementById('confirmLevelUp')
 };
 
 // 音響効果生成関数（Web Audio API使用）
@@ -241,6 +276,36 @@ function updateUI() {
     elements.playerDefense.textContent = gameState.player.defense;
     elements.playerMagic.textContent = gameState.player.magic;
     elements.playerSpeed.textContent = gameState.player.speed;
+    
+    // 経験値と所持金の表示更新
+    elements.playerExp.textContent = gameState.player.exp;
+    elements.playerGold.textContent = gameState.player.gold;
+    elements.nextLevelExp.textContent = gameState.player.level * 20;
+    
+    // 装備表示更新
+    updateEquipmentDisplay();
+}
+
+// 装備表示更新関数
+function updateEquipmentDisplay() {
+    if (!dataManager.loaded) {
+        elements.equippedWeapon.textContent = 'なし';
+        elements.equippedShield.textContent = 'なし';
+        elements.equippedHead.textContent = 'なし';
+        elements.equippedBody.textContent = 'なし';
+        return;
+    }
+    
+    // 装備名を表示（IDから名前に変換）
+    const weaponItem = gameState.player.equipment.weapon ? dataManager.getShopItem(gameState.player.equipment.weapon) : null;
+    const shieldItem = gameState.player.equipment.shield ? dataManager.getShopItem(gameState.player.equipment.shield) : null;
+    const headItem = gameState.player.equipment.head ? dataManager.getShopItem(gameState.player.equipment.head) : null;
+    const bodyItem = gameState.player.equipment.body ? dataManager.getShopItem(gameState.player.equipment.body) : null;
+    
+    elements.equippedWeapon.textContent = weaponItem ? weaponItem.item_name : 'なし';
+    elements.equippedShield.textContent = shieldItem ? shieldItem.item_name : 'なし';
+    elements.equippedHead.textContent = headItem ? headItem.item_name : 'なし';
+    elements.equippedBody.textContent = bodyItem ? bodyItem.item_name : 'なし';
 }
 
 // 章に応じた背景画像更新
@@ -368,25 +433,139 @@ function useSkill(skillName) {
 }
 
 // アイテム使用
-function useItem(itemName) {
+function useItem(itemId) {
     if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
+    if (!dataManager.loaded) return;
     
-    if (itemName === 'potion' && gameState.inventory.potion > 0) {
-        soundEffects.playHeal();
-        gameState.inventory.potion--;
-        const healAmount = 50;
-        gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + healAmount);
-        addBattleLog(`ポーションを使用！ HPを${healAmount}回復した！`);
-        
-    } else if (itemName === 'ether' && gameState.inventory.ether > 0) {
-        soundEffects.playHeal();
-        gameState.inventory.ether--;
-        const mpRecover = 30;
-        gameState.player.mp = Math.min(gameState.player.maxMp, gameState.player.mp + mpRecover);
-        addBattleLog(`エーテルを使用！ MPを${mpRecover}回復した！`);
-        
-    } else {
+    // インベントリチェック
+    if (!gameState.inventory[itemId] || gameState.inventory[itemId] <= 0) {
         addBattleLog("アイテムがありません！");
+        return;
+    }
+    
+    // ショップデータからアイテム情報を取得
+    const shopItem = dataManager.getShopItem(itemId);
+    if (!shopItem) {
+        addBattleLog("アイテム情報が見つかりません！");
+        return;
+    }
+    
+    // アイテムを消費
+    gameState.inventory[itemId]--;
+    
+    // 効果を適用
+    let effectMessage = '';
+    let isDamageItem = false;
+    
+    switch (shopItem.effect_type) {
+        case 'heal_hp':
+            const healAmount = shopItem.effect_value;
+            const actualHeal = Math.min(healAmount, gameState.player.maxHp - gameState.player.hp);
+            gameState.player.hp += actualHeal;
+            effectMessage = `HPを${actualHeal}回復した！`;
+            break;
+            
+        case 'heal_mp':
+            const mpRecover = shopItem.effect_value;
+            const actualMpRecover = Math.min(mpRecover, gameState.player.maxMp - gameState.player.mp);
+            gameState.player.mp += actualMpRecover;
+            effectMessage = `MPを${actualMpRecover}回復した！`;
+            break;
+            
+        case 'damage_hp':
+            const damage = shopItem.effect_value;
+            gameState.enemy.hp = Math.max(0, gameState.enemy.hp - damage);
+            effectMessage = `${gameState.enemy.name}に${damage}のダメージを与えた！`;
+            isDamageItem = true;
+            break;
+            
+        case 'boost_attack':
+            gameState.player.attack += shopItem.effect_value;
+            effectMessage = `攻撃力が${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'boost_defense':
+            gameState.player.defense += shopItem.effect_value;
+            effectMessage = `防御力が${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'boost_magic':
+            gameState.player.magic += shopItem.effect_value;
+            effectMessage = `魔力が${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'boost_speed':
+            gameState.player.speed += shopItem.effect_value;
+            effectMessage = `素早さが${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'boost_max_hp':
+            gameState.player.maxHp += shopItem.effect_value;
+            gameState.player.hp = Math.min(gameState.player.hp + shopItem.effect_value, gameState.player.maxHp);
+            effectMessage = `最大HPが${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'boost_max_mp':
+            gameState.player.maxMp += shopItem.effect_value;
+            gameState.player.mp = Math.min(gameState.player.mp + shopItem.effect_value, gameState.player.maxMp);
+            effectMessage = `最大MPが${shopItem.effect_value}上がった！`;
+            break;
+            
+        case 'cure_poison':
+            // 状態異常システムが実装されたら対応
+            effectMessage = '毒を治療した！';
+            break;
+            
+        case 'cure_paralysis':
+            // 状態異常システムが実装されたら対応
+            effectMessage = '麻痺を治療した！';
+            break;
+            
+        case 'revival':
+            // 復活システムが実装されたら対応
+            effectMessage = 'パワーを感じる...！';
+            break;
+            
+        case 'equip_weapon':
+            equipItem('weapon', shopItem);
+            effectMessage = `${shopItem.item_name}を装備した！`;
+            break;
+            
+        case 'equip_shield':
+            equipItem('shield', shopItem);
+            effectMessage = `${shopItem.item_name}を装備した！`;
+            break;
+            
+        case 'equip_head':
+            equipItem('head', shopItem);
+            effectMessage = `${shopItem.item_name}を装備した！`;
+            break;
+            
+        case 'equip_body':
+            equipItem('body', shopItem);
+            effectMessage = `${shopItem.item_name}を装備した！`;
+            break;
+            
+        default:
+            effectMessage = '効果を発揮した！';
+    }
+    
+    // 音響効果
+    if (isDamageItem) {
+        soundEffects.playAttack();
+        screenShake(gameState.enemy.hp <= 0 ? 15 : 10);
+    } else {
+        soundEffects.playHeal();
+    }
+    
+    addBattleLog(`${shopItem.item_name}を使用！ ${effectMessage}`);
+    
+    // 敵が倒された場合の処理
+    if (isDamageItem && gameState.enemy.hp <= 0) {
+        addBattleLog(`${gameState.enemy.name}を倒した！`);
+        updateItemDisplay();
+        updateUI();
+        setTimeout(nextBattle, 1500);
         return;
     }
     
@@ -399,29 +578,50 @@ function useItem(itemName) {
 
 // アイテム表示更新関数
 function updateItemDisplay() {
-    // ポーションの表示更新
-    const potionOption = document.querySelector('.item-option[data-item="potion"] .item-count');
-    if (potionOption) {
-        potionOption.textContent = `所持数: ${gameState.inventory.potion}`;
-    }
+    if (!dataManager.loaded) return;
     
-    // エーテルの表示更新
-    const etherOption = document.querySelector('.item-option[data-item="ether"] .item-count');
-    if (etherOption) {
-        etherOption.textContent = `所持数: ${gameState.inventory.ether}`;
-    }
+    elements.itemList.innerHTML = '';
     
-    // アイテムが0個の場合は無効化
-    const potionButton = document.querySelector('.item-option[data-item="potion"]');
-    if (potionButton) {
-        potionButton.style.opacity = gameState.inventory.potion > 0 ? '1' : '0.5';
-        potionButton.style.pointerEvents = gameState.inventory.potion > 0 ? 'auto' : 'none';
-    }
+    // ショップアイテムの情報を取得
+    const shopItems = dataManager.getShopItems();
     
-    const etherButton = document.querySelector('.item-option[data-item="ether"]');
-    if (etherButton) {
-        etherButton.style.opacity = gameState.inventory.ether > 0 ? '1' : '0.5';
-        etherButton.style.pointerEvents = gameState.inventory.ether > 0 ? 'auto' : 'none';
+    // 所持しているアイテムをカウント
+    let hasItems = false;
+    
+    // インベントリの各アイテムを処理（所持数が0より大きいもののみ）
+    Object.keys(gameState.inventory).forEach(itemId => {
+        const count = gameState.inventory[itemId];
+        
+        // 所持数が0以下の場合は表示しない（ネタバレ防止）
+        if (count <= 0) return;
+        
+        const shopItem = shopItems.find(item => item.item_id === itemId);
+        
+        if (shopItem) {
+            hasItems = true;
+            
+            const itemElement = document.createElement('button');
+            itemElement.className = 'item-option';
+            itemElement.dataset.item = itemId;
+            
+            itemElement.innerHTML = `
+                <div class="item-name">${shopItem.item_name}</div>
+                <div class="item-count">所持数: ${count}</div>
+                <div class="item-desc">${shopItem.description}</div>
+            `;
+            
+            itemElement.addEventListener('click', () => {
+                useItem(itemId);
+                elements.itemModal.style.display = 'none';
+            });
+            
+            elements.itemList.appendChild(itemElement);
+        }
+    });
+    
+    // アイテムが何もない場合
+    if (!hasItems) {
+        elements.itemList.innerHTML = '<div class="shop-empty">使用可能なアイテムがありません</div>';
     }
 }
 
@@ -642,6 +842,9 @@ function nextBattle() {
         addBattleLog(`${gameState.enemy.gold_reward}ゴールドを獲得！`);
     }
     
+    // レベルアップチェック
+    checkLevelUp();
+    
     // ボス戦後の章クリア判定
     if (gameState.enemy.isBoss) {
         addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
@@ -652,6 +855,9 @@ function nextBattle() {
             gameState.player.exp += parseInt(currentStage.reward_exp) || 0;
             gameState.player.gold += parseInt(currentStage.reward_gold) || 0;
             addBattleLog(`ボーナス報酬：経験値${currentStage.reward_exp}、${currentStage.reward_gold}ゴールドを獲得！`);
+            
+            // ボーナス経験値後のレベルアップチェック
+            checkLevelUp();
         }
         
         setTimeout(() => {
@@ -826,9 +1032,13 @@ function resetChapter() {
 
 // 次章へ
 function nextChapter() {
+    const previousChapter = gameState.battle.chapter;
     gameState.battle.chapter++;
     gameState.battle.battleCount = 1;
     gameState.battle.battleEnded = false;
+    
+    // 新章で解禁されるアイテムをチェック
+    checkNewShopItems(previousChapter, gameState.battle.chapter);
     
     // CSVから章データを取得
     const stageData = dataManager.getStage(gameState.battle.chapter);
@@ -860,6 +1070,7 @@ function setupEventListeners() {
     
     elements.itemBtn.addEventListener('click', () => {
         soundEffects.playClick();
+        updateItemDisplay(); // アイテム表示を更新してからモーダルを表示
         elements.itemModal.style.display = 'flex';
     });
     
@@ -895,15 +1106,7 @@ function setupEventListeners() {
         });
     });
     
-    // アイテム選択
-    document.querySelectorAll('.item-option').forEach(button => {
-        button.addEventListener('click', () => {
-            soundEffects.playClick();
-            const item = button.dataset.item;
-            elements.itemModal.style.display = 'none';
-            useItem(item);
-        });
-    });
+    // アイテム選択（動的に生成されるのでupdateItemDisplayで処理）
     
     // モーダル外クリックで閉じる
     elements.skillModal.addEventListener('click', (e) => {
@@ -917,6 +1120,324 @@ function setupEventListeners() {
             elements.itemModal.style.display = 'none';
         }
     });
+    
+    // ショップイベントリスナー
+    elements.shopBtn.addEventListener('click', () => {
+        soundEffects.playClick();
+        openShop();
+    });
+    
+    elements.closeShopModal.addEventListener('click', () => {
+        soundEffects.playClick();
+        closeShop();
+    });
+    
+    elements.shopModal.addEventListener('click', (e) => {
+        if (e.target === elements.shopModal) {
+            closeShop();
+        }
+    });
+    
+    // レベルアップモーダルイベントリスナー
+    elements.confirmLevelUp.addEventListener('click', () => {
+        confirmLevelUpAllocation();
+    });
+    
+    // ステータスポイント割り振りボタン
+    document.querySelectorAll('.stat-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const stat = button.dataset.stat;
+            const type = button.dataset.type;
+            allocateStatPoint(stat, type);
+        });
+    });
+}
+
+// ショップ機能
+function openShop() {
+    if (!dataManager.loaded) {
+        addBattleLog('ショップデータの読み込み中です...');
+        return;
+    }
+    
+    // プレイヤーの所持金を表示
+    elements.shopPlayerGold.textContent = gameState.player.gold;
+    
+    // ショップアイテムリストを生成
+    populateShopItems();
+    
+    // ショップモーダルを表示
+    elements.shopModal.style.display = 'flex';
+}
+
+function closeShop() {
+    elements.shopModal.style.display = 'none';
+    
+    // ショップ利用後は敵が1体目に戻る
+    gameState.battle.battleCount = 1;
+    gameState.battle.battleEnded = false;
+    generateNewEnemy();
+    updateUI();
+    addBattleLog('ショップを出ました。新たな敵が現れた！');
+}
+
+function populateShopItems() {
+    const shopItems = dataManager.getShopItems();
+    elements.shopItemsList.innerHTML = '';
+    
+    // 現在の章以下のアイテムのみフィルタリング
+    const availableItems = shopItems.filter(item => {
+        const itemChapter = parseInt(item.chapter) || 1;
+        return itemChapter <= gameState.battle.chapter;
+    });
+    
+    if (availableItems.length === 0) {
+        elements.shopItemsList.innerHTML = '<div class="shop-empty">この章では販売アイテムがありません</div>';
+        return;
+    }
+    
+    availableItems.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'shop-item';
+        itemElement.innerHTML = `
+            <div class="shop-item-info">
+                <div class="shop-item-name">${item.item_name}</div>
+                <div class="shop-item-desc">${item.description}</div>
+            </div>
+            <div class="shop-item-price">${item.price}G</div>
+        `;
+        
+        itemElement.addEventListener('click', () => {
+            buyItem(item);
+        });
+        
+        elements.shopItemsList.appendChild(itemElement);
+    });
+}
+
+function buyItem(item) {
+    // 所持金チェック
+    if (gameState.player.gold < item.price) {
+        addBattleLog(`${item.item_name}を購入するには${item.price}G必要です。`);
+        soundEffects.playClick();
+        return;
+    }
+    
+    // アイテムを購入
+    gameState.player.gold -= item.price;
+    
+    // インベントリに追加
+    if (gameState.inventory[item.item_id]) {
+        gameState.inventory[item.item_id]++;
+    } else {
+        gameState.inventory[item.item_id] = 1;
+    }
+    
+    // UI更新
+    elements.shopPlayerGold.textContent = gameState.player.gold;
+    updateUI();
+    updateItemDisplay();
+    
+    addBattleLog(`${item.item_name}を購入しました！`);
+    soundEffects.playClick();
+}
+
+// レベルアップシステム
+let tempStatPoints = 0;
+let tempStats = {};
+
+function checkLevelUp() {
+    const currentLevel = gameState.player.level;
+    const requiredExp = currentLevel * 20;
+    
+    if (gameState.player.exp >= requiredExp) {
+        // レベルアップ！
+        gameState.player.level++;
+        gameState.player.exp -= requiredExp;
+        gameState.player.statPoints += 3; // レベルアップごとに3ポイント獲得
+        
+        addBattleLog(`レベルアップ！Lv.${gameState.player.level}になりました！`);
+        addBattleLog(`ステータスポイントを3獲得しました！`);
+        
+        // レベルアップモーダルを表示
+        setTimeout(() => {
+            showLevelUpModal();
+        }, 1500);
+    }
+}
+
+function showLevelUpModal() {
+    // モーダル内の表示を更新
+    elements.levelUpDisplay.textContent = gameState.player.level;
+    elements.availablePoints.textContent = gameState.player.statPoints;
+    
+    // テンポラリステータスを初期化
+    tempStatPoints = gameState.player.statPoints;
+    tempStats = {
+        maxHp: gameState.player.maxHp,
+        maxMp: gameState.player.maxMp,
+        attack: gameState.player.attack,
+        defense: gameState.player.defense,
+        magic: gameState.player.magic,
+        speed: gameState.player.speed
+    };
+    
+    // ステータス表示を更新
+    updateLevelUpDisplay();
+    
+    // モーダルを表示
+    elements.levelUpModal.style.display = 'flex';
+}
+
+function updateLevelUpDisplay() {
+    // 各ステータスの現在値を表示
+    document.getElementById('statHp').textContent = tempStats.maxHp;
+    document.getElementById('statMp').textContent = tempStats.maxMp;
+    document.getElementById('statAttack').textContent = tempStats.attack;
+    document.getElementById('statDefense').textContent = tempStats.defense;
+    document.getElementById('statMagic').textContent = tempStats.magic;
+    document.getElementById('statSpeed').textContent = tempStats.speed;
+    
+    // 残りポイント数を表示
+    elements.availablePoints.textContent = tempStatPoints;
+}
+
+function allocateStatPoint(stat, type) {
+    if (type === 'plus') {
+        if (tempStatPoints <= 0) return;
+        
+        // ステータス増加
+        if (stat === 'maxHp' || stat === 'maxMp') {
+            tempStats[stat] += 10;
+        } else {
+            tempStats[stat] += 1;
+        }
+        tempStatPoints--;
+    } else if (type === 'minus') {
+        // ポイントを戻す処理
+        const originalValue = gameState.player[stat];
+        if (tempStats[stat] <= originalValue) return;
+        
+        if (stat === 'maxHp' || stat === 'maxMp') {
+            tempStats[stat] -= 10;
+        } else {
+            tempStats[stat] -= 1;
+        }
+        tempStatPoints++;
+    }
+    
+    updateLevelUpDisplay();
+    soundEffects.playClick();
+}
+
+function confirmLevelUpAllocation() {
+    // ステータスを実際に適用
+    gameState.player.maxHp = tempStats.maxHp;
+    gameState.player.maxMp = tempStats.maxMp;
+    gameState.player.attack = tempStats.attack;
+    gameState.player.defense = tempStats.defense;
+    gameState.player.magic = tempStats.magic;
+    gameState.player.speed = tempStats.speed;
+    gameState.player.statPoints = tempStatPoints;
+    
+    // HP/MPを最大値に回復
+    gameState.player.hp = gameState.player.maxHp;
+    gameState.player.mp = gameState.player.maxMp;
+    
+    // UI更新
+    updateUI();
+    
+    // モーダルを閉じる
+    elements.levelUpModal.style.display = 'none';
+    
+    addBattleLog('ステータスを振り分けました！');
+    addBattleLog('HP・MPが全回復しました！');
+    
+    soundEffects.playClick();
+}
+
+// 装備システム
+function equipItem(slot, item) {
+    // 古い装備を外す（ステータス減算）
+    const oldEquipment = gameState.player.equipment[slot];
+    if (oldEquipment) {
+        const oldItem = dataManager.getShopItem(oldEquipment);
+        if (oldItem) {
+            // 古い装備の効果を削除
+            removeEquipmentEffect(oldItem);
+        }
+    }
+    
+    // 両手武器の場合の盾制約チェック
+    if (slot === 'weapon' && item.item_id === 'two-hand-sword') {
+        // 盾を強制的に外す
+        const oldShield = gameState.player.equipment.shield;
+        if (oldShield) {
+            const shieldItem = dataManager.getShopItem(oldShield);
+            if (shieldItem) {
+                removeEquipmentEffect(shieldItem);
+                addBattleLog(`${shieldItem.item_name}を外しました（両手武器のため）`);
+            }
+            gameState.player.equipment.shield = null;
+        }
+    }
+    
+    // 盾を装備しようとした時に両手武器をチェック
+    if (slot === 'shield' && gameState.player.equipment.weapon === 'two-hand-sword') {
+        addBattleLog('両手武器を装備中のため盾は装備できません！');
+        return false;
+    }
+    
+    // 新しい装備を着ける
+    gameState.player.equipment[slot] = item.item_id;
+    
+    // 新しい装備の効果を適用
+    applyEquipmentEffect(item);
+    
+    return true;
+}
+
+function applyEquipmentEffect(item) {
+    switch (item.effect_type) {
+        case 'equip_weapon':
+            gameState.player.attack += item.effect_value;
+            break;
+        case 'equip_shield':
+        case 'equip_head':
+        case 'equip_body':
+            gameState.player.defense += item.effect_value;
+            break;
+    }
+}
+
+function removeEquipmentEffect(item) {
+    switch (item.effect_type) {
+        case 'equip_weapon':
+            gameState.player.attack -= item.effect_value;
+            break;
+        case 'equip_shield':
+        case 'equip_head':
+        case 'equip_body':
+            gameState.player.defense -= item.effect_value;
+            break;
+    }
+}
+
+// 新章でのショップアイテム解禁チェック
+function checkNewShopItems(previousChapter, currentChapter) {
+    if (!dataManager.loaded) return;
+    
+    const shopItems = dataManager.getShopItems();
+    const newItems = shopItems.filter(item => {
+        const itemChapter = parseInt(item.chapter) || 1;
+        return itemChapter === currentChapter;
+    });
+    
+    if (newItems.length > 0) {
+        const itemNames = newItems.map(item => item.item_name).join('、');
+        addBattleLog(`🏪 ショップに新アイテムが入荷しました！`);
+        addBattleLog(`新商品: ${itemNames}`);
+    }
 }
 
 // ゲーム初期化

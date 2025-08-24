@@ -1,0 +1,11 @@
+ 📋 CSV追加推奨アイテム例
+
+  power-crystal,パワークリスタル,100,equipment,攻撃力を永続的に3アップ,boost_attack,3,5
+  shield-stone,シールドストーン,100,equipment,防御力を永続的に3アップ,boost_defense,3,5
+  magic-gem,マジックジェム,100,equipment,魔力を永続的に3アップ,boost_magic,3,5
+  speed-boots,スピードブーツ,100,equipment,素早さを永続的に3アップ,boost_speed,3,5
+  life-crystal,ライフクリスタル,150,equipment,最大HPを永続的に20アップ,boost_max_hp,20,3
+  mana-crystal,マナクリスタル,150,equipment,最大MPを永続的に20アップ,boost_max_mp,20,3
+  antidote,解毒剤,20,consumable,毒状態を治療する,cure_poison,1,99
+  paralysis-cure,麻痺治療薬,25,consumable,麻痺状態を治療する,cure_paralysis,1,99
+  phoenix-down,フェニックスの羽,200,consumable,戦闘不能から復活,revival,1,5

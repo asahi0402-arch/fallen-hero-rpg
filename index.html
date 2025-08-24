@@ -24,6 +24,43 @@
                         <div class="stat-item-left">魔力: <span id="playerMagic">15</span></div>
                         <div class="stat-item-left">素早: <span id="playerSpeed">12</span></div>
                     </div>
+                    
+                    <!-- 装備表示 -->
+                    <div class="player-equipment">
+                        <div class="equipment-title">装備</div>
+                        <div class="equipment-grid">
+                            <div class="equipment-slot">
+                                <div class="equipment-label">武器</div>
+                                <div class="equipment-name" id="equippedWeapon">なし</div>
+                            </div>
+                            <div class="equipment-slot">
+                                <div class="equipment-label">盾</div>
+                                <div class="equipment-name" id="equippedShield">なし</div>
+                            </div>
+                            <div class="equipment-slot">
+                                <div class="equipment-label">頭</div>
+                                <div class="equipment-name" id="equippedHead">なし</div>
+                            </div>
+                            <div class="equipment-slot">
+                                <div class="equipment-label">胴</div>
+                                <div class="equipment-name" id="equippedBody">なし</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 経験値と所持金 -->
+                    <div class="player-resources">
+                        <div class="resource-item">
+                            <span class="resource-label">経験値:</span>
+                            <span class="resource-value" id="playerExp">0</span>
+                            <span class="resource-next">/ <span id="nextLevelExp">20</span></span>
+                        </div>
+                        <div class="resource-item">
+                            <span class="resource-label">所持金:</span>
+                            <span class="resource-value" id="playerGold">100</span>
+                            <span class="resource-unit">G</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -62,11 +99,21 @@
                             </div>
                             <span class="bar-value" id="playerMpText">30/30</span>
                         </div>
+                        
+                        <!-- コマンドエリア（HP/MP下に移動） -->
+                        <div class="command-section-center">
+                            <div class="command-buttons-center">
+                                <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
+                                <button class="command-btn skill-btn" id="skillBtn">スキル</button>
+                                <button class="command-btn item-btn" id="itemBtn">アイテム</button>
+                                <button class="command-btn auto-btn" id="autoBtn">オート</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 右エリア：章情報＋コマンド -->
+            <!-- 右エリア：章情報＋ショップ -->
             <div class="right-panel">
                 <!-- 章情報（右に移動） -->
                 <div class="chapter-info-right">
@@ -76,15 +123,13 @@
                     </div>
                 </div>
 
-                <!-- コマンドエリア -->
-                <div class="command-section">
-                    <div class="command-label">コマンド</div>
-                    <div class="command-buttons">
-                        <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
-                        <button class="command-btn skill-btn" id="skillBtn">スキル</button>
-                        <button class="command-btn item-btn" id="itemBtn">アイテム</button>
-                        <button class="command-btn auto-btn" id="autoBtn">オート</button>
-                    </div>
+                <!-- ショップエリア -->
+                <div class="shop-section">
+                    <div class="shop-label">ショップ</div>
+                    <button class="shop-btn" id="shopBtn">
+                        <span class="btn-text">🏪 ショップに入る</span>
+                    </button>
+                    <p class="shop-note">※ショップ利用後は<br>敵が1体目に戻ります</p>
                 </div>
             </div>
         </div>
@@ -126,17 +171,86 @@
                     <h3>アイテム使用</h3>
                     <button class="close-btn" id="closeItemModal">&times;</button>
                 </div>
-                <div class="item-list">
-                    <button class="item-option" data-item="potion">
-                        <div class="item-name">ポーション</div>
-                        <div class="item-count">所持数: 3</div>
-                        <div class="item-desc">HPを50回復</div>
-                    </button>
-                    <button class="item-option" data-item="ether">
-                        <div class="item-name">エーテル</div>
-                        <div class="item-count">所持数: 1</div>
-                        <div class="item-desc">MPを30回復</div>
-                    </button>
+                <div class="item-list" id="itemList">
+                    <!-- アイテムが動的に生成される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ショップモーダル -->
+        <div class="modal" id="shopModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🏪 ショップ</h3>
+                    <button class="close-btn" id="closeShopModal">&times;</button>
+                </div>
+                <div class="shop-info">
+                    <div class="player-gold">所持金: <span id="shopPlayerGold">100</span>G</div>
+                </div>
+                <div class="shop-items" id="shopItemsList">
+                    <!-- ショップアイテムが動的に生成される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- レベルアップモーダル -->
+        <div class="modal" id="levelUpModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🎉 レベルアップ！</h3>
+                </div>
+                <div class="level-up-info">
+                    <div class="level-display">Level <span id="levelUpDisplay">2</span>になりました！</div>
+                    <div class="stat-points">ステータスポイント: <span id="availablePoints">3</span></div>
+                </div>
+                <div class="stat-allocation">
+                    <div class="stat-group">
+                        <div class="stat-row">
+                            <span class="stat-label">HP</span>
+                            <button class="stat-btn minus" data-stat="maxHp" data-type="minus">-</button>
+                            <span class="stat-current" id="statHp">100</span>
+                            <button class="stat-btn plus" data-stat="maxHp" data-type="plus">+</button>
+                            <span class="stat-effect">(+10)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">MP</span>
+                            <button class="stat-btn minus" data-stat="maxMp" data-type="minus">-</button>
+                            <span class="stat-current" id="statMp">30</span>
+                            <button class="stat-btn plus" data-stat="maxMp" data-type="plus">+</button>
+                            <span class="stat-effect">(+10)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">攻撃</span>
+                            <button class="stat-btn minus" data-stat="attack" data-type="minus">-</button>
+                            <span class="stat-current" id="statAttack">20</span>
+                            <button class="stat-btn plus" data-stat="attack" data-type="plus">+</button>
+                            <span class="stat-effect">(+1)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">防御</span>
+                            <button class="stat-btn minus" data-stat="defense" data-type="minus">-</button>
+                            <span class="stat-current" id="statDefense">10</span>
+                            <button class="stat-btn plus" data-stat="defense" data-type="plus">+</button>
+                            <span class="stat-effect">(+1)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">魔力</span>
+                            <button class="stat-btn minus" data-stat="magic" data-type="minus">-</button>
+                            <span class="stat-current" id="statMagic">15</span>
+                            <button class="stat-btn plus" data-stat="magic" data-type="plus">+</button>
+                            <span class="stat-effect">(+1)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">素早</span>
+                            <button class="stat-btn minus" data-stat="speed" data-type="minus">-</button>
+                            <span class="stat-current" id="statSpeed">12</span>
+                            <button class="stat-btn plus" data-stat="speed" data-type="plus">+</button>
+                            <span class="stat-effect">(+1)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-up-actions">
+                    <button class="confirm-btn" id="confirmLevelUp">決定</button>
                 </div>
             </div>
         </div>

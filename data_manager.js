@@ -8,7 +8,8 @@ class DataManager {
             skills: [],
             items: [],
             equipment: [],
-            stages: []
+            stages: [],
+            shop: []
         };
         this.loaded = false;
     }
@@ -105,7 +106,8 @@ class DataManager {
                 this.loadCSV('./data/skills.csv'),
                 this.loadCSV('./data/items.csv'),
                 this.loadCSV('./data/equipment.csv'),
-                this.loadCSV('./data/stages.csv')
+                this.loadCSV('./data/stages.csv'),
+                this.loadCSV('./data/shop.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -117,6 +119,7 @@ class DataManager {
             this.data.items = results[4];
             this.data.equipment = results[5];
             this.data.stages = results[6];
+            this.data.shop = results[7];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -189,6 +192,16 @@ class DataManager {
     // 章データを取得
     getStage(chapter) {
         return this.data.stages.find(stage => stage.chapter === chapter);
+    }
+
+    // ショップアイテムを取得
+    getShopItems() {
+        return this.data.shop;
+    }
+
+    // ショップアイテムを取得
+    getShopItem(itemId) {
+        return this.data.shop.find(item => item.item_id === itemId);
     }
 
     // 敵の行動を選択（確率に基づく）
