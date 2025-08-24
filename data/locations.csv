@@ -1,5 +1,5 @@
 ﻿location_type,location_id,chapter,location_name,background_image,description
-field,field_1,1,緑の平原,plains_bg.jpg,平和な草原で安全に戦闘練習ができます
+field,field_1,1,緑の平原,plains_bg.png,平和な草原で安全に戦闘練習ができます
 dungeon,dungeon_1,1,スライムの洞窟,cave_bg.jpg,スライムが住む暗い洞窟です
 field,field_2,2,暗い森,dark_forest_bg.jpg,薄暗い森で少し危険な敵が出現します
 dungeon,dungeon_2,2,ゴブリンの巣窟,goblin_cave_bg.jpg,ゴブリンが群れる危険な洞窟です

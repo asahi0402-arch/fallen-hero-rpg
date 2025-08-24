@@ -253,12 +253,25 @@ function updateUI() {
     // 章に応じた背景画像を更新
     updateStageBackground();
     
-    // 敵画像を更新
+    // 敵画像を更新（キャッシュバスター付き）
     if (gameState.enemy && gameState.enemy.image) {
-        const imagePath = `./assets/images/enemies/${gameState.enemy.image}`;
+        const timestamp = Date.now();
+        const imagePath = `./assets/images/enemies/${gameState.enemy.image}?v=${timestamp}`;
+        
+        // 画像読み込み前にローディング状態を設定
+        elements.enemyImage.style.backgroundColor = '#4a5568';
+        elements.enemyImage.innerHTML = '<div class="placeholder-text">読み込み中...</div>';
+        
         elements.enemyImage.src = imagePath;
+        elements.enemyImage.onload = function() {
+            // 読み込み成功時
+            this.innerHTML = '';
+            this.style.backgroundColor = '';
+            console.log(`✅ Enemy image loaded: ${gameState.enemy.image}`);
+        };
         elements.enemyImage.onerror = function() {
             // 画像読み込み失敗時のフォールバック
+            console.error(`❌ Failed to load enemy image: ${gameState.enemy.image}`);
             this.style.backgroundColor = '#FF6BF5';
             this.style.color = 'white';
             this.style.display = 'flex';
@@ -301,6 +314,9 @@ function updateUI() {
     
     // ロケーション表示更新
     updateLocationDisplay();
+    
+    // 逃げるボタンの状態更新
+    updateFleeButtonState();
 }
 
 // 装備表示更新関数
@@ -414,6 +430,25 @@ function updateLocationDisplay() {
     }
 }
 
+// 逃げるボタンの状態更新
+function updateFleeButtonState() {
+    const fleeBtn = document.getElementById('fleeBtn');
+    if (!fleeBtn) return;
+    
+    const isBoss = gameState.enemy && gameState.enemy.name.includes('ボス');
+    const canFlee = !isBoss && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded;
+    
+    fleeBtn.disabled = !canFlee;
+    
+    if (isBoss) {
+        fleeBtn.textContent = '逃げる（ボス戦不可）';
+        fleeBtn.title = 'ボス戦では逃走できません';
+    } else {
+        fleeBtn.textContent = '逃げる';
+        fleeBtn.title = '50%の確率で逃走成功';
+    }
+}
+
 // 章に応じた背景画像更新（ロケーション対応）
 function updateStageBackground() {
     const stageBackground = document.getElementById('stageBackground');
@@ -423,18 +458,24 @@ function updateStageBackground() {
     const locationInfo = dataManager.getLocation(gameState.battle.location, gameState.battle.chapter);
     
     if (locationInfo && locationInfo.background_image) {
-        const backgroundPath = `./assets/images/backgrounds/${locationInfo.background_image}`;
+        const timestamp = Date.now();
+        const backgroundPath = `./assets/images/backgrounds/${locationInfo.background_image}?v=${timestamp}`;
         stageBackground.src = backgroundPath;
         stageBackground.onerror = function() {
             // 背景画像読み込み失敗時のフォールバック
+            console.warn(`Background image not found: ${locationInfo.background_image}`);
             this.style.backgroundColor = getLocationBackgroundColor(gameState.battle.location, gameState.battle.chapter);
             this.innerHTML = `<div class="placeholder-text">${locationInfo.location_name}<br>背景</div>`;
+            this.style.display = 'flex';
+            this.style.alignItems = 'center';
+            this.style.justifyContent = 'center';
         };
     } else {
         // フォールバック：章ベースの背景
         const stageInfo = dataManager.getStageInfo(gameState.battle.chapter);
         if (stageInfo && stageInfo.background_image) {
-            const backgroundPath = `./assets/images/backgrounds/${stageInfo.background_image}`;
+            const timestamp = Date.now();
+            const backgroundPath = `./assets/images/backgrounds/${stageInfo.background_image}?v=${timestamp}`;
             stageBackground.src = backgroundPath;
             stageBackground.onerror = function() {
                 this.style.backgroundColor = getChapterBackgroundColor(gameState.battle.chapter);
@@ -981,6 +1022,29 @@ function applyStatusEffect(target, effect, duration) {
     addBattleLog(`${target.name || 'プレイヤー'}は${effect}状態になった！`);
 }
 
+// 逃走成功時の戦闘継続（経験値・金なし）
+function nextBattleAfterFlee() {
+    // レベルアップチェック（念のため）
+    checkLevelUp();
+    
+    // 通常敵の場合の戦闘継続
+    if (gameState.battle.location === 'field') {
+        // フィールドでは無限戦闘（battleCountは増加しない）
+        addBattleLog('フィールドでの戦闘継続...');
+    } else {
+        // ダンジョンでは戦闘カウントを増加
+        gameState.battle.battleCount++;
+    }
+    
+    // 敵データ更新とUI更新
+    updateEnemyData();
+    updateUI();
+    
+    // 戦闘状態をリセット
+    gameState.battle.isPlayerTurn = true;
+    gameState.battle.battleEnded = false;
+}
+
 // 次の戦闘
 function nextBattle() {
     // 経験値・ゴールド獲得処理
@@ -1000,6 +1064,18 @@ function nextBattle() {
     if (gameState.enemy.isBoss) {
         addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
         addBattleLog("章クリア！");
+        
+        // ボス撃破時のストーリートリガーをチェック
+        const defeatedBossId = gameState.enemy.id;
+        if (storyTriggerManager) {
+            const trigger = storyTriggerManager.checkBossDefeat(defeatedBossId);
+            if (trigger) {
+                addBattleLog('📖 ストーリーイベントが発生しました');
+                setTimeout(() => {
+                    storyTriggerManager.triggerStory(trigger.story_id);
+                }, 1000);
+            }
+        }
         
         const currentStage = dataManager.getStageInfo(gameState.battle.chapter);
         if (currentStage) {
@@ -1142,6 +1218,18 @@ function generateNewEnemy() {
                 isBoss: true
             };
             addBattleLog(`章ボス「${gameState.enemy.name}」が現れた！`);
+            
+            // ボス遭遇時のストーリートリガーをチェック
+            setTimeout(() => {
+                if (storyTriggerManager) {
+                    const trigger = storyTriggerManager.checkBossEncounter(bossData.id);
+                    if (trigger) {
+                        addBattleLog('📖 ストーリーイベントが発生しました');
+                        storyTriggerManager.triggerStory(trigger.story_id);
+                    }
+                }
+            }, 1000);
+            
             return;
         }
     }
@@ -1234,6 +1322,17 @@ function nextChapter() {
     
     resetChapter();
     addBattleLog(`${gameState.battle.chapter}章が始まりました！`);
+    
+    // 章開始時のストーリートリガーをチェック
+    setTimeout(() => {
+        if (storyTriggerManager) {
+            const trigger = storyTriggerManager.checkChapterStart(gameState.battle.chapter);
+            if (trigger) {
+                addBattleLog('📖 ストーリーイベントが発生しました');
+                storyTriggerManager.triggerStory(trigger.story_id);
+            }
+        }
+    }, 1000);
 }
 
 // イベントリスナーの設定
@@ -1254,6 +1353,15 @@ function setupEventListeners() {
         updateItemDisplay(); // アイテム表示を更新してからモーダルを表示
         elements.itemModal.style.display = 'flex';
     });
+    
+    // 逃げるボタン
+    const fleeBtn = document.getElementById('fleeBtn');
+    if (fleeBtn) {
+        fleeBtn.addEventListener('click', () => {
+            soundEffects.playClick();
+            attemptFlee();
+        });
+    }
     
     elements.autoBtn.addEventListener('click', () => {
         soundEffects.playClick();
@@ -1307,6 +1415,15 @@ function setupEventListeners() {
         soundEffects.playClick();
         openShop();
     });
+
+    // ストーリーイベントリスナー
+    elements.storyBtn = document.getElementById('storyBtn');
+    if (elements.storyBtn) {
+        elements.storyBtn.addEventListener('click', () => {
+            soundEffects.playClick();
+            window.location.href = 'story.html?story=chapter_1';
+        });
+    }
     
     elements.closeShopModal.addEventListener('click', () => {
         soundEffects.playClick();
@@ -1581,6 +1698,43 @@ function confirmLevelUpAllocation() {
     soundEffects.playClick();
 }
 
+// 逃走システム
+function attemptFlee() {
+    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
+    
+    // ボス戦では100%失敗
+    const isBoss = gameState.enemy.name.includes('ボス');
+    if (isBoss) {
+        addBattleLog('💀 ボス戦では逃げることができない！');
+        gameState.battle.isPlayerTurn = false;
+        setTimeout(enemyTurn, 1500);
+        return;
+    }
+    
+    // 50%の確率で成功
+    const fleeSuccess = Math.random() < 0.5;
+    
+    if (fleeSuccess) {
+        // 逃走成功
+        addBattleLog('💨 逃走成功！戦闘から離脱した');
+        addBattleLog('（経験値・ゴールドは獲得できません）');
+        soundEffects.playClick();
+        
+        // 経験値・金なしで次の戦闘へ
+        setTimeout(() => {
+            nextBattleAfterFlee();
+        }, 1500);
+    } else {
+        // 逃走失敗
+        addBattleLog('❌ 逃走失敗！敵に阻まれた');
+        soundEffects.playClick();
+        
+        // 敵のターンになる
+        gameState.battle.isPlayerTurn = false;
+        setTimeout(enemyTurn, 1500);
+    }
+}
+
 // 装備システム
 function equipItem(slot, item) {
     // 古い装備を外す（ステータス減算）
@@ -1673,6 +1827,7 @@ function switchLocation(location) {
     
     if (gameState.battle.location === location) return; // 既に同じ場所の場合は何もしない
     
+    const previousLocation = gameState.battle.location;
     gameState.battle.location = location;
     gameState.battle.fieldMode = (location === 'field');
     
@@ -1707,6 +1862,18 @@ function switchLocation(location) {
             gameState.battle.dungeonFloor = 1;
             addBattleLog('⛰️ ダンジョンに入りました');
         }
+    }
+    
+    // ダンジョン初回入場時のストーリートリガーをチェック
+    if (location !== 'field' && previousLocation !== location && storyTriggerManager) {
+        setTimeout(() => {
+            const dungeonId = `${location}_${gameState.battle.chapter}`;
+            const trigger = storyTriggerManager.checkDungeonFirstEnter(dungeonId);
+            if (trigger) {
+                addBattleLog('📖 ストーリーイベントが発生しました');
+                storyTriggerManager.triggerStory(trigger.story_id);
+            }
+        }, 500);
     }
     
     // 戦闘をリセットして新しい敵を生成
@@ -1889,9 +2056,79 @@ async function initGame() {
     generateNewEnemy();
     
     updateUI();
+    
+    // プレイヤー画像を初期化（キャッシュバスター付き）
+    const playerImage = document.getElementById('playerImage');
+    if (playerImage) {
+        const timestamp = Date.now();
+        const currentSrc = playerImage.src.split('?')[0];
+        playerImage.src = `${currentSrc}?v=${timestamp}`;
+    }
+    
     addBattleLog("戦闘が開始されました");
     addBattleLog(`${gameState.enemy.name}が現れた！`);
 }
 
+// 全画像のキャッシュクリア関数
+function reloadAllImages() {
+    const timestamp = Date.now();
+    
+    // プレイヤーポートレート画像
+    const playerImage = document.getElementById('playerImage');
+    if (playerImage) {
+        const currentSrc = playerImage.src.split('?')[0]; // クエリパラメータを除去
+        playerImage.src = `${currentSrc}?v=${timestamp}`;
+    }
+    
+    // 敵画像
+    if (gameState.enemy && gameState.enemy.image) {
+        const imagePath = `./assets/images/enemies/${gameState.enemy.image}?v=${timestamp}`;
+        elements.enemyImage.src = imagePath;
+    }
+    
+    // 背景画像
+    const stageBackground = document.getElementById('stageBackground');
+    if (stageBackground && stageBackground.src) {
+        const currentSrc = stageBackground.src.split('?')[0];
+        stageBackground.src = `${currentSrc}?v=${timestamp}`;
+    }
+    
+    console.log('🖼️ All images reloaded with cache busting');
+}
+
 // ページ読み込み完了時にゲーム開始
+// キーボードショートカット
+document.addEventListener('keydown', async (e) => {
+    // Ctrl+R: CSVデータとキャッシュクリア
+    if (e.ctrlKey && e.key === 'r') {
+        e.preventDefault();
+        console.log('Cache clearing requested...');
+        
+        // データを再読み込み
+        const success = await dataManager.reloadAllData();
+        
+        // ストーリートリガーも再読み込み
+        if (storyTriggerManager) {
+            await storyTriggerManager.reloadTriggers();
+        }
+        
+        if (success) {
+            // UIを更新
+            updateUI();
+            updateShopDisplay();
+            updateLocationButtons();
+            
+            // 画像キャッシュもクリア
+            reloadAllImages();
+            
+            // フィードバック
+            addBattleLog('🔄 CSVデータと画像キャッシュをクリアしました');
+            console.log('✅ CSV data and image cache cleared successfully');
+        } else {
+            addBattleLog('❌ データの再読み込みに失敗しました');
+            console.error('❌ Failed to reload data');
+        }
+    }
+});
+
 document.addEventListener('DOMContentLoaded', initGame);

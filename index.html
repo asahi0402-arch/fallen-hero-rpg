@@ -66,48 +66,25 @@
 
             <!-- 中央エリア：敵キャラクター -->
             <div class="enemy-area">
+                <!-- 背景画像（敵エリア全体の背景） -->
                 <div class="stage-background">
                     <img id="stageBackground" src="./assets/images/backgrounds/plains_bg.jpg" alt="ステージ背景" class="background-image"
                          onerror="this.style.backgroundColor='#87CEEB'; this.innerHTML='<div class=\'placeholder-text\'>背景</div>'">
                 </div>
+                
                 <div class="enemy-container">
+                    <!-- 敵キャラ（背景の前に配置） -->
                     <img id="enemyImage" src="./assets/images/enemies/slime.png" alt="敵キャラ" class="enemy-image" 
                          onerror="this.style.backgroundColor='#FF6BF5'; this.innerHTML='<div class=\'placeholder-text\'>敵</div>'">
-                    <div class="enemy-info">
+                    
+                    <!-- 敵情報（敵画像の上に小さく表示） -->
+                    <div class="enemy-info-overlay">
                         <div class="enemy-name" id="enemyName">スライム</div>
                         <div class="enemy-hp-bar">
                             <div class="hp-bar-bg">
                                 <div class="hp-bar-fill" id="enemyHpBar" style="width: 100%"></div>
                             </div>
                             <div class="hp-text" id="enemyHpText">50/50</div>
-                        </div>
-                    </div>
-                    
-                    <!-- プレイヤーHP/MPゲージ（敵HPの下に移動） -->
-                    <div class="player-bars-center">
-                        <div class="player-bar-row">
-                            <span class="bar-label">プレイヤーHP</span>
-                            <div class="hp-bar-bg">
-                                <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
-                            </div>
-                            <span class="bar-value" id="playerHpText">100/100</span>
-                        </div>
-                        <div class="player-bar-row">
-                            <span class="bar-label">プレイヤーMP</span>
-                            <div class="mp-bar-bg">
-                                <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
-                            </div>
-                            <span class="bar-value" id="playerMpText">30/30</span>
-                        </div>
-                        
-                        <!-- コマンドエリア（HP/MP下に移動） -->
-                        <div class="command-section-center">
-                            <div class="command-buttons-center">
-                                <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
-                                <button class="command-btn skill-btn" id="skillBtn">スキル</button>
-                                <button class="command-btn item-btn" id="itemBtn">アイテム</button>
-                                <button class="command-btn auto-btn" id="autoBtn">オート</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,6 +129,15 @@
                     <p class="inn-note">※フィールドからのみ利用可能</p>
                 </div>
 
+                <!-- ストーリーエリア -->
+                <div class="story-section">
+                    <div class="story-label">ストーリー</div>
+                    <button class="story-btn" id="storyBtn">
+                        <span class="btn-text">📖 ストーリーを読む</span>
+                    </button>
+                    <p class="story-note">第1章：盗賊団の隠れ家</p>
+                </div>
+
                 <!-- ガチャショップエリア -->
                 <div class="gacha-section">
                     <div class="gacha-label">ガチャショップ</div>
@@ -163,6 +149,37 @@
                         <span class="btn-text">🖼️ イラストガチャ</span>
                     </button>
                     <p class="gacha-price">100ゴールド</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- プレイヤーHP/MPとコマンド -->
+        <div class="player-controls-bottom">
+            <div class="player-bars-bottom">
+                <div class="player-bar-row">
+                    <span class="bar-label">プレイヤーHP</span>
+                    <div class="hp-bar-bg">
+                        <div class="hp-bar-fill player-hp" id="playerHpBar" style="width: 100%"></div>
+                    </div>
+                    <span class="bar-value" id="playerHpText">100/100</span>
+                </div>
+                <div class="player-bar-row">
+                    <span class="bar-label">プレイヤーMP</span>
+                    <div class="mp-bar-bg">
+                        <div class="mp-bar-fill" id="playerMpBar" style="width: 100%"></div>
+                    </div>
+                    <span class="bar-value" id="playerMpText">30/30</span>
+                </div>
+            </div>
+            
+            <!-- コマンドエリア -->
+            <div class="command-section-bottom">
+                <div class="command-buttons-bottom">
+                    <button class="command-btn attack-btn" id="attackBtn">攻撃</button>
+                    <button class="command-btn skill-btn" id="skillBtn">スキル</button>
+                    <button class="command-btn item-btn" id="itemBtn">アイテム</button>
+                    <button class="command-btn flee-btn" id="fleeBtn">逃げる</button>
+                    <button class="command-btn auto-btn" id="autoBtn">オート</button>
                 </div>
             </div>
         </div>
@@ -290,6 +307,7 @@
     </div>
 
     <script src="data_manager.js"></script>
+    <script src="story_trigger.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

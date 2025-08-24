@@ -1,0 +1,303 @@
+/* タイトル画面専用CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+.title-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 背景画像 */
+.title-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* メインタイトル */
+.title-main {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    margin-bottom: 50px;
+    animation: titleFadeIn 2s ease-out;
+}
+
+.game-title {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        3px 3px 0px #000,
+        -1px -1px 0px #000,  
+        1px -1px 0px #000,
+        -1px 1px 0px #000,
+        1px 1px 0px #000,
+        0 0 20px rgba(255, 215, 0, 0.8);
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+}
+
+.game-subtitle {
+    font-size: 1.2rem;
+    color: #ffd700;
+    text-shadow: 
+        2px 2px 0px #000,
+        -1px -1px 0px #000,  
+        1px -1px 0px #000,
+        -1px 1px 0px #000,
+        1px 1px 0px #000;
+    letter-spacing: 2px;
+}
+
+/* メニューコンテナ */
+.menu-container {
+    position: relative;
+    z-index: 3;
+    animation: menuSlideIn 1s ease-out 0.5s both;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* メニューボタン */
+.menu-btn {
+    background: linear-gradient(135deg, rgba(45, 55, 72, 0.9), rgba(26, 32, 44, 0.9));
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    padding: 15px 40px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    min-width: 250px;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.menu-btn:hover:before {
+    left: 100%;
+}
+
+.menu-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-color: #fff;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, rgba(245, 101, 101, 0.9), rgba(229, 62, 62, 0.9));
+}
+
+.continue-btn:hover {
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.9), rgba(56, 161, 105, 0.9));
+}
+
+.story-btn:hover {
+    background: linear-gradient(135deg, rgba(66, 153, 225, 0.9), rgba(49, 130, 206, 0.9));
+}
+
+.gallery-btn:hover {
+    background: linear-gradient(135deg, rgba(159, 122, 234, 0.9), rgba(128, 90, 213, 0.9));
+}
+
+.settings-btn:hover {
+    background: linear-gradient(135deg, rgba(160, 174, 192, 0.9), rgba(113, 128, 150, 0.9));
+}
+
+.btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+/* バージョン情報 */
+.version-info {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 3;
+    text-align: right;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* アニメーション */
+@keyframes titleFadeIn {
+    0% { opacity: 0; transform: translateY(-50px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes menuSlideIn {
+    0% { opacity: 0; transform: translateY(50px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* モーダル */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2d3748, #1a202c);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 400px;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ffd700;
+}
+
+.modal-header h3 {
+    font-size: 24px;
+    color: #ffd700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #fff;
+    transform: scale(1.2);
+}
+
+.settings-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.setting-item label {
+    font-weight: bold;
+    color: #e2e8f0;
+    min-width: 100px;
+}
+
+.setting-item input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: #4a5568;
+    outline: none;
+    border-radius: 3px;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #ffd700;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.setting-item select {
+    background: #4a5568;
+    color: white;
+    border: 1px solid #ffd700;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+    
+    .menu-btn {
+        min-width: 200px;
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+    
+    .modal-content {
+        margin: 20px;
+        min-width: unset;
+        width: calc(100% - 40px);
+    }
+}

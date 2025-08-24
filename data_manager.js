@@ -15,10 +15,12 @@ class DataManager {
         this.loaded = false;
     }
 
-    // CSVファイルを読み込み、パースする
+    // CSVファイルを読み込み、パースする（キャッシュ回避版）
     async loadCSV(filePath) {
         try {
-            const response = await fetch(filePath);
+            // キャッシュ回避のためにタイムスタンプを追加
+            const cacheBreaker = `?v=${Date.now()}`;
+            const response = await fetch(filePath + cacheBreaker);
             if (!response.ok) {
                 throw new Error(`Failed to load ${filePath}: ${response.status}`);
             }
@@ -131,6 +133,13 @@ class DataManager {
             console.error('Failed to load CSV data:', error);
             return false;
         }
+    }
+
+    // データを強制再読み込み（キャッシュクリア）
+    async reloadAllData() {
+        console.log('Reloading all CSV data (cache cleared)...');
+        this.loaded = false;
+        return await this.loadAllData();
     }
 
     // キャラクターデータを取得

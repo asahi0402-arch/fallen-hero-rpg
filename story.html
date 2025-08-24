@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堕ちた英雄 - ストーリー</title>
+    <link rel="stylesheet" href="story.css">
+</head>
+<body>
+    <div class="story-container">
+        <!-- 上半分：背景画像＋立ち絵エリア -->
+        <div class="visual-area">
+            <!-- 背景画像 -->
+            <div class="background-layer">
+                <img id="backgroundImage" src="./assets/images/backgrounds/story_bg.jpg" 
+                     alt="背景" class="bg-image"
+                     onerror="this.style.backgroundColor='#2d3748'; this.innerHTML='<div class=\'placeholder-text\'>背景画像</div>'">
+            </div>
+            
+            <!-- キャラクター立ち絵エリア -->
+            <div class="character-layer">
+                <div class="character-left" id="characterLeft">
+                    <img id="leftCharacterImage" src="" alt="左キャラクター" class="character-image" style="display: none;">
+                </div>
+                
+                <div class="character-right" id="characterRight">
+                    <img id="rightCharacterImage" src="" alt="右キャラクター" class="character-image" style="display: none;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 下半分：セリフログエリア -->
+        <div class="dialogue-area">
+            <!-- 話者名表示 -->
+            <div class="speaker-name" id="speakerName">ナレーター</div>
+            
+            <!-- セリフウィンドウ -->
+            <div class="dialogue-window">
+                <div class="dialogue-text" id="dialogueText">
+                    物語が始まります...
+                </div>
+            </div>
+            
+            <!-- 進行ボタン -->
+            <div class="control-buttons">
+                <button class="control-btn skip-btn" id="skipBtn">スキップ</button>
+                <button class="control-btn auto-btn" id="autoBtn">オート</button>
+                <button class="control-btn next-btn" id="nextBtn">次へ ▶</button>
+                <button class="control-btn menu-btn" id="menuBtn">メニュー</button>
+            </div>
+        </div>
+        
+        <!-- プログレスバー -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+            <div class="progress-text" id="progressText">1/10</div>
+        </div>
+    </div>
+    
+    <!-- メニューモーダル -->
+    <div class="modal" id="menuModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📚 ストーリーメニュー</h3>
+                <button class="close-btn" id="closeMenuModal">&times;</button>
+            </div>
+            <div class="menu-body">
+                <button class="modal-btn" id="saveStoryBtn">📄 進行状況を保存</button>
+                <button class="modal-btn" id="loadStoryBtn">📁 進行状況を読み込み</button>
+                <button class="modal-btn" id="restartStoryBtn">🔄 最初から読み直す</button>
+                <button class="modal-btn" id="backToTitleBtn">🏠 タイトルに戻る</button>
+                <button class="modal-btn" id="backToGameBtn">⚔️ ゲームに戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="story.js"></script>
+</body>
+</html>

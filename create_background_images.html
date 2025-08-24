@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背景画像生成ツール</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #2d3748;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        canvas {
+            border: 2px solid #4299e1;
+            margin: 10px;
+            display: block;
+        }
+        button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #3182ce;
+        }
+        .info {
+            background: #1a202c;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ 背景画像生成ツール</h1>
+        <div class="info">
+            <p>このツールは、ゲーム用のプレースホルダー背景画像を生成します。</p>
+            <p>生成された画像を右クリック→「名前を付けて保存」でダウンロードし、<br>
+            <code>assets/images/backgrounds/</code>フォルダに保存してください。</p>
+        </div>
+        
+        <button onclick="generateAndDownloadAll()" style="font-size: 18px; padding: 15px 30px;">🚀 背景画像を生成・ダウンロード</button>
+        <div id="status" style="margin: 20px 0; font-weight: bold;"></div>
+        
+        <div id="canvasContainer"></div>
+    </div>
+
+    <script>
+        const backgrounds = [
+            {name: 'plains_bg.jpg', title: '緑の平原', colors: ['#87CEEB', '#98FB98', '#90EE90']},
+            {name: 'cave_bg.jpg', title: 'スライムの洞窟', colors: ['#2F4F4F', '#696969', '#808080']},
+            {name: 'dark_forest_bg.jpg', title: '暗い森', colors: ['#1B4D3E', '#228B22', '#006400']},
+            {name: 'goblin_cave_bg.jpg', title: 'ゴブリンの巣窟', colors: ['#8B4513', '#A0522D', '#CD853F']},
+            {name: 'wasteland_bg.jpg', title: '荒野', colors: ['#DEB887', '#D2B48C', '#F4A460']},
+            {name: 'ruins_bg.jpg', title: '古代遺跡', colors: ['#708090', '#A9A9A9', '#C0C0C0']},
+            {name: 'snow_mountain_bg.jpg', title: '雪山', colors: ['#F0F8FF', '#E6E6FA', '#B0C4DE']},
+            {name: 'ice_temple_bg.jpg', title: '氷の神殿', colors: ['#4682B4', '#87CEEB', '#B0E0E6']},
+            {name: 'volcano_bg.jpg', title: '火山', colors: ['#FF4500', '#FF6347', '#DC143C']},
+            {name: 'demon_castle_bg.jpg', title: '魔王城', colors: ['#4B0082', '#8B008B', '#9932CC']}
+        ];
+
+        let generatedImages = {};
+
+        function generateAllBackgrounds() {
+            const container = document.getElementById('canvasContainer');
+            container.innerHTML = '';
+
+            backgrounds.forEach(bg => {
+                const canvas = createBackgroundImage(bg.name, bg.title, bg.colors);
+                container.appendChild(canvas);
+                
+                // データURLを保存
+                generatedImages[bg.name] = canvas.toDataURL('image/jpeg', 0.8);
+            });
+        }
+
+        function createBackgroundImage(filename, title, colors) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            canvas.title = filename;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // グラデーション背景
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, colors[0]);
+            gradient.addColorStop(0.5, colors[1]);
+            gradient.addColorStop(1, colors[2]);
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // タイトル描画
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(10, 10, 300, 60);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText(title, 20, 40);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText(filename, 20, 60);
+            
+            // 装飾要素
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 10 + 5;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            return canvas;
+        }
+
+        function generateAndDownloadAll() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '🎨 背景画像を生成中...';
+            statusDiv.style.color = '#4299e1';
+            
+            // 生成
+            generateAllBackgrounds();
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = '💾 ダウンロード中...';
+                
+                // ダウンロード
+                Object.entries(generatedImages).forEach(([filename, dataUrl]) => {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+                
+                statusDiv.innerHTML = '✅ 完了！ダウンロードフォルダから backgrounds フォルダにコピーしてください';
+                statusDiv.style.color = '#48bb78';
+                
+                alert('✅ 全ての背景画像をダウンロードしました！\\n\\n📁 ダウンロードフォルダから以下にコピーしてください：\\n   assets/images/backgrounds/\\n\\n🔄 コピー後、ゲーム画面でCtrl+Rを押して更新してください。');
+            }, 500);
+        }
+
+        function downloadAll() {
+            if (Object.keys(generatedImages).length === 0) {
+                alert('まず「全背景画像を生成」ボタンを押してください');
+                return;
+            }
+
+            Object.entries(generatedImages).forEach(([filename, dataUrl]) => {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            alert('全ての背景画像をダウンロードしました！\\nassets/images/backgrounds/フォルダに保存してください。');
+        }
+
+        // ページ読み込み時に自動生成
+        window.addEventListener('load', generateAllBackgrounds);
+    </script>
+</body>
+</html>

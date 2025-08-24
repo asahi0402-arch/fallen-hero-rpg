@@ -1,0 +1,6 @@
+﻿chapter_id,title,description,unlock_condition
+chapter_1,第1章：盗賊団の隠れ家,かつての英雄リオンが再び剣を取る物語,none
+chapter_2,第2章：復活の兆し,力を取り戻し始めるリオンの成長物語,chapter_1_complete
+chapter_3,第3章：闇の使者,新たな敵の出現と過去の因縁,chapter_2_complete
+chapter_4,第4章：失われた記憶,封印された記憶の断片,chapter_3_complete
+chapter_5,第5章：真実の扉,すべての真実が明かされる時,chapter_4_complete

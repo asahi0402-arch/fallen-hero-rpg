@@ -1,0 +1,15 @@
+﻿trigger_id,trigger_type,condition,story_id,description,priority
+chapter_start_1,chapter_start,chapter:1,chapter_1_start,第1章開始時,1
+chapter_start_2,chapter_start,chapter:2,chapter_2_start,第2章開始時,1
+chapter_start_3,chapter_start,chapter:3,chapter_3_start,第3章開始時,1
+dungeon_first_1,dungeon_enter,location:dungeon_1&first_time:true,dungeon_1_intro,第1ダンジョン初回,2
+dungeon_first_2,dungeon_enter,location:dungeon_2&first_time:true,dungeon_2_intro,第2ダンジョン初回,2
+dungeon_first_3,dungeon_enter,location:dungeon_3&first_time:true,dungeon_3_intro,第3ダンジョン初回,2
+boss_encounter_1,boss_encounter,enemy:goblin_king,boss_1_encounter,ゴブリンキング遭遇時,3
+boss_encounter_2,boss_encounter,enemy:orc_chief,boss_2_encounter,オークチーフ遭遇時,3
+boss_encounter_3,boss_encounter,enemy:dark_wizard,boss_3_encounter,闇魔法使い遭遇時,3
+boss_defeat_1,boss_defeat,enemy:goblin_king,boss_1_defeat,ゴブリンキング撃破時,4
+boss_defeat_2,boss_defeat,enemy:orc_chief,boss_2_defeat,オークチーフ撃破時,4
+boss_defeat_3,boss_defeat,enemy:dark_wizard,boss_3_defeat,闇魔法使い撃破時,4
+special_event_1,custom,player_level:10,level_10_event,レベル10到達時,5
+special_event_2,custom,gold:1000,rich_event,1000ゴールド到達時,5
