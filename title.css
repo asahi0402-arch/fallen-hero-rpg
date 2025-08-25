@@ -83,6 +83,47 @@ body {
     letter-spacing: 2px;
 }
 
+/* キャラクター立ち絵表示エリア */
+.character-display {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    animation: characterFadeIn 2.5s ease-out 0.5s both;
+}
+
+.character-portrait {
+    width: 400px;
+    height: 600px;
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(255, 215, 0, 0.3);
+    border: 3px solid #ffd700;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.character-portrait:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes characterFadeIn {
+    0% { 
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 /* メニューコンテナ */
 .menu-container {
     position: relative;

@@ -12,12 +12,18 @@
         <div class="game-main">
             <!-- 左エリア：主人公立ち絵 -->
             <div class="player-portrait-area">
-                <img id="playerImage" src="./assets/images/characters/player_portrait.png" alt="主人公" class="player-portrait" 
-                     onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
+                <!-- プレイヤー画像/動画コンテナ -->
+                <div id="playerMediaContainer" class="player-portrait">
+                    <img id="playerImage" src="./assets/images/characters/player_portrait.png" alt="主人公" class="player-media" 
+                         onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
+                </div>
                 
                 <!-- プレイヤーステータス（立ち絵下に移動） -->
                 <div class="player-stats-left">
                     <div class="stat-title">プレイヤーステータス</div>
+                    <div class="level-display">
+                        <div class="stat-item-left level-item">レベル: <span id="playerLevel">1</span></div>
+                    </div>
                     <div class="detailed-stats-left">
                         <div class="stat-item-left">攻撃: <span id="playerAttack">20</span></div>
                         <div class="stat-item-left">防御: <span id="playerDefense">10</span></div>
@@ -105,7 +111,6 @@
             <div class="right-panel">
                 <!-- 章情報（右に移動） -->
                 <div class="chapter-info-right">
-                    <div class="level-info">Lv: <span id="playerLevel">1</span></div>
                     <div class="battle-info">
                         <span id="chapterDisplay">1章</span> - 戦闘 <span id="battleCount">1</span>/<span id="maxBattles">10</span>
                     </div>
@@ -121,18 +126,16 @@
                     <div class="location-info" id="locationInfo">フィールドで安全に戦闘</div>
                 </div>
 
-                <!-- ショップエリア -->
-                <div class="shop-section">
-                    <div class="shop-label">ショップ</div>
-                    <button class="shop-btn" id="shopBtn">
-                        <span class="btn-text">🏪 ショップに入る</span>
+                <!-- ストーリーエリア -->
+                <div class="story-section">
+                    <button class="story-btn" id="storyBtn">
+                        <span class="btn-text">📖 ストーリーを読む</span>
                     </button>
-                    <p class="shop-note">※ショップ利用後は<br>敵が1体目に戻ります</p>
+                    <p class="story-note">第1章：盗賊団の隠れ家</p>
                 </div>
 
                 <!-- 宿屋エリア -->
                 <div class="inn-section">
-                    <div class="inn-label">宿屋</div>
                     <button class="inn-btn" id="innBtn">
                         <span class="btn-text">🏨 宿屋に泊まる</span>
                     </button>
@@ -140,26 +143,28 @@
                     <p class="inn-note">※フィールドからのみ利用可能</p>
                 </div>
 
-                <!-- ストーリーエリア -->
-                <div class="story-section">
-                    <div class="story-label">ストーリー</div>
-                    <button class="story-btn" id="storyBtn">
-                        <span class="btn-text">📖 ストーリーを読む</span>
+                <!-- ショップエリア -->
+                <div class="shop-section">
+                    <button class="shop-btn" id="shopBtn">
+                        <span class="btn-text">🏪 アイテムショップ</span>
                     </button>
-                    <p class="story-note">第1章：盗賊団の隠れ家</p>
+                    <p class="shop-note">※ショップ利用後は<br>敵が1体目に戻ります</p>
                 </div>
 
                 <!-- ガチャショップエリア -->
                 <div class="gacha-section">
-                    <div class="gacha-label">ガチャショップ</div>
-                    <button class="gacha-btn equipment-gacha-btn" id="equipmentGachaBtn">
-                        <span class="btn-text">⚔️ 装備ガチャ</span>
+                    <button class="gacha-btn" id="gachaShopBtn">
+                        <span class="btn-text">🎰 ガチャショップ</span>
                     </button>
-                    <p class="gacha-price">500ゴールド</p>
-                    <button class="gacha-btn illustration-gacha-btn" id="illustrationGachaBtn">
-                        <span class="btn-text">🖼️ イラストガチャ</span>
+                    <p class="gacha-note">装備・イラストが手に入る</p>
+                </div>
+
+                <!-- オプションエリア -->
+                <div class="options-section">
+                    <button class="options-btn" id="optionsBtn">
+                        <span class="btn-text">⚙️ オプション</span>
                     </button>
-                    <p class="gacha-price">100ゴールド</p>
+                    <p class="options-note">ゲーム設定</p>
                 </div>
             </div>
         </div>
@@ -254,14 +259,27 @@
         <div class="modal" id="shopModal" style="display: none;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🏪 ショップ</h3>
+                    <h3>🏪 アイテムショップ</h3>
                     <button class="close-btn" id="closeShopModal">&times;</button>
+                </div>
+                <div class="shop-tabs">
+                    <button class="shop-tab active" id="buyTab">購入</button>
+                    <button class="shop-tab" id="sellTab">売却</button>
+                    <button class="shop-tab" id="repairTab">修理</button>
                 </div>
                 <div class="shop-info">
                     <div class="player-gold">所持金: <span id="shopPlayerGold">100</span>G</div>
                 </div>
-                <div class="shop-items" id="shopItemsList">
-                    <!-- ショップアイテムが動的に生成される -->
+                <div class="shop-content">
+                    <div class="shop-items" id="shopItemsList">
+                        <!-- ショップアイテムが動的に生成される -->
+                    </div>
+                    <div class="sell-items" id="sellItemsList" style="display: none;">
+                        <!-- 売却可能アイテムが動的に生成される -->
+                    </div>
+                    <div class="repair-items" id="repairItemsList" style="display: none;">
+                        <!-- 修理メニューが動的に生成される -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -324,6 +342,59 @@
                 </div>
                 <div class="level-up-actions">
                     <button class="confirm-btn" id="confirmLevelUp">決定</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ガチャショップモーダル -->
+        <div class="modal" id="gachaModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🎰 ガチャショップ</h3>
+                    <button class="close-btn" id="closeGachaModal">&times;</button>
+                </div>
+                
+                <!-- ガチャ結果表示エリア -->
+                <div class="gacha-results" id="gachaResults" style="display: none;">
+                    <div class="gacha-results-header">獲得アイテム</div>
+                    <div class="gacha-results-list" id="gachaResultsList">
+                    </div>
+                </div>
+                
+                <div class="gacha-menu">
+                    <div class="gacha-type-section">
+                        <h4>⚔️ アイテムガチャ</h4>
+                        <p class="gacha-description">武器・防具・アクセサリーが手に入る</p>
+                        <div class="gacha-buttons">
+                            <button class="gacha-action-btn" id="equipmentGacha1">
+                                <span class="gacha-text">1回</span>
+                                <span class="gacha-cost">500G</span>
+                            </button>
+                            <button class="gacha-action-btn" id="equipmentGacha10">
+                                <span class="gacha-text">10連</span>
+                                <span class="gacha-cost">4500G</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="gacha-type-section">
+                        <h4>🖼️ イラストガチャ</h4>
+                        <p class="gacha-description">キャラクターイラストが手に入る</p>
+                        <div class="gacha-buttons">
+                            <button class="gacha-action-btn" id="illustrationGacha1">
+                                <span class="gacha-text">1回</span>
+                                <span class="gacha-cost">100G</span>
+                            </button>
+                            <button class="gacha-action-btn" id="illustrationGacha10">
+                                <span class="gacha-text">10連</span>
+                                <span class="gacha-cost">900G</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="gacha-info">
+                        <div class="player-gold">所持金: <span id="gachaPlayerGold">100</span>G</div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -10,7 +10,8 @@ class DataManager {
             equipment: [],
             stages: [],
             shop: [],
-            locations: []
+            locations: [],
+            backgrounds: []
         };
         this.loaded = false;
     }
@@ -111,7 +112,8 @@ class DataManager {
                 this.loadCSV('./data/equipment.csv'),
                 this.loadCSV('./data/stages.csv'),
                 this.loadCSV('./data/shop.csv'),
-                this.loadCSV('./data/locations.csv')
+                this.loadCSV('./data/locations.csv'),
+                this.loadCSV('./data/backgrounds.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -125,12 +127,26 @@ class DataManager {
             this.data.stages = results[6];
             this.data.shop = results[7];
             this.data.locations = results[8];
+            this.data.backgrounds = results[9];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
+            console.log('Backgrounds loaded:', this.data.backgrounds);
+            
+            // 保留中の背景変更があれば実行
+            if (this.pendingBackgroundChange) {
+                console.log(`Executing pending background change: ${this.pendingBackgroundChange}`);
+                // changeBackground関数を呼び出す（グローバルスコープから）
+                if (typeof changeBackground === 'function') {
+                    changeBackground(this.pendingBackgroundChange);
+                }
+                this.pendingBackgroundChange = null;
+            }
+            
             return true;
         } catch (error) {
             console.error('Failed to load CSV data:', error);
+            console.error('Error details:', error.message);
             return false;
         }
     }

@@ -1,0 +1,12 @@
+﻿illustration_id,illustration_name,rarity,rate,description,image_file
+slime_art,スライム図鑑,common,25,可愛らしいスライムのイラスト,illustrations/slime_art.png
+goblin_art,ゴブリン図鑑,common,20,凶暴なゴブリンのイラスト,illustrations/goblin_art.png
+orc_art,オーク図鑑,common,20,強靭なオークのイラスト,illustrations/orc_art.png
+skeleton_art,スケルトン図鑑,common,15,不気味なスケルトンのイラスト,illustrations/skeleton_art.png
+wizard_art,魔法使い図鑑,uncommon,8,神秘的な魔法使いのイラスト,illustrations/wizard_art.png
+dragon_art,ドラゴン図鑑,rare,5,威厳あるドラゴンのイラスト,illustrations/dragon_art.png
+hero_girl_art,謎の美少女イラスト,rare,3,美しい少女戦士のイラスト,illustrations/hero_girl_art.png
+warrior_art,レア戦士イラスト,rare,2,勇敢な戦士のイラスト,illustrations/warrior_art.png
+secret_art,秘密のイラスト,legendary,1,幻の秘密イラスト,illustrations/secret_art.png
+angel_art,天使のイラスト,mythic,0.5,神話級の天使イラスト,illustrations/angel_art.png
+demon_art,悪魔のイラスト,mythic,0.5,神話級の悪魔イラスト,illustrations/demon_art.png

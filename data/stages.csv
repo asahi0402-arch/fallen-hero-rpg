@@ -1,5 +1,5 @@
 ﻿chapter,stage_name,max_battles,enemy_pool,boss_enemy,background_image,bgm,description,unlock_condition,reward_exp,reward_gold,special_rewards
-1,盗賊団の隠れ家,10,"slime,goblin,orc,skeleton",orc,plains_bg.jpg,plains_theme.mp3,冒険の始まりとなる平和な平原,,100,50,iron_sword
+1,盗賊団の隠れ家,10,"slime,goblin,touzoku_A,touzoku_B,touzoku_C,orc,skeleton",orc,plains_bg.jpg,plains_theme.mp3,冒険の始まりとなる平和な平原,,100,50,iron_sword
 2,暗黒の森,12,"dark_elf,ogre,vampire,harpy",vampire,dark_forest_bg.jpg,dark_forest_theme.mp3,邪悪な魔物が潜む暗い森,chapter_1_clear,200,100,mage_robe
 3,魔の洞窟,15,"dragon_knight,succubus,demon_lord",dragon_knight,cave_bg.jpg,cave_theme.mp3,古代の秘宝が眠る危険な洞窟,chapter_2_clear,350,200,flame_sword
 4,天空の塔,18,"angel_fallen,demon_lord,succubus",angel_fallen,sky_tower_bg.jpg,tower_theme.mp3,雲の上にそびえる謎の塔,chapter_3_clear,500,350,holy_armor

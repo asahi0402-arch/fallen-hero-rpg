@@ -1,6 +1,3 @@
-﻿"id","name","type","level","base_hp","base_mp","base_attack","base_defense","base_magic","base_speed","hp_growth","mp_growth","attack_growth","defense_growth","magic_growth","speed_growth","portrait","description"
-"player","主人公","player","1","100","30","20","10","15","12","10","5","3","3","3","3","player_portrait.png","正義感あふれる英雄。しかし世界の真実を知ったとき、その心は揺らぐ"
-"shop_keeper","武器商人","npc","1","50","20","10","5","8","10","0","0","0","0","0","0","shop_keeper.png","武器や防具を売る商人。戦いの行く末を見守っている"
-"mysterious_girl","謎の少女","npc","1","80","50","12","8","25","15","0","0","0","0","0","0","mysterious_girl.png","主人公の前に度々現れる謎の少女。その正体は..."
-"dark_lord","魔王","npc","50","2000","500","80","40","100","30","0","0","0","0","0","0","dark_lord.png","世界を支配する魔王。しかし真の敵は別にいるのかもしれない"
-"true_enemy","真の敵","npc","99","5000","1000","150","100","200","50","0","0","0","0","0","0","true_enemy.png","全ての黒幕。世界の真実を知る者"
+﻿id,name,type,level,base_hp,base_mp,base_attack,base_defense,base_magic,base_speed,hp_growth,mp_growth,attack_growth,defense_growth,magic_growth,speed_growth,portrait,media_type,portrait_damaged_70,portrait_damaged_50,portrait_damaged_30,portrait_defeated,description
+player,主人公,player,1,100,30,20,10,15,12,10,5,3,3,3,3,player_portrait.mp4,video,player_damaged_70.mp4,player_damaged_50.mp4,player_damaged_30.mp4,player_defeated.png,正義感あふれる英雄。しかし世界の真実を知ったとき、その心は揺らぐ
+shop_keeper,武器商人,npc,1,50,20,10,5,8,10,0,0,0,0,0,0,shop_keeper.png,image,,,,shop_keeper.png,武器や防具を売る商人。戦いの行く末を見守っている
