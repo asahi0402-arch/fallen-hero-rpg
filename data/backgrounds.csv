@@ -1,7 +1,7 @@
 ﻿location_type,location_name,background_image,description
 town,町,assets/images/backgrounds/town.png,町の背景
-item_shop,アイテムショップ,assets/images/backgrounds/item_shop.png,アイテムショップの内部
-inn,宿屋,assets/images/backgrounds/inn.png,宿屋の内部
-gacha_shop,ガチャショップ,assets/images/backgrounds/gacha_shop.png,ガチャショップの内部
+item_shop,アイテムショップ,assets/images/backgrounds/town.png,アイテムショップの内部
+inn,宿屋,assets/images/backgrounds/town.png,宿屋の内部
+gacha_shop,ガチャショップ,assets/images/backgrounds/town.png,ガチャショップの内部
 field,フィールド,assets/images/backgrounds/field.png,フィールドの背景
 dungeon,ダンジョン,assets/images/backgrounds/dungeon.png,ダンジョンの背景

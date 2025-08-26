@@ -11,7 +11,8 @@ class DataManager {
             stages: [],
             shop: [],
             locations: [],
-            backgrounds: []
+            backgrounds: [],
+            audio: []
         };
         this.loaded = false;
     }
@@ -113,7 +114,8 @@ class DataManager {
                 this.loadCSV('./data/stages.csv'),
                 this.loadCSV('./data/shop.csv'),
                 this.loadCSV('./data/locations.csv'),
-                this.loadCSV('./data/backgrounds.csv')
+                this.loadCSV('./data/backgrounds.csv'),
+                this.loadCSV('./data/audio.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -128,6 +130,7 @@ class DataManager {
             this.data.shop = results[7];
             this.data.locations = results[8];
             this.data.backgrounds = results[9];
+            this.data.audio = results[10];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -393,6 +396,21 @@ class DataManager {
         }
         
         return damage;
+    }
+
+    // 音声データを取得
+    getAudio(id) {
+        return this.data.audio.find(audio => audio.id === id);
+    }
+
+    // カテゴリ別音声データを取得
+    getAudioByCategory(category) {
+        return this.data.audio.filter(audio => audio.category === category);
+    }
+
+    // タイプ別音声データを取得（bgm or se）
+    getAudioByType(type) {
+        return this.data.audio.filter(audio => audio.type === type);
     }
 }
 

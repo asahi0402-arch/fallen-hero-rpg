@@ -1,3 +1,6 @@
-﻿id,name,type,level,base_hp,base_mp,base_attack,base_defense,base_magic,base_speed,hp_growth,mp_growth,attack_growth,defense_growth,magic_growth,speed_growth,portrait,media_type,portrait_damaged_70,portrait_damaged_50,portrait_damaged_30,portrait_defeated,description
-player,主人公,player,1,100,30,20,10,15,12,10,5,3,3,3,3,player_portrait.mp4,video,player_damaged_70.mp4,player_damaged_50.mp4,player_damaged_30.mp4,player_defeated.png,正義感あふれる英雄。しかし世界の真実を知ったとき、その心は揺らぐ
-shop_keeper,武器商人,npc,1,50,20,10,5,8,10,0,0,0,0,0,0,shop_keeper.png,image,,,,shop_keeper.png,武器や防具を売る商人。戦いの行く末を見守っている
+﻿id,name,type,level,base_hp,base_mp,base_attack,base_defense,base_magic,base_speed,hp_growth,mp_growth,attack_growth,defense_growth,magic_growth,speed_growth,portrait,media_type,portrait_damaged_70,portrait_damaged_50,portrait_damaged_30,portrait_defeated,description,purchase_price,is_purchasable
+player,主人公,player,1,100,30,20,10,15,12,10,5,3,3,3,3,player_portrait.mp4,video,player_damaged_70.mp4,player_damaged_50.mp4,player_damaged_30.mp4,player_defeated.png,正義感あふれる英雄。しかし世界の真実を知ったとき、その心は揺らぐ,0,false
+shop_keeper,武器商人,npc,1,50,20,10,5,8,10,0,0,0,0,0,0,shop_keeper.png,image,,,,shop_keeper.png,武器や防具を売る商人。戦いの行く末を見守っている,0,false
+warrior,戦士,player,1,120,20,25,15,10,10,12,3,4,4,2,2,warrior_portrait.mp4,video,warrior_damaged_70.mp4,warrior_damaged_50.mp4,warrior_damaged_30.mp4,warrior_defeated.png,力強い戦士。高い攻撃力と防御力を誇る,1000,true
+mage,魔法使い,player,1,80,50,15,8,25,15,8,8,2,2,5,3,mage_portrait.mp4,video,mage_damaged_70.mp4,mage_damaged_50.mp4,mage_damaged_30.mp4,mage_defeated.png,魔法に長けた魔法使い。高い魔力と素早さを持つ,1200,true
+archer,弓使い,player,1,90,35,20,12,18,20,9,6,3,3,4,4,archer_portrait.mp4,video,archer_damaged_70.mp4,archer_damaged_50.mp4,archer_damaged_30.mp4,archer_defeated.png,正確な射撃を得意とする弓使い。バランスの取れた能力,1500,true

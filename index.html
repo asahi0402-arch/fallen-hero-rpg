@@ -126,45 +126,46 @@
                     <div class="location-info" id="locationInfo">フィールドで安全に戦闘</div>
                 </div>
 
-                <!-- ストーリーエリア -->
-                <div class="story-section">
-                    <button class="story-btn" id="storyBtn">
-                        <span class="btn-text">📖 ストーリーを読む</span>
+                <!-- ギルドエリア -->
+                <div class="guild-section">
+                    <button class="guild-btn" id="guildBtn" title="仲間との会話やクエスト情報を確認できます">
+                        <span class="btn-text">🏛️ ギルド</span>
                     </button>
-                    <p class="story-note">第1章：盗賊団の隠れ家</p>
                 </div>
 
                 <!-- 宿屋エリア -->
                 <div class="inn-section">
-                    <button class="inn-btn" id="innBtn">
-                        <span class="btn-text">🏨 宿屋に泊まる</span>
+                    <button class="inn-btn" id="innBtn" title="100ゴールドでHP/MPを全回復します（フィールドからのみ利用可能）">
+                        <span class="btn-text">🏨 宿屋</span>
                     </button>
-                    <p class="inn-price">100ゴールドでHP/MP全回復</p>
-                    <p class="inn-note">※フィールドからのみ利用可能</p>
+                </div>
+
+                <!-- 酒場エリア -->
+                <div class="tavern-section">
+                    <button class="tavern-btn" id="tavernBtn" title="ゴールドで仲間を雇ったり、キャラクターを切り替えることができます">
+                        <span class="btn-text">🍺 酒場</span>
+                    </button>
                 </div>
 
                 <!-- ショップエリア -->
                 <div class="shop-section">
-                    <button class="shop-btn" id="shopBtn">
-                        <span class="btn-text">🏪 アイテムショップ</span>
+                    <button class="shop-btn" id="shopBtn" title="アイテムの購入・売却・衣服の修理ができます">
+                        <span class="btn-text">🏪 ショップ</span>
                     </button>
-                    <p class="shop-note">※ショップ利用後は<br>敵が1体目に戻ります</p>
                 </div>
 
                 <!-- ガチャショップエリア -->
                 <div class="gacha-section">
-                    <button class="gacha-btn" id="gachaShopBtn">
-                        <span class="btn-text">🎰 ガチャショップ</span>
+                    <button class="gacha-btn" id="gachaShopBtn" title="ゴールドで装備ガチャ・イラストガチャを引くことができます">
+                        <span class="btn-text">🎰 ガチャ</span>
                     </button>
-                    <p class="gacha-note">装備・イラストが手に入る</p>
                 </div>
 
                 <!-- オプションエリア -->
                 <div class="options-section">
-                    <button class="options-btn" id="optionsBtn">
+                    <button class="options-btn" id="optionsBtn" title="ゲームの設定を変更できます">
                         <span class="btn-text">⚙️ オプション</span>
                     </button>
-                    <p class="options-note">ゲーム設定</p>
                 </div>
             </div>
         </div>
@@ -342,6 +343,54 @@
                 </div>
                 <div class="level-up-actions">
                     <button class="confirm-btn" id="confirmLevelUp">決定</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ギルドモーダル -->
+        <div class="modal" id="guildModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🏛️ ギルド</h3>
+                    <button class="close-btn" id="closeGuildModal">&times;</button>
+                </div>
+                <div class="guild-content">
+                    <div class="conversation-area">
+                        <div class="conversation-log" id="conversationLog">
+                            <p class="guild-message">「冒険者よ、よく来た。ここは冒険者ギルドだ。」</p>
+                        </div>
+                        <div class="conversation-choices" id="conversationChoices">
+                            <button class="choice-btn" onclick="showConversationChoice('quest')">依頼について聞く</button>
+                            <button class="choice-btn" onclick="showConversationChoice('party')">パーティについて聞く</button>
+                            <button class="choice-btn" onclick="showConversationChoice('info')">情報を聞く</button>
+                            <button class="choice-btn" onclick="closeModal('guildModal')">立ち去る</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 酒場モーダル -->
+        <div class="modal" id="tavernModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🍺 酒場</h3>
+                    <button class="close-btn" id="closeTavernModal">&times;</button>
+                </div>
+                <div class="tavern-info">
+                    <div class="player-gold">所持金: <span id="tavernPlayerGold">100</span>G</div>
+                </div>
+                <div class="tavern-tabs">
+                    <button class="tavern-tab active" id="purchaseTab">キャラクター雇用</button>
+                    <button class="tavern-tab" id="switchTab">キャラクター切り替え</button>
+                </div>
+                <div class="tavern-content">
+                    <div class="available-characters" id="availableCharactersList">
+                        <!-- 購入可能なキャラクターが動的に生成される -->
+                    </div>
+                    <div class="owned-characters" id="ownedCharactersList" style="display: none;">
+                        <!-- 所有しているキャラクターが動的に生成される -->
+                    </div>
                 </div>
             </div>
         </div>

@@ -286,15 +286,52 @@ body {
     transform: scale(1.05);
 }
 
-/* 敵攻撃時の拡大エフェクト */
-.enemy-image.enemy-attack {
-    animation: enemyAttack 0.4s ease-in-out;
+/* 敵攻撃時の拡大エフェクト - より広範囲のセレクタ */
+.enemy-attack,
+#enemyImage.enemy-attack,
+.enemy-image.enemy-attack,
+img.enemy-attack,
+video.enemy-attack,
+[id*="enemy"].enemy-attack {
+    animation: enemyAttack 0.4s ease-in-out !important;
+    transform-origin: center center !important;
+    z-index: 10 !important;
+    position: relative !important;
 }
 
 @keyframes enemyAttack {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
+    0% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    25% { 
+        transform: scale(1.2);
+        filter: brightness(1.3) drop-shadow(0 0 10px #ff4444);
+    }
+    50% { 
+        transform: scale(1.25);
+        filter: brightness(1.5) drop-shadow(0 0 15px #ff0000);
+    }
+    75% { 
+        transform: scale(1.1);
+        filter: brightness(1.2) drop-shadow(0 0 8px #ff6666);
+    }
+    100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+@keyframes flash-damage {
+    0% { 
+        opacity: 0;
+    }
+    30% { 
+        opacity: 1;
+    }
+    100% { 
+        opacity: 0;
+    }
 }
 
 .enemy-info {
@@ -762,100 +799,121 @@ body {
 }
 
 /* 右エリアの共通スタイル */
-.shop-section, .inn-section, .gacha-section, .options-section {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.guild-section,
+.shop-section, 
+.inn-section, 
+.tavern-section,
+.gacha-section, 
+.options-section {
+    background: linear-gradient(135deg, #2d3748, #4a5568);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
-    flex: 1;
+    margin-bottom: 4px;
+    min-height: 50px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    min-height: 120px;
-}
-
-.shop-label, .inn-label, .gacha-label, .options-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #2d3748;
-    margin-bottom: 8px;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 6px;
+    align-items: center;
+    position: relative;
 }
 
 /* 統一ボタンスタイル */
-.shop-btn, .inn-btn, .gacha-btn, .story-btn, .location-btn, .options-btn {
+.guild-btn,
+.shop-btn, 
+.inn-btn, 
+.tavern-btn,
+.gacha-btn, 
+.options-btn {
+    width: 100%;
     border: none;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 13px;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    margin-bottom: 4px;
-}
-
-.shop-btn, .inn-btn, .gacha-btn {
-    background: linear-gradient(135deg, #2d3748, #1a202c);
-    color: #ed8936;
-    border: 2px solid #ed8936;
-}
-
-.shop-btn:hover, .inn-btn:hover, .gacha-btn:hover {
-    background: linear-gradient(135deg, #4a5568, #2d3748);
-    color: #f6ad55;
-    border-color: #f6ad55;
-}
-
-.story-btn, .location-btn, .options-btn {
     color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.story-btn:hover, .location-btn:hover, .options-btn:hover {
+/* 各ボタンの個別カラー */
+.guild-btn {
+    background: linear-gradient(135deg, #805ad5, #6b46c1);
+    box-shadow: 0 2px 8px rgba(128, 90, 213, 0.3);
+}
+
+.guild-btn:hover {
+    background: linear-gradient(135deg, #6b46c1, #553c9a);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(128, 90, 213, 0.4);
 }
 
-.shop-btn:hover, .inn-btn:hover, .gacha-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
-}
-
-.shop-note, .inn-price, .inn-note, .gacha-price {
-    font-size: 12px;
-    color: #2d3748;
-    margin-top: 6px;
-    line-height: 1.4;
-    font-weight: 600;
-}
-
-/* 宿屋ボタン固有スタイル（アイテムショップと同じスタイル） */
 .inn-btn {
-    background: linear-gradient(135deg, #2d3748, #1a202c);
-    color: #ed8936;
-    border: 2px solid #ed8936;
+    background: linear-gradient(135deg, #3182ce, #2c5aa0);
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);
 }
 
-/* ストーリーボタン固有スタイル */
-.story-btn {
-    background: linear-gradient(135deg, #9f7aea, #805ad5);
+.inn-btn:hover {
+    background: linear-gradient(135deg, #2c5aa0, #2a4a84);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+}
+
+.tavern-btn {
+    background: linear-gradient(135deg, #d69e2e, #b7791f);
+    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.3);
+}
+
+.tavern-btn:hover {
+    background: linear-gradient(135deg, #b7791f, #975a16);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(214, 158, 46, 0.4);
+}
+
+.shop-btn {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.3);
+}
+
+.shop-btn:hover {
+    background: linear-gradient(135deg, #2f855a, #276749);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(56, 161, 105, 0.4);
+}
+
+.gacha-btn {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+}
+
+.gacha-btn:hover {
+    background: linear-gradient(135deg, #c53030, #9c2626);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+}
+
+.options-btn {
+    background: linear-gradient(135deg, #718096, #4a5568);
+    box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
+}
+
+.options-btn:hover {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
 }
 
 .inn-btn:disabled {
     background: linear-gradient(135deg, #a0aec0, #718096) !important;
     color: #666 !important;
-    border-color: #718096 !important;
     cursor: not-allowed;
     opacity: 0.7;
-}
-
-.inn-price {
-    color: #ed8936;
-    font-weight: bold;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(113, 128, 150, 0.2) !important;
 }
 
 /* ガチャボタン固有スタイル */
@@ -2063,6 +2121,456 @@ body {
     color: #718096;
     font-style: italic;
     padding: 40px;
+}
+
+
+/* スキルアニメーション */
+@keyframes fire-burst-main {
+    0% { 
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes fire-burst-0 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(30px, -20px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-1 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(-30px, -20px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-2 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(20px, 30px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-3 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(-20px, 30px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-4 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(35px, 0px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-5 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(-35px, 0px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-6 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(0px, -35px) scale(0.5); opacity: 0; }
+}
+
+@keyframes fire-burst-7 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(0px, 35px) scale(0.5); opacity: 0; }
+}
+
+@keyframes heal-pulse {
+    0% { 
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(1.5);
+    }
+}
+
+@keyframes sparkle {
+    0% { 
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0);
+    }
+}
+
+@keyframes magic-pulse {
+    0% { 
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    }
+    50% { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(180deg);
+    }
+    100% { 
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.3) rotate(360deg);
+    }
+}
+
+@keyframes attack-slash {
+    0% { 
+        transform: scaleX(0) rotate(-45deg);
+        opacity: 0;
+    }
+    50% { 
+        transform: scaleX(1) rotate(-45deg);
+        opacity: 1;
+    }
+    100% { 
+        transform: scaleX(1.2) rotate(-45deg);
+        opacity: 0;
+    }
+}
+
+@keyframes ice-projectile {
+    0% { 
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+        opacity: 1;
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(0.8) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes ice-shard-0 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(25px, -15px) scale(0.3); opacity: 0; }
+}
+
+@keyframes ice-shard-1 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(-25px, -15px) scale(0.3); opacity: 0; }
+}
+
+@keyframes ice-shard-2 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(15px, 25px) scale(0.3); opacity: 0; }
+}
+
+@keyframes ice-shard-3 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(-15px, 25px) scale(0.3); opacity: 0; }
+}
+
+@keyframes ice-shard-4 {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) translate(0px, -30px) scale(0.3); opacity: 0; }
+}
+
+@keyframes lightning-strike {
+    0% { 
+        opacity: 0;
+        transform: translateX(-50%) scaleY(0);
+    }
+    20% { 
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1);
+    }
+    40% { 
+        opacity: 0.7;
+        transform: translateX(-50%) scaleY(1);
+    }
+    60% { 
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: translateX(-50%) scaleY(1);
+    }
+}
+
+@keyframes lightning-branch {
+    0% { 
+        opacity: 0;
+        transform: scaleY(0);
+    }
+    50% { 
+        opacity: 1;
+        transform: scaleY(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: scaleY(1);
+    }
+}
+
+.skill-animation {
+    pointer-events: none !important;
+}
+
+/* ギルドモーダル */
+.guild-content {
+    padding: 20px;
+    height: 400px;
+    overflow: hidden;
+}
+
+.conversation-area {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.conversation-log {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    border: 2px solid #805ad5;
+}
+
+.guild-message {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: linear-gradient(135deg, #f3f0ff, #e9d8fd);
+    border-radius: 8px;
+    color: #553c9a;
+    font-weight: 500;
+    border-left: 4px solid #805ad5;
+}
+
+.conversation-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.choice-btn {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #805ad5, #6b46c1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.choice-btn:hover {
+    background: linear-gradient(135deg, #6b46c1, #553c9a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
+}
+
+/* 酒場モーダル */
+.tavern-content {
+    padding: 20px;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.available-characters {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.character-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff7ed, #fed7aa);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.character-item:hover {
+    background: linear-gradient(135deg, #fed7aa, #fdba74);
+    border-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.character-portrait {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #d97706;
+}
+
+.character-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.character-info {
+    flex: 1;
+}
+
+.character-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #92400e;
+    margin-bottom: 5px;
+}
+
+.character-desc {
+    font-size: 12px;
+    color: #a16207;
+    margin-bottom: 8px;
+}
+
+.character-stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.character-stats .stat {
+    font-size: 10px;
+    background: rgba(217, 119, 6, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #92400e;
+}
+
+.character-price {
+    font-weight: bold;
+    font-size: 18px;
+    color: #166534;
+    background: rgba(34, 197, 94, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-left: 15px;
+}
+
+.tavern-empty {
+    text-align: center;
+    color: #a16207;
+    font-style: italic;
+    padding: 40px;
+}
+
+.tavern-info {
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* 酒場タブ */
+.tavern-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.tavern-tab {
+    flex: 1;
+    padding: 15px;
+    background: transparent;
+    border: none;
+    color: #a16207;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tavern-tab:hover {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}
+
+.tavern-tab.active {
+    background: rgba(245, 158, 11, 0.2);
+    color: #92400e;
+    border-bottom-color: #f59e0b;
+}
+
+/* 所有キャラクター */
+.owned-characters {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.owned-character-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.owned-character-item:hover {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.owned-character-item.current {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-color: #22c55e;
+    cursor: default;
+}
+
+.owned-character-item.current:hover {
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-color: #22c55e;
+}
+
+.switch-btn {
+    background: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.switch-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.current-indicator {
+    background: #22c55e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-left: 15px;
 }
 
 /* ガチャ結果表示スタイル */
