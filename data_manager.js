@@ -109,10 +109,9 @@ class DataManager {
                 this.loadCSV('./data/enemies.csv'),
                 this.loadCSV('./data/enemy_actions.csv'),
                 this.loadCSV('./data/skills.csv'),
-                this.loadCSV('./data/items.csv'),
+                this.loadCSV('./data/items_unified.csv'),
                 this.loadCSV('./data/equipment_unified.csv'),
                 this.loadCSV('./data/stages.csv'),
-                this.loadCSV('./data/shop.csv'),
                 this.loadCSV('./data/locations.csv'),
                 this.loadCSV('./data/backgrounds.csv'),
                 this.loadCSV('./data/audio.csv')
@@ -127,10 +126,9 @@ class DataManager {
             this.data.items = results[4];
             this.data.equipment = results[5];
             this.data.stages = results[6];
-            this.data.shop = results[7];
-            this.data.locations = results[8];
-            this.data.backgrounds = results[9];
-            this.data.audio = results[10];
+            this.data.locations = results[7];
+            this.data.backgrounds = results[8];
+            this.data.audio = results[9];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -217,7 +215,7 @@ class DataManager {
 
     // 装備データを取得
     getEquipment(id) {
-        return this.data.equipment.find(eq => eq.item_id === id);
+        return this.data.equipment.find(eq => eq.id === id);
     }
     
     // 装備アイテムを取得（ガチャ・ショップ・ドロップ全て含む）
@@ -237,12 +235,60 @@ class DataManager {
 
     // ショップアイテムを取得
     getShopItems() {
-        return this.data.shop;
+        // 統合されたアイテムファイルからショップで販売されるアイテムのみを返す
+        return this.data.items.filter(item => item.shop_chapter && parseInt(item.shop_chapter) > 0);
     }
 
     // ショップアイテムを取得
     getShopItem(itemId) {
-        return this.data.shop.find(item => item.item_id === itemId);
+        // 統合されたアイテムファイルから指定されたアイテムを取得
+        let item = this.data.items.find(item => item.id === itemId);
+        
+        // アイテムで見つからない場合は装備品から検索
+        if (!item) {
+            item = this.data.equipment.find(item => item.id === itemId);
+        }
+        
+        return item;
+    }
+
+    // 現在の章で購入可能なアイテムを取得（消耗品・永続アイテム・装備品）
+    getAvailableShopItems(currentChapter) {
+        const items = [];
+        
+        // 消耗品・永続アイテム
+        const consumableItems = this.data.items.filter(item => 
+            item.shop_chapter && 
+            parseInt(item.shop_chapter) <= currentChapter
+        );
+        items.push(...consumableItems);
+        
+        // 装備品
+        const equipmentItems = this.data.equipment.filter(item => 
+            item.shop_chapter && 
+            parseInt(item.shop_chapter) <= currentChapter
+        );
+        items.push(...equipmentItems);
+        
+        return items;
+    }
+
+    // アイテムの購入価格を取得
+    getItemBuyPrice(itemId) {
+        const item = this.getItem(itemId);
+        return item ? parseInt(item.buy_price) || 0 : 0;
+    }
+
+    // アイテムの売却価格を取得
+    getItemSellPrice(itemId) {
+        const item = this.getItem(itemId);
+        return item ? parseInt(item.sell_price) || 0 : 0;
+    }
+
+    // アイテムのショップ在庫上限を取得
+    getItemMaxStock(itemId) {
+        const item = this.getItem(itemId);
+        return item ? parseInt(item.max_shop_stock) || 99 : 99;
     }
     
     // ロケーション情報を取得

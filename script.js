@@ -47,17 +47,17 @@ let gameState = {
         inventory: {
             potion: 3,
             ether: 1,
-            'hi-potion': 0,
-            'bomb-stone': 0,
-            'power-crystal': 0,
-            'shield-stone': 0,
-            'magic-gem': 0,
-            'speed-boots': 0,
-            'life-crystal': 0,
-            'mana-crystal': 0,
-            'antidote': 0,
-            'paralysis-cure': 0,
-            'phoenix-down': 0
+            hi_potion: 0,
+            bomb_stone: 0,
+            power_crystal: 0,
+            shield_stone: 0,
+            magic_gem: 0,
+            speed_boots: 0,
+            life_crystal: 0,
+            mana_crystal: 0,
+            antidote: 0,
+            paralysis_heal: 0,
+            awakening: 0
         }
     },
     
@@ -751,41 +751,6 @@ function calculateDamage(attacker, defender, isSkill = false, skillMultiplier = 
     return { damage, critical: false };
 }
 
-// プレイヤーの攻撃
-function playerAttack() {
-    console.log('🎯 playerAttack関数が呼ばれました！');
-    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) {
-        console.log('❌ プレイヤーのターンではない、または戦闘終了済み');
-        return;
-    }
-    
-    console.log('✅ 戦闘条件OK、エフェクト実行中...');
-    
-    // 攻撃エフェクトを表示
-    showPlayerAttackEffect();
-    
-    // 攻撃音を再生
-    audioManager.playSE('se_attack');
-    const result = calculateDamage(gameState.player, gameState.enemy);
-    gameState.enemy.hp = Math.max(0, gameState.enemy.hp - result.damage);
-    
-    let message = `プレイヤーの攻撃！ ${gameState.enemy.name}に${result.damage}のダメージ！`;
-    if (result.critical) {
-        message += " クリティカルヒット！";
-    }
-    addBattleLog(message);
-    
-    updateUI();
-    
-    if (gameState.enemy.hp <= 0) {
-        addBattleLog(`${gameState.enemy.name}を倒した！`);
-        setTimeout(nextBattle, 1500);
-        return;
-    }
-    
-    gameState.battle.isPlayerTurn = false;
-    setTimeout(enemyTurn, 1000);
-}
 
 // プレイヤーのスキル使用
 function useSkill(skillName) {
@@ -877,7 +842,7 @@ function useItem(itemId) {
         return;
     }
     
-    const isEquipmentItem = itemInfo.effect_type.startsWith('equip_');
+    const isEquipmentItem = itemInfo.effect_type?.startsWith('equip_') || itemInfo.equipment_type;
     
     // 町状態では装備のみ可能、戦闘中でない場合は通常アイテム使用不可
     if (gameState.battle.inTown) {
@@ -1046,7 +1011,20 @@ function useItem(itemId) {
             break;
             
         default:
-            effectMessage = '効果を発揮した！';
+            // 装備品の場合（equipment_typeフィールドを持つ）
+            if (itemInfo.equipment_type) {
+                gameState.shared.inventory[itemId]--;
+                let equipSlot = itemInfo.equipment_type;
+                if (equipItem(equipSlot, itemInfo)) {
+                    effectMessage = `${itemInfo.name}を装備した！`;
+                } else {
+                    effectMessage = `${itemInfo.name}を装備できませんでした`;
+                    // 装備失敗時はアイテムをインベントリに戻す
+                    gameState.shared.inventory[itemId]++;
+                }
+            } else {
+                effectMessage = '効果を発揮した！';
+            }
     }
     
     // 音響効果
@@ -1057,7 +1035,7 @@ function useItem(itemId) {
         soundEffects.playHeal();
     }
     
-    addBattleLog(`${itemInfo.item_name}を使用！ ${effectMessage}`);
+    addBattleLog(`${itemInfo.name}を使用！ ${effectMessage}`);
     
     // 敵が倒された場合の処理
     if (isDamageItem && gameState.enemy.hp <= 0) {
@@ -1102,15 +1080,15 @@ function updateItemDisplay() {
         if (count <= 0) return;
         
         // ショップアイテムから検索
-        let itemInfo = shopItems.find(item => item.item_id === itemId);
+        let itemInfo = shopItems.find(item => item.id === itemId);
         
         // ショップアイテムにない場合は装備アイテムから検索
         if (!itemInfo) {
-            const equipmentItem = equipmentItems.find(item => item.item_id === itemId);
+            const equipmentItem = equipmentItems.find(item => item.id === itemId);
             if (equipmentItem) {
                 // 装備アイテムをショップアイテム形式に変換
                 itemInfo = {
-                    item_name: equipmentItem.item_name,
+                    name: equipmentItem.name,
                     description: equipmentItem.description,
                     effect_type: `equip_${equipmentItem.equipment_type}`,
                     effect_value: equipmentItem.attack_bonus || equipmentItem.defense_bonus || equipmentItem.magic_bonus || equipmentItem.speed_bonus || equipmentItem.hp_bonus || equipmentItem.mp_bonus
@@ -1165,10 +1143,10 @@ function updateItemDisplay() {
                         const currentWeaponId = gameState.player.equipment.weapon;
                         if (currentWeaponId) {
                             // ショップアイテムから検索
-                            let currentWeaponInfo = shopItems.find(item => item.item_id === currentWeaponId);
+                            let currentWeaponInfo = shopItems.find(item => item.id === currentWeaponId);
                             if (!currentWeaponInfo) {
                                 // 装備アイテムから検索
-                                const currentWeaponItem = equipmentItems.find(item => item.item_id === currentWeaponId);
+                                const currentWeaponItem = equipmentItems.find(item => item.id === currentWeaponId);
                                 if (currentWeaponItem) {
                                     currentWeaponBonus = parseInt(currentWeaponItem.attack_bonus) || 0;
                                 }
@@ -1195,10 +1173,10 @@ function updateItemDisplay() {
                         const currentEquipId = gameState.player.equipment[equipSlot];
                         if (currentEquipId) {
                             // ショップアイテムから検索
-                            let currentEquipInfo = shopItems.find(item => item.item_id === currentEquipId);
+                            let currentEquipInfo = shopItems.find(item => item.id === currentEquipId);
                             if (!currentEquipInfo) {
                                 // 装備アイテムから検索
-                                const currentEquipItem = equipmentItems.find(item => item.item_id === currentEquipId);
+                                const currentEquipItem = equipmentItems.find(item => item.id === currentEquipId);
                                 if (currentEquipItem) {
                                     currentEquipBonus = parseInt(currentEquipItem.defense_bonus) || 0;
                                 }
@@ -1225,7 +1203,7 @@ function updateItemDisplay() {
             }
             
             itemElement.innerHTML = `
-                <div class="item-name">${itemInfo.item_name}</div>
+                <div class="item-name">${itemInfo.name}</div>
                 <div class="item-count">所持数: ${count}</div>
                 <div class="item-desc">${itemInfo.description}</div>
                 ${statusChangeText}
@@ -2263,7 +2241,7 @@ function populateSellItems() {
         itemElement.className = 'sell-item';
         itemElement.innerHTML = `
             <div class="sell-item-info">
-                <div class="sell-item-name">${sellableItem.item.item_name}</div>
+                <div class="sell-item-name">${sellableItem.item.name}</div>
                 <div class="sell-item-desc">${sellableItem.item.description}</div>
             </div>
             <div class="sell-item-count">所持: ${sellableItem.count}個</div>
@@ -2303,7 +2281,7 @@ function sellItem(itemId, item) {
     updateUI();
     updateItemDisplay();
     
-    addBattleLog(`${item.item_name}を${sellPrice}Gで売却しました！`);
+    addBattleLog(`${item.name}を${sellPrice}Gで売却しました！`);
     soundEffects.playClick();
 }
 
@@ -2376,14 +2354,9 @@ function repairClothing() {
 }
 
 function populateShopItems() {
-    const shopItems = dataManager.getShopItems();
+    // 現在の章で購入可能なアイテムを取得
+    const availableItems = dataManager.getAvailableShopItems(gameState.battle.chapter);
     elements.shopItemsList.innerHTML = '';
-    
-    // 現在の章以下のアイテムのみフィルタリング
-    const availableItems = shopItems.filter(item => {
-        const itemChapter = parseInt(item.chapter) || 1;
-        return itemChapter <= gameState.battle.chapter;
-    });
     
     if (availableItems.length === 0) {
         elements.shopItemsList.innerHTML = '<div class="shop-empty">この章では販売アイテムがありません</div>';
@@ -2395,10 +2368,10 @@ function populateShopItems() {
         itemElement.className = 'shop-item';
         itemElement.innerHTML = `
             <div class="shop-item-info">
-                <div class="shop-item-name">${item.item_name}</div>
+                <div class="shop-item-name">${item.name}</div>
                 <div class="shop-item-desc">${item.description}</div>
             </div>
-            <div class="shop-item-price">${item.price}G</div>
+            <div class="shop-item-price">${item.buy_price}G</div>
         `;
         
         itemElement.addEventListener('click', () => {
@@ -2411,28 +2384,34 @@ function populateShopItems() {
 
 function buyItem(item) {
     // 所持金チェック
-    if (gameState.shared.gold < item.price) {
-        addBattleLog(`${item.item_name}を購入するには${item.price}G必要です。`);
+    const buyPrice = parseInt(item.buy_price);
+    if (gameState.shared.gold < buyPrice) {
+        addBattleLog(`${item.name}を購入するには${buyPrice}G必要です。`);
         soundEffects.playClick();
         return;
     }
     
     // アイテムを購入
-    gameState.shared.gold -= item.price;
+    gameState.shared.gold -= buyPrice;
     
     // インベントリに追加
-    if (gameState.shared.inventory[item.item_id]) {
-        gameState.shared.inventory[item.item_id]++;
+    console.log('🛒 購入前インベントリ:', gameState.shared.inventory[item.id]);
+    if (gameState.shared.inventory[item.id]) {
+        gameState.shared.inventory[item.id]++;
     } else {
-        gameState.shared.inventory[item.item_id] = 1;
+        gameState.shared.inventory[item.id] = 1;
     }
+    console.log('🛒 購入後インベントリ:', gameState.shared.inventory[item.id]);
+    console.log('🛒 全インベントリ:', gameState.shared.inventory);
+    console.log('🛒 インベントリタイプ:', typeof gameState.shared.inventory);
+    console.log('🛒 インベントリキー:', Object.keys(gameState.shared.inventory));
     
     // UI更新
     elements.shopPlayerGold.textContent = gameState.shared.gold;
     updateUI();
     updateItemDisplay();
     
-    addBattleLog(`${item.item_name}を購入しました！`);
+    addBattleLog(`${item.name}を購入しました！`);
     soundEffects.playClick();
 }
 
@@ -2672,7 +2651,7 @@ function equipItem(slot, item) {
     };
 
     // アイテムIDを確定（itemオブジェクトから取得、またはガチャアイテムの場合は直接指定）
-    const itemId = item.item_id;
+    const itemId = item.id;
     
     // 古い装備を外してインベントリに戻す
     const oldEquipment = gameState.player.equipment[slot];
@@ -2738,13 +2717,13 @@ function applyEquipmentEffect(item) {
     // ガチャアイテムの場合、effect_typeがないのでスロットに基づいて判定
     const effectValue = item.effect_value || 0;
     
-    if (item.effect_type === 'equip_weapon' || item.item_id === 'gacha-sword' || item.item_id === 'legendary-sword') {
+    if (item.effect_type === 'equip_weapon' || item.id === 'gacha-sword' || item.id === 'legendary-sword') {
         gameState.player.attack += effectValue;
-    } else if (item.effect_type === 'equip_shield' || item.item_id === 'gacha-shield' || item.item_id === 'legendary-shield') {
+    } else if (item.effect_type === 'equip_shield' || item.id === 'gacha-shield' || item.id === 'legendary-shield') {
         gameState.player.defense += effectValue;
-    } else if (item.effect_type === 'equip_head' || item.item_id === 'gacha-helmet') {
+    } else if (item.effect_type === 'equip_head' || item.id === 'gacha-helmet') {
         gameState.player.defense += effectValue;
-    } else if (item.effect_type === 'equip_body' || item.item_id === 'gacha-armor') {
+    } else if (item.effect_type === 'equip_body' || item.id === 'gacha-armor') {
         gameState.player.defense += effectValue;
     }
 }
@@ -2753,13 +2732,13 @@ function removeEquipmentEffect(item) {
     // ガチャアイテムの場合、effect_typeがないのでスロットに基づいて判定
     const effectValue = item.effect_value || 0;
     
-    if (item.effect_type === 'equip_weapon' || item.item_id === 'gacha-sword' || item.item_id === 'legendary-sword') {
+    if (item.effect_type === 'equip_weapon' || item.id === 'gacha-sword' || item.id === 'legendary-sword') {
         gameState.player.attack -= effectValue;
-    } else if (item.effect_type === 'equip_shield' || item.item_id === 'gacha-shield' || item.item_id === 'legendary-shield') {
+    } else if (item.effect_type === 'equip_shield' || item.id === 'gacha-shield' || item.id === 'legendary-shield') {
         gameState.player.defense -= effectValue;
-    } else if (item.effect_type === 'equip_head' || item.item_id === 'gacha-helmet') {
+    } else if (item.effect_type === 'equip_head' || item.id === 'gacha-helmet') {
         gameState.player.defense -= effectValue;
-    } else if (item.effect_type === 'equip_body' || item.item_id === 'gacha-armor') {
+    } else if (item.effect_type === 'equip_body' || item.id === 'gacha-armor') {
         gameState.player.defense -= effectValue;
     }
 }
@@ -3589,6 +3568,10 @@ async function initGame() {
         gameState.dataLoaded = true;
         addBattleLog("データ読み込み完了！");
         console.log("✅ Game data loaded successfully");
+        console.log("📦 Items loaded:", dataManager.data.items?.length || 0);
+        console.log("⚔️ Equipment loaded:", dataManager.data.equipment?.length || 0);
+        console.log("📋 初期インベントリ:", gameState.shared.inventory);
+        console.log("📋 インベントリキー:", Object.keys(gameState.shared.inventory));
         
         // CSV駆動でプレイヤーデータを初期化
         const playerData = dataManager.getCharacter('player');
@@ -4303,6 +4286,7 @@ function startAutoModeWithSettings() {
 
 // プレイヤー攻撃関数
 function playerAttack() {
+    console.log('⚔️ playerAttack called, dataManager.loaded:', dataManager?.loaded);
     if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
     
     // 攻撃エフェクトと音響効果
@@ -4310,11 +4294,15 @@ function playerAttack() {
     showPlayerAttackEffect();
     screenShake(10);
     
-    // 基本攻撃の処理
-    const damage = Math.max(1, gameState.player.attack - Math.floor(gameState.enemy.defense / 2));
-    gameState.enemy.hp = Math.max(0, gameState.enemy.hp - damage);
+    // 基本攻撃の処理（クリティカル判定込み）
+    const result = calculateDamage(gameState.player, gameState.enemy);
+    gameState.enemy.hp = Math.max(0, gameState.enemy.hp - result.damage);
     
-    addBattleLog(`${gameState.player.name}の攻撃！ ${gameState.enemy.name}に${damage}のダメージ！`);
+    let message = `${gameState.player.name}の攻撃！ ${gameState.enemy.name}に${result.damage}のダメージ！`;
+    if (result.critical) {
+        message += " クリティカルヒット！";
+    }
+    addBattleLog(message);
     
     // 敵撃破チェック
     if (gameState.enemy.hp <= 0) {
