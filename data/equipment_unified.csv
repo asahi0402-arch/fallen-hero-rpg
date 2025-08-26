@@ -1,0 +1,26 @@
+﻿item_id,item_name,equipment_type,attack_bonus,defense_bonus,magic_bonus,speed_bonus,hp_bonus,mp_bonus,rarity,description,acquisition_method,acquisition_detail,price,sell_price
+short-sword,ショートソード,weapon,5,0,0,0,0,0,common,攻撃力+5の基本剣,ショップ,1章,150,75
+iron-sword,アイアンソード,weapon,8,0,0,0,0,0,common,攻撃力+8の鉄剣,ショップ,2章,300,150
+steel-sword,スチールソード,weapon,12,0,0,0,0,0,common,攻撃力+12の鋼鉄剣,ショップ,3章,500,250
+two-hand-sword,両手剣,weapon,18,0,0,0,0,0,uncommon,攻撃力+18の両手剣（盾不可）,ショップ,4章,800,400
+wooden-shield,木の盾,shield,0,3,0,0,0,0,common,防御力+3の基本盾,ショップ,1章,100,50
+iron-shield,アイアンシールド,shield,0,5,0,0,0,0,common,防御力+5の鉄盾,ショップ,2章,200,100
+steel-shield,スチールシールド,shield,0,8,0,0,0,0,common,防御力+8の鋼鉄盾,ショップ,3章,350,175
+knight-shield,ナイトシールド,shield,0,12,0,0,0,0,uncommon,防御力+12の騎士の盾,ショップ,4章,600,300
+leather-cap,革の帽子,head,0,2,0,0,0,0,common,防御力+2の革製帽子,ショップ,1章,80,40
+iron-helmet,アイアンヘルム,head,0,4,0,0,0,0,common,防御力+4の鉄兜,ショップ,2章,150,75
+steel-helmet,スチールヘルム,head,0,6,0,0,0,0,common,防御力+6の鋼鉄兜,ショップ,3章,250,125
+knight-helmet,ナイトヘルム,head,0,9,0,0,0,0,uncommon,防御力+9の騎士の兜,ショップ,4章,400,200
+leather-armor,革の鎧,body,0,4,0,0,0,0,common,防御力+4の革製鎧,ショップ,1章,120,60
+chain-mail,チェインメイル,body,0,7,0,0,0,0,common,防御力+7の鎖帷子,ショップ,2章,250,125
+steel-armor,スチールアーマー,body,0,10,0,0,0,0,common,防御力+10の鋼鉄鎧,ショップ,3章,400,200
+knight-armor,ナイトアーマー,body,0,15,0,0,0,0,uncommon,防御力+15の騎士の鎧,ショップ,4章,700,350
+gacha-sword,レアソード,weapon,15,0,0,0,0,0,rare,攻撃力+15の強力な剣,ガチャ,装備ガチャ,0,500
+gacha-shield,レアシールド,shield,0,8,0,0,0,0,rare,防御力+8の強力な盾,ガチャ,装備ガチャ,0,400
+gacha-helmet,レアヘルム,head,0,6,0,0,0,0,rare,防御力+6の強力な兜,ガチャ,装備ガチャ,0,300
+gacha-armor,レアアーマー,body,0,10,0,0,0,0,rare,防御力+10の強力な鎧,ガチャ,装備ガチャ,0,500
+legendary-sword,レジェンドソード,weapon,25,0,0,0,0,0,legendary,攻撃力+25の伝説の剣,ガチャ,装備ガチャ,0,1000
+legendary-shield,レジェンドシールド,shield,0,15,0,0,0,0,legendary,防御力+15の伝説の盾,ガチャ,装備ガチャ,0,750
+magic-staff,マジックスタッフ,weapon,3,0,12,0,0,10,rare,魔力+12 MP+10の魔法の杖,ドロップ,魔法使いの敵,0,600
+cursed-blade,呪いの刃,weapon,20,-5,0,5,0,0,rare,攻撃+20 防御-5 速度+5の呪われた武器,ドロップ,デーモンソード,0,800
+dragon-scale,ドラゴンスケイル,body,0,20,5,0,50,0,legendary,防御+20 魔力+5 HP+50のドラゴン鱗鎧,ドロップ,古代ドラゴン,0,1500

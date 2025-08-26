@@ -110,7 +110,7 @@ class DataManager {
                 this.loadCSV('./data/enemy_actions.csv'),
                 this.loadCSV('./data/skills.csv'),
                 this.loadCSV('./data/items.csv'),
-                this.loadCSV('./data/equipment.csv'),
+                this.loadCSV('./data/equipment_unified.csv'),
                 this.loadCSV('./data/stages.csv'),
                 this.loadCSV('./data/shop.csv'),
                 this.loadCSV('./data/locations.csv'),
@@ -217,7 +217,17 @@ class DataManager {
 
     // 装備データを取得
     getEquipment(id) {
-        return this.data.equipment.find(eq => eq.id === id);
+        return this.data.equipment.find(eq => eq.item_id === id);
+    }
+    
+    // 装備アイテムを取得（ガチャ・ショップ・ドロップ全て含む）
+    getEquipmentItems() {
+        return this.data.equipment || [];
+    }
+    
+    // ガチャで手に入る装備アイテムを取得
+    getEquipmentGachaItems() {
+        return this.data.equipment.filter(item => item.acquisition_method === 'ガチャ') || [];
     }
 
     // 章データを取得

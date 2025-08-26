@@ -68,6 +68,7 @@ let gameState = {
         maxBattles: 10,
         isPlayerTurn: true,
         isAutoMode: false,
+        autoLevelUpMode: 'manual', // 'manual' or 'random'
         battleEnded: false,
         location: null,
         dungeonFloor: 1,
@@ -215,7 +216,8 @@ const elements = {
     levelUpModal: document.getElementById('levelUpModal'),
     levelUpDisplay: document.getElementById('levelUpDisplay'),
     availablePoints: document.getElementById('availablePoints'),
-    confirmLevelUp: document.getElementById('confirmLevelUp')
+    confirmLevelUp: document.getElementById('confirmLevelUp'),
+    autoModeSettingsModal: document.getElementById('autoModeSettingsModal')
 };
 
 // 音響効果生成関数（Web Audio API使用）
@@ -1086,15 +1088,8 @@ function updateItemDisplay() {
     // ショップアイテムの情報を取得
     const shopItems = dataManager.getShopItems();
     
-    // ガチャ専用アイテムの定義
-    const gachaItems = {
-        'gacha-sword': { item_name: 'レアソード', description: '攻撃力+15の強力な剣', effect_type: 'equip_weapon' },
-        'gacha-shield': { item_name: 'レアシールド', description: '防御力+8の強力な盾', effect_type: 'equip_shield' },
-        'gacha-helmet': { item_name: 'レアヘルム', description: '防御力+6の強力な兜', effect_type: 'equip_head' },
-        'gacha-armor': { item_name: 'レアアーマー', description: '防御力+10の強力な鎧', effect_type: 'equip_body' },
-        'legendary-sword': { item_name: 'レジェンドソード', description: '攻撃力+25の伝説の剣', effect_type: 'equip_weapon' },
-        'legendary-shield': { item_name: 'レジェンドシールド', description: '防御力+15の伝説の盾', effect_type: 'equip_shield' }
-    };
+    // 統合装備データから装備アイテムを取得
+    const equipmentItems = dataManager.getEquipmentItems();
     
     // 所持しているアイテムをカウント
     let hasItems = false;
@@ -1109,9 +1104,18 @@ function updateItemDisplay() {
         // ショップアイテムから検索
         let itemInfo = shopItems.find(item => item.item_id === itemId);
         
-        // ショップアイテムにない場合はガチャアイテムから検索
-        if (!itemInfo && gachaItems[itemId]) {
-            itemInfo = gachaItems[itemId];
+        // ショップアイテムにない場合は装備アイテムから検索
+        if (!itemInfo) {
+            const equipmentItem = equipmentItems.find(item => item.item_id === itemId);
+            if (equipmentItem) {
+                // 装備アイテムをショップアイテム形式に変換
+                itemInfo = {
+                    item_name: equipmentItem.item_name,
+                    description: equipmentItem.description,
+                    effect_type: `equip_${equipmentItem.equipment_type}`,
+                    effect_value: equipmentItem.attack_bonus || equipmentItem.defense_bonus || equipmentItem.magic_bonus || equipmentItem.speed_bonus || equipmentItem.hp_bonus || equipmentItem.mp_bonus
+                };
+            }
         }
         
         if (itemInfo) {
@@ -1121,15 +1125,118 @@ function updateItemDisplay() {
             itemElement.className = 'item-option';
             itemElement.dataset.item = itemId;
             
+            // ステータス変化表示を生成
+            let statusChangeText = '';
+            if (itemInfo.effect_type && itemInfo.effect_value) {
+                const effectValue = parseInt(itemInfo.effect_value) || 0;
+                
+                switch (itemInfo.effect_type) {
+                    case 'heal_hp':
+                        const maxHealable = gameState.player.maxHp - gameState.player.hp;
+                        const actualHeal = Math.min(effectValue, maxHealable);
+                        statusChangeText = `<div class="status-change">HP: ${gameState.player.hp} → ${gameState.player.hp + actualHeal}</div>`;
+                        break;
+                    case 'heal_mp':
+                        const maxMpHealable = gameState.player.maxMp - gameState.player.mp;
+                        const actualMpHeal = Math.min(effectValue, maxMpHealable);
+                        statusChangeText = `<div class="status-change">MP: ${gameState.player.mp} → ${gameState.player.mp + actualMpHeal}</div>`;
+                        break;
+                    case 'boost_attack':
+                        statusChangeText = `<div class="status-change">攻撃: ${gameState.player.attack} → ${gameState.player.attack + effectValue}</div>`;
+                        break;
+                    case 'boost_defense':
+                        statusChangeText = `<div class="status-change">防御: ${gameState.player.defense} → ${gameState.player.defense + effectValue}</div>`;
+                        break;
+                    case 'boost_magic':
+                        statusChangeText = `<div class="status-change">魔力: ${gameState.player.magic} → ${gameState.player.magic + effectValue}</div>`;
+                        break;
+                    case 'boost_speed':
+                        statusChangeText = `<div class="status-change">素早さ: ${gameState.player.speed} → ${gameState.player.speed + effectValue}</div>`;
+                        break;
+                    case 'boost_max_hp':
+                        statusChangeText = `<div class="status-change">最大HP: ${gameState.player.maxHp} → ${gameState.player.maxHp + effectValue}</div>`;
+                        break;
+                    case 'boost_max_mp':
+                        statusChangeText = `<div class="status-change">最大MP: ${gameState.player.maxMp} → ${gameState.player.maxMp + effectValue}</div>`;
+                        break;
+                    case 'equip_weapon':
+                        // 現在装備中の武器の効果値を取得
+                        let currentWeaponBonus = 0;
+                        const currentWeaponId = gameState.player.equipment.weapon;
+                        if (currentWeaponId) {
+                            // ショップアイテムから検索
+                            let currentWeaponInfo = shopItems.find(item => item.item_id === currentWeaponId);
+                            if (!currentWeaponInfo) {
+                                // 装備アイテムから検索
+                                const currentWeaponItem = equipmentItems.find(item => item.item_id === currentWeaponId);
+                                if (currentWeaponItem) {
+                                    currentWeaponBonus = parseInt(currentWeaponItem.attack_bonus) || 0;
+                                }
+                            } else {
+                                currentWeaponBonus = parseInt(currentWeaponInfo.effect_value) || 0;
+                            }
+                        }
+                        
+                        // 新しい攻撃力 = 現在の攻撃力 - 現在の武器効果 + 新しい武器効果
+                        const newAttackTotal = gameState.player.attack - currentWeaponBonus + effectValue;
+                        statusChangeText = `<div class="status-change">攻撃: ${gameState.player.attack} → ${newAttackTotal}</div>`;
+                        break;
+                    case 'equip_shield':
+                    case 'equip_head':
+                    case 'equip_body':
+                        // 装備箇所を特定
+                        let equipSlot;
+                        if (itemInfo.effect_type === 'equip_shield') equipSlot = 'shield';
+                        else if (itemInfo.effect_type === 'equip_head') equipSlot = 'head';
+                        else if (itemInfo.effect_type === 'equip_body') equipSlot = 'body';
+                        
+                        // 現在装備中のアイテムの効果値を取得
+                        let currentEquipBonus = 0;
+                        const currentEquipId = gameState.player.equipment[equipSlot];
+                        if (currentEquipId) {
+                            // ショップアイテムから検索
+                            let currentEquipInfo = shopItems.find(item => item.item_id === currentEquipId);
+                            if (!currentEquipInfo) {
+                                // 装備アイテムから検索
+                                const currentEquipItem = equipmentItems.find(item => item.item_id === currentEquipId);
+                                if (currentEquipItem) {
+                                    currentEquipBonus = parseInt(currentEquipItem.defense_bonus) || 0;
+                                }
+                            } else {
+                                currentEquipBonus = parseInt(currentEquipInfo.effect_value) || 0;
+                            }
+                        }
+                        
+                        // ベース防御力を取得
+                        const currentCharData = gameState.characterData[gameState.characters.currentCharacter];
+                        const baseDefense = currentCharData ? currentCharData.baseStats.defense : 10;
+                        
+                        // 新しい防御力 = ベース防御力 + 他の防具の効果 + 新しい防具の効果
+                        const newDefenseTotal = gameState.player.defense - currentEquipBonus + effectValue;
+                        statusChangeText = `<div class="status-change">防御: ${gameState.player.defense} → ${newDefenseTotal}</div>`;
+                        break;
+                    case 'damage_hp':
+                        if (gameState.enemy) {
+                            const targetHp = Math.max(0, gameState.enemy.hp - effectValue);
+                            statusChangeText = `<div class="status-change">敵HP: ${gameState.enemy.hp} → ${targetHp}</div>`;
+                        }
+                        break;
+                }
+            }
+            
             itemElement.innerHTML = `
                 <div class="item-name">${itemInfo.item_name}</div>
                 <div class="item-count">所持数: ${count}</div>
                 <div class="item-desc">${itemInfo.description}</div>
+                ${statusChangeText}
             `;
             
             itemElement.addEventListener('click', () => {
                 useItem(itemId);
-                elements.itemModal.style.display = 'none';
+                // 戦闘中の場合のみ自動でウィンドウを閉じる
+                if (!gameState.battle.inTown) {
+                    elements.itemModal.style.display = 'none';
+                }
             });
             
             elements.itemList.appendChild(itemElement);
@@ -1372,6 +1479,14 @@ function handlePlayerDefeat() {
     addBattleLog("プレイヤーは倒れてしまった...");
     gameState.battle.battleEnded = true;
     
+    // オートモードを強制解除してボタンも元に戻す
+    if (gameState.battle.isAutoMode) {
+        gameState.battle.isAutoMode = false;
+        const autoBtn = document.getElementById('autoBtn');
+        autoBtn.textContent = 'オート';
+        autoBtn.style.backgroundColor = '#3498db';
+    }
+    
     // フィールド/ダンジョン対応の敗北ペナルティ
     applyDefeatPenalty();
     
@@ -1531,8 +1646,16 @@ function nextBattle() {
     generateNewEnemy();
     
     gameState.battle.isPlayerTurn = true;
+    gameState.battle.battleEnded = false; // 戦闘状態をリセット
     addBattleLog(`${gameState.enemy.name}が現れた！`);
     updateUI();
+    
+    // オートモード継続処理
+    if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+        setTimeout(() => {
+            autoPlayerAction();
+        }, 2000); // エフェクトを考慮して少し長めに
+    }
 }
 
 // 章クリア会話画面表示
@@ -1820,14 +1943,7 @@ function setupEventListeners() {
     }
     
     elements.autoBtn.addEventListener('click', () => {
-        soundEffects.playClick();
-        gameState.battle.isAutoMode = !gameState.battle.isAutoMode;
-        elements.autoBtn.style.backgroundColor = gameState.battle.isAutoMode ? '#38a169' : '';
-        addBattleLog(gameState.battle.isAutoMode ? 'オートモード ON' : 'オートモード OFF');
-        
-        if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
-            setTimeout(playerAttack, 1000);
-        }
+        toggleAutoMode();
     });
     
     // モーダル関連
@@ -2337,10 +2453,64 @@ function checkLevelUp() {
         addBattleLog(`レベルアップ！Lv.${gameState.player.level}になりました！`);
         addBattleLog(`ステータスポイントを3獲得しました！`);
         
-        // レベルアップモーダルを表示
-        setTimeout(() => {
-            showLevelUpModal();
-        }, 1500);
+        // オートモード時の処理分岐
+        if (gameState.battle.isAutoMode && gameState.battle.autoLevelUpMode === 'random') {
+            // ランダム割り振り
+            autoAllocateStatPoints(3);
+            addBattleLog('🎲 ステータスポイントを自動で割り振りました');
+        } else {
+            // レベルアップモーダルを表示（オートモードでも手動設定の場合は表示）
+            // 戦闘を一時停止
+            gameState.battle.isAutoMode = false; // オートモード一時停止
+            gameState.battle.pausedForLevelUp = true; // レベルアップ中フラグ
+            
+            setTimeout(() => {
+                showLevelUpModal();
+            }, 1500);
+        }
+    }
+}
+
+// ステータスポイントをランダムに割り振り
+function autoAllocateStatPoints(points) {
+    const stats = ['hp', 'mp', 'attack', 'defense', 'magic', 'speed'];
+    let remainingPoints = points;
+    
+    while (remainingPoints > 0) {
+        const randomStat = stats[Math.floor(Math.random() * stats.length)];
+        const pointsToAdd = Math.min(remainingPoints, Math.floor(Math.random() * 2) + 1); // 1-2ポイント
+        
+        switch (randomStat) {
+            case 'hp':
+                // 通常と同じ上昇値：+10
+                gameState.player.maxHp += pointsToAdd * 10;
+                gameState.player.hp = Math.min(gameState.player.hp + pointsToAdd * 10, gameState.player.maxHp);
+                break;
+            case 'mp':
+                // 通常と同じ上昇値：+10
+                gameState.player.maxMp += pointsToAdd * 10;
+                gameState.player.mp = Math.min(gameState.player.mp + pointsToAdd * 10, gameState.player.maxMp);
+                break;
+            case 'attack':
+                // 通常と同じ上昇値：+1
+                gameState.player.attack += pointsToAdd * 1;
+                break;
+            case 'defense':
+                // 通常と同じ上昇値：+1
+                gameState.player.defense += pointsToAdd * 1;
+                break;
+            case 'magic':
+                // 通常と同じ上昇値：+1
+                gameState.player.magic += pointsToAdd * 1;
+                break;
+            case 'speed':
+                // 通常と同じ上昇値：+1
+                gameState.player.speed += pointsToAdd * 1;
+                break;
+        }
+        
+        remainingPoints -= pointsToAdd;
+        gameState.player.statPoints -= pointsToAdd;
     }
 }
 
@@ -2432,6 +2602,22 @@ function confirmLevelUpAllocation() {
     
     addBattleLog('ステータスを振り分けました！');
     addBattleLog('HP・MPが全回復しました！');
+    
+    // レベルアップ一時停止フラグを解除
+    gameState.battle.pausedForLevelUp = false;
+    
+    // 元々オートモードで手動設定を選んでいた場合、オートモードを再開
+    const autoBtn = document.getElementById('autoBtn');
+    if (autoBtn && autoBtn.textContent === '手動') {
+        gameState.battle.isAutoMode = true;
+        
+        // 戦闘が続いていればオートモードを再開
+        if (gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+            setTimeout(() => {
+                autoPlayerAction();
+            }, 1000);
+        }
+    }
     
     soundEffects.playClick();
 }
@@ -4055,6 +4241,140 @@ function initGuild() {
             closeModal('guildModal');
         });
     }
+}
+
+// オートモード設定関数群
+function toggleAutoMode() {
+    const autoBtn = document.getElementById('autoBtn');
+    
+    if (gameState.battle.isAutoMode) {
+        // オートモードを停止
+        gameState.battle.isAutoMode = false;
+        autoBtn.textContent = 'オート';
+        autoBtn.style.backgroundColor = '#3498db';
+        addBattleLog('👤 手動モードに切り替えました');
+        soundEffects.playClick();
+        
+        // UIを即座に更新してプレイヤーが操作できるようにする
+        updateUI();
+    } else {
+        // オートモード設定を開く
+        elements.autoModeSettingsModal.style.display = 'block';
+        soundEffects.playClick();
+    }
+}
+
+function closeAutoSettingsModal() {
+    elements.autoModeSettingsModal.style.display = 'none';
+    soundEffects.playClick();
+}
+
+function startAutoModeWithSettings() {
+    // 設定を取得
+    const levelUpMode = document.querySelector('input[name="autoLevelUp"]:checked').value;
+    gameState.battle.autoLevelUpMode = levelUpMode;
+    
+    // オートモードを開始
+    gameState.battle.isAutoMode = true;
+    
+    const autoBtn = document.getElementById('autoBtn');
+    autoBtn.textContent = '手動';
+    autoBtn.style.backgroundColor = '#e74c3c';
+    
+    // 設定に応じたメッセージを表示
+    if (levelUpMode === 'manual') {
+        addBattleLog('🤖 オートモード開始（レベルアップ時は手動設定）');
+    } else {
+        addBattleLog('🤖 オートモード開始（レベルアップ時は自動割り振り）');
+    }
+    
+    // モーダルを閉じる
+    closeAutoSettingsModal();
+    
+    // オートモードの場合、すぐに次のアクションを実行
+    if (gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+        setTimeout(() => {
+            if (gameState.battle.isAutoMode) {
+                autoPlayerAction();
+            }
+        }, 1000);
+    }
+}
+
+// プレイヤー攻撃関数
+function playerAttack() {
+    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
+    
+    // 攻撃エフェクトと音響効果
+    audioManager.playSE('se_attack'); // CSVの攻撃SEを再生
+    showPlayerAttackEffect();
+    screenShake(10);
+    
+    // 基本攻撃の処理
+    const damage = Math.max(1, gameState.player.attack - Math.floor(gameState.enemy.defense / 2));
+    gameState.enemy.hp = Math.max(0, gameState.enemy.hp - damage);
+    
+    addBattleLog(`${gameState.player.name}の攻撃！ ${gameState.enemy.name}に${damage}のダメージ！`);
+    
+    // 敵撃破チェック
+    if (gameState.enemy.hp <= 0) {
+        addBattleLog(`${gameState.enemy.name}を倒した！`);
+        gameState.battle.battleEnded = true;
+        
+        // 次の戦闘への移行（オートモードは nextBattle 内で管理）
+        setTimeout(nextBattle, 1500);
+        return;
+    }
+    
+    // ターン終了
+    gameState.battle.isPlayerTurn = false;
+    updateUI();
+    
+    // 敵のターンへ移行
+    setTimeout(() => {
+        processEnemyTurn();
+    }, 1000);
+}
+
+// 敵のターン処理
+function processEnemyTurn() {
+    // レベルアップ中や戦闘終了時は敵もアクションしない
+    if (gameState.battle.battleEnded || gameState.battle.pausedForLevelUp) return;
+    
+    // 敵の攻撃をエフェクト込みで実行
+    executeEnemyAttack();
+    
+    // プレイヤー敗北チェック
+    if (gameState.player.hp <= 0) {
+        gameState.battle.isAutoMode = false; // オートモード強制解除
+        handlePlayerDefeat(); // 敗北処理を実行
+        return;
+    }
+    
+    // プレイヤーのターンに戻す
+    gameState.battle.isPlayerTurn = true;
+    updateUI();
+    
+    // レベルアップ中でなければオートモード継続チェック
+    if (gameState.battle.isAutoMode && !gameState.battle.pausedForLevelUp) {
+        setTimeout(() => {
+            autoPlayerAction();
+        }, 1000);
+    }
+}
+
+// オートモード時のプレイヤーアクション
+function autoPlayerAction() {
+    // レベルアップ中や戦闘終了時はアクションしない
+    if (!gameState.battle.isAutoMode || 
+        !gameState.battle.isPlayerTurn || 
+        gameState.battle.battleEnded || 
+        gameState.battle.pausedForLevelUp) {
+        return;
+    }
+    
+    // 基本的に攻撃を選択
+    playerAttack();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1442,6 +1442,78 @@ video.enemy-attack,
     font-size: 13px;
 }
 
+.status-change {
+    font-size: 11px;
+    color: #007bff;
+    font-weight: bold;
+    margin-top: 3px;
+    padding: 2px 5px;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 3px;
+    border-left: 3px solid #007bff;
+}
+
+/* オートモード設定 */
+.auto-settings {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.auto-settings h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.setting-option {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.setting-option input[type="radio"] {
+    margin-right: 8px;
+}
+
+.setting-option label {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.confirm-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.confirm-btn {
+    background-color: #27ae60;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #219a52;
+}
+
+.cancel-btn {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #7f8c8d;
+}
+
 /* ショップモーダル */
 .shop-info {
     padding: 15px 20px;

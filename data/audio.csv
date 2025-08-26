@@ -6,10 +6,10 @@ bgm_dungeon,bgm,ダンジョンBGM,assets/audio/bgm/dungeon.mp3,0.6,TRUE,dungeon
 bgm_town,bgm,街BGM,assets/audio/bgm/town.mp3,0.5,TRUE,town,街や宿屋での落ち着いたBGM
 bgm_victory,bgm,勝利BGM,assets/audio/bgm/victory.mp3,0.8,FALSE,victory,戦闘勝利時の短いファンファーレ
 bgm_gameover,bgm,ゲームオーバーBGM,assets/audio/bgm/gameover.mp3,0.7,FALSE,gameover,ゲームオーバー時のBGM
-se_attack,se,攻撃SE,assets/audio/se/attack.mp3,0.8,FALSE,combat,通常攻撃時の効果音
+se_attack,se,攻撃SE,assets/audio/se/attack_sound.mp3,0.8,FALSE,combat,通常攻撃時の効果音
 se_skill,se,スキルSE,assets/audio/se/skill.mp3,0.9,FALSE,combat,スキル使用時の効果音
 se_magic,se,魔法SE,assets/audio/se/magic.mp3,0.8,FALSE,combat,魔法使用時の効果音
-magic_fire,se,炎魔法SE,assets/audio/se/fire_magic.mp3,0.8,FALSE,combat,炎魔法使用時の効果音
+se_magic_fire,se,炎魔法SE,assets/audio/se/magic_fire.mp3,0.8,FALSE,combat,炎魔法使用時の効果音
 se_damage,se,ダメージSE,assets/audio/se/damage.mp3,0.7,FALSE,combat,ダメージを受けた時の効果音
 se_heal,se,回復SE,assets/audio/se/heal.mp3,0.6,FALSE,combat,回復時の効果音
 se_critical,se,クリティカルSE,assets/audio/se/critical.mp3,1,FALSE,combat,クリティカル攻撃時の効果音
