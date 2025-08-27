@@ -1,26 +1,44 @@
-﻿id,name,equipment_type,attack_bonus,defense_bonus,magic_bonus,speed_bonus,hp_bonus,mp_bonus,rarity,description,acquisition_method,shop_chapter,buy_price,sell_price
-short-sword,ショートソード,weapon,5,0,0,0,0,0,common,攻撃力+5の基本剣,ショップ,1,150,75
-iron-sword,アイアンソード,weapon,8,0,0,0,0,0,common,攻撃力+8の鉄剣,ショップ,2,300,150
-steel-sword,スチールソード,weapon,12,0,0,0,0,0,common,攻撃力+12の鋼鉄剣,ショップ,3,500,250
-two-hand-sword,両手剣,weapon,18,0,0,0,0,0,uncommon,攻撃力+18の両手剣（盾不可）,ショップ,4,800,400
-wooden-shield,木の盾,shield,0,3,0,0,0,0,common,防御力+3の基本盾,ショップ,1,100,50
-iron-shield,アイアンシールド,shield,0,5,0,0,0,0,common,防御力+5の鉄盾,ショップ,2,200,100
-steel-shield,スチールシールド,shield,0,8,0,0,0,0,common,防御力+8の鋼鉄盾,ショップ,3,350,175
-knight-shield,ナイトシールド,shield,0,12,0,0,0,0,uncommon,防御力+12の騎士の盾,ショップ,4,600,300
-leather-cap,革の帽子,head,0,2,0,0,0,0,common,防御力+2の革製帽子,ショップ,1,80,40
-iron-helmet,アイアンヘルム,head,0,4,0,0,0,0,common,防御力+4の鉄兜,ショップ,2,150,75
-steel-helmet,スチールヘルム,head,0,6,0,0,0,0,common,防御力+6の鋼鉄兜,ショップ,3,250,125
-knight-helmet,ナイトヘルム,head,0,9,0,0,0,0,uncommon,防御力+9の騎士の兜,ショップ,4,400,200
-leather-armor,革の鎧,body,0,4,0,0,0,0,common,防御力+4の革製鎧,ショップ,1,120,60
-chain-mail,チェインメイル,body,0,7,0,0,0,0,common,防御力+7の鎖帷子,ショップ,2,250,125
-steel-armor,スチールアーマー,body,0,10,0,0,0,0,common,防御力+10の鋼鉄鎧,ショップ,3,400,200
-knight-armor,ナイトアーマー,body,0,15,0,0,0,0,uncommon,防御力+15の騎士の鎧,ショップ,4,700,350
-gacha-sword,レアソード,weapon,15,0,0,0,0,0,rare,攻撃力+15の強力な剣,ガチャ,0,0,500
-gacha-shield,レアシールド,shield,0,8,0,0,0,0,rare,防御力+8の強力な盾,ガチャ,0,0,400
-gacha-helmet,レアヘルム,head,0,6,0,0,0,0,rare,防御力+6の強力な兜,ガチャ,0,0,300
-gacha-armor,レアアーマー,body,0,10,0,0,0,0,rare,防御力+10の強力な鎧,ガチャ,0,0,500
-legendary-sword,レジェンドソード,weapon,25,0,0,0,0,0,legendary,攻撃力+25の伝説の剣,ガチャ,0,0,1000
-legendary-shield,レジェンドシールド,shield,0,15,0,0,0,0,legendary,防御力+15の伝説の盾,ガチャ,0,0,750
-magic-staff,マジックスタッフ,weapon,3,0,12,0,0,10,rare,魔力+12 MP+10の魔法の杖,ドロップ,魔法使いの敵,0,600
-cursed-blade,呪いの刃,weapon,20,-5,0,5,0,0,rare,攻撃+20 防御-5 速度+5の呪われた武器,ドロップ,デーモンソード,0,800
-dragon-scale,ドラゴンスケイル,body,0,20,5,0,50,0,legendary,防御+20 魔力+5 HP+50のドラゴン鱗鎧,ドロップ,古代ドラゴン,0,1500
+﻿id,name,equipment_type,weapon_type,attack_bonus,defense_bonus,magic_bonus,speed_bonus,hp_bonus,mp_bonus,rarity,description,acquisition_method,shop_chapter,buy_price,sell_price
+short-sword,ショートソード,weapon,sword,5,0,0,0,0,0,common,攻撃力+5の基本剣,ショップ,1,150,75
+iron-sword,アイアンソード,weapon,sword,8,0,0,0,0,0,common,攻撃力+8の鉄剣,ショップ,2,300,150
+steel-sword,スチールソード,weapon,sword,12,0,0,0,0,0,common,攻撃力+12の鋼鉄剣,ショップ,3,500,250
+two-hand-sword,両手剣,weapon,sword,18,0,0,0,0,0,uncommon,攻撃力+18の両手剣（盾不可）,ショップ,4,800,400
+wooden-shield,木の盾,shield,none,0,3,0,0,0,0,common,防御力+3の基本盾,ショップ,1,100,50
+iron-shield,アイアンシールド,shield,none,0,5,0,0,0,0,common,防御力+5の鉄盾,ショップ,2,200,100
+steel-shield,スチールシールド,shield,none,0,8,0,0,0,0,common,防御力+8の鋼鉄盾,ショップ,3,350,175
+knight-shield,ナイトシールド,shield,none,0,12,0,0,0,0,uncommon,防御力+12の騎士の盾,ショップ,4,600,300
+leather-cap,革の帽子,head,none,0,2,0,0,0,0,common,防御力+2の革製帽子,ショップ,1,80,40
+iron-helmet,アイアンヘルム,head,none,0,4,0,0,0,0,common,防御力+4の鉄兜,ショップ,2,150,75
+steel-helmet,スチールヘルム,head,none,0,6,0,0,0,0,common,防御力+6の鋼鉄兜,ショップ,3,250,125
+knight-helmet,ナイトヘルム,head,none,0,9,0,0,0,0,uncommon,防御力+9の騎士の兜,ショップ,4,400,200
+leather-armor,革の鎧,body,none,0,4,0,0,0,0,common,防御力+4の革製鎧,ショップ,1,120,60
+chain-mail,チェインメイル,body,none,0,7,0,0,0,0,common,防御力+7の鎖帷子,ショップ,2,250,125
+steel-armor,スチールアーマー,body,none,0,10,0,0,0,0,common,防御力+10の鋼鉄鎧,ショップ,3,400,200
+knight-armor,ナイトアーマー,body,none,0,15,0,0,0,0,uncommon,防御力+15の騎士の鎧,ショップ,4,700,350
+gacha-sword,レアソード,weapon,sword,15,0,0,0,0,0,rare,攻撃力+15の強力な剣,ガチャ,0,0,500
+gacha-shield,レアシールド,shield,none,0,8,0,0,0,0,rare,防御力+8の強力な盾,ガチャ,0,0,400
+gacha-helmet,レアヘルム,head,none,0,6,0,0,0,0,rare,防御力+6の強力な兜,ガチャ,0,0,300
+gacha-armor,レアアーマー,body,none,0,10,0,0,0,0,rare,防御力+10の強力な鎧,ガチャ,0,0,500
+legendary-sword,レジェンドソード,weapon,sword,25,0,0,0,0,0,legendary,攻撃力+25の伝説の剣,ガチャ,0,0,1000
+legendary-shield,レジェンドシールド,shield,none,0,15,0,0,0,0,legendary,防御力+15の伝説の盾,ガチャ,0,0,750
+magic-staff,マジックスタッフ,weapon,staff,3,0,12,0,0,10,rare,魔力+12 MP+10の魔法の杖,ドロップ,魔法使いの敵,0,600
+cursed-blade,呪いの刃,weapon,sword,20,-5,0,5,0,0,rare,攻撃+20 防御-5 速度+5の呪われた武器,ドロップ,デーモンソード,0,800
+dragon-scale,ドラゴンスケイル,body,none,0,20,5,0,50,0,legendary,防御+20 魔力+5 HP+50のドラゴン鱗鎧,ドロップ,古代ドラゴン,0,1500
+basic-gloves,レザーグローブ,weapon,fist,3,0,0,2,0,0,common,攻撃力+3 素早さ+2の基本グローブ,ショップ,1,120,60
+iron-knuckles,アイアンナックル,weapon,fist,6,0,0,3,0,0,common,攻撃力+6 素早さ+3の鉄製ナックル,ショップ,2,250,125
+steel-claws,スチールクロー,weapon,fist,10,0,0,4,0,0,common,攻撃力+10 素早さ+4の鋼鉄クロー,ショップ,3,400,200
+battle-gauntlets,バトルガントレット,weapon,fist,15,2,0,5,0,0,uncommon,攻撃力+15 防御力+2 素早さ+5の格闘用手甲,ショップ,4,650,325
+short-bow,ショートボウ,weapon,bow,4,0,0,3,0,0,common,攻撃力+4 素早さ+3の基本弓,ショップ,1,140,70
+hunter-bow,ハンターボウ,weapon,bow,7,0,0,4,0,0,common,攻撃力+7 素早さ+4の狩人の弓,ショップ,2,280,140
+composite-bow,コンポジットボウ,weapon,bow,11,0,0,5,0,0,common,攻撃力+11 素早さ+5の複合弓,ショップ,3,450,225
+longbow,ロングボウ,weapon,bow,16,0,0,6,0,0,uncommon,攻撃力+16 素早さ+6の長弓,ショップ,4,720,360
+basic-wand,ベーシックワンド,weapon,staff,2,0,8,0,0,5,common,攻撃力+2 魔力+8 MP+5の基本の杖,ショップ,1,100,50
+crystal-rod,クリスタルロッド,weapon,staff,4,0,12,0,0,8,common,攻撃力+4 魔力+12 MP+8の水晶の杖,ショップ,2,220,110
+mystic-staff,ミスティックスタッフ,weapon,staff,6,0,18,0,0,12,common,攻撃力+6 魔力+18 MP+12の神秘の杖,ショップ,3,380,190
+arcane-scepter,アルカンセプター,weapon,staff,8,0,25,0,0,15,uncommon,攻撃力+8 魔力+25 MP+15の秘術の笏,ショップ,4,600,300
+gacha-fists,レアナックル,weapon,fist,12,0,0,8,0,0,rare,攻撃力+12 素早さ+8の強力なナックル,ガチャ,0,0,450
+legendary-claws,レジェンドクロー,weapon,fist,20,5,0,12,0,0,legendary,攻撃力+20 防御力+5 素早さ+12の伝説のクロー,ガチャ,0,0,900
+gacha-bow,レアボウ,weapon,bow,13,0,0,9,0,0,rare,攻撃力+13 素早さ+9の強力な弓,ガチャ,0,0,480
+legendary-bow,レジェンドボウ,weapon,bow,22,0,0,15,0,0,legendary,攻撃力+22 素早さ+15の伝説の弓,ガチャ,0,0,950
+gacha-staff,レアロッド,weapon,staff,5,0,20,0,0,18,rare,攻撃力+5 魔力+20 MP+18の強力な杖,ガチャ,0,0,520
+legendary-staff,レジェンドスタッフ,weapon,staff,10,0,35,0,0,25,legendary,攻撃力+10 魔力+35 MP+25の伝説の杖,ガチャ,0,0,1100

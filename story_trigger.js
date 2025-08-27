@@ -175,7 +175,46 @@ class StoryTriggerManager {
         
         // ストーリー画面を開く
         const storyUrl = `story.html?story=${storyId}&auto_return=true`;
-        window.open(storyUrl, '_blank', 'width=1200,height=800');
+        console.log('Opening story URL:', storyUrl);
+        const storyWindow = window.open(storyUrl, '_blank', 'width=1200,height=800');
+        
+        // ストーリーウィンドウが閉じられたときの処理
+        if (storyWindow) {
+            console.log('Story window opened successfully');
+        } else {
+            console.log('❌ Story window failed to open (popup blocked?)');
+            // ウィンドウが開けない場合は簡単なメッセージ表示後にフラグをリセット
+            alert(`📖 ストーリー「${storyId}」が発生しました！\n（本来はストーリー画面が開きますが、ポップアップがブロックされているようです）`);
+            setTimeout(() => {
+                if (window.gameState && window.gameState.battle) {
+                    console.log('Resetting storyInProgress due to popup failure');
+                    window.gameState.battle.storyInProgress = false;
+                }
+            }, 500);
+            return false;
+        }
+        
+        if (storyWindow) {
+            const checkClosed = setInterval(() => {
+                if (storyWindow.closed) {
+                    console.log('Story window closed, resetting storyInProgress flag');
+                    // メインウィンドウのstoryInProgressフラグをリセット
+                    if (window.gameState && window.gameState.battle) {
+                        window.gameState.battle.storyInProgress = false;
+                    }
+                    clearInterval(checkClosed);
+                }
+            }, 500); // 500ms間隔でチェック
+            
+            // フォールバック：30秒後に強制的にフラグをリセット
+            setTimeout(() => {
+                if (window.gameState && window.gameState.battle && window.gameState.battle.storyInProgress) {
+                    console.log('Story timeout: Force resetting storyInProgress flag');
+                    window.gameState.battle.storyInProgress = false;
+                }
+                clearInterval(checkClosed);
+            }, 30000); // 30秒のタイムアウト
+        }
         
         return true;
     }

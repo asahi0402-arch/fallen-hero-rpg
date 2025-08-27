@@ -3,6 +3,7 @@ let gameState = {
     // 現在のプレイヤー情報（アクティブなキャラクターへの参照）
     player: {
         name: "主人公",
+        character_class: "warrior",
         level: 1,
         hp: 100,
         maxHp: 100,
@@ -73,7 +74,9 @@ let gameState = {
         location: null,
         dungeonFloor: 1,
         fieldMode: false,
-        inTown: true
+        inTown: true,
+        storyInProgress: false, // ストーリーイベント進行中フラグ
+        guildFirstVisits: {} // 章ごとのギルド初回訪問記録
     },
     characters: {
         currentCharacter: 'player',
@@ -93,6 +96,7 @@ const CharacterManager = {
         
         gameState.characterData[currentId] = {
             name: gameState.player.name,
+            character_class: gameState.player.character_class,
             level: gameState.player.level,
             exp: gameState.player.exp,
             statPoints: gameState.player.statPoints,
@@ -121,6 +125,7 @@ const CharacterManager = {
         
         // プレイヤーデータを更新
         gameState.player.name = characterData.name;
+        gameState.player.character_class = characterData.character_class;
         gameState.player.level = characterData.level;
         gameState.player.exp = characterData.exp;
         gameState.player.statPoints = characterData.statPoints;
@@ -149,6 +154,7 @@ const CharacterManager = {
     initializeNewCharacter(characterId, csvData) {
         gameState.characterData[characterId] = {
             name: csvData.name,
+            character_class: csvData.character_class,
             level: parseInt(csvData.level) || 1,
             exp: 0,
             statPoints: 0,
@@ -356,6 +362,12 @@ function screenShake(intensity = 10, duration = 500) {
 function updateUI() {
     elements.playerLevel.textContent = gameState.player.level;
     
+    // プレイヤー名を更新
+    const playerNameElement = document.getElementById('playerName');
+    if (playerNameElement) {
+        playerNameElement.textContent = gameState.player.name;
+    }
+    
     // 新しいHTML構造に対応
     const chapterDisplay = document.getElementById('chapterDisplay');
     const maxBattlesDisplay = document.getElementById('maxBattles');
@@ -373,17 +385,12 @@ function updateUI() {
     } else {
         elements.battleCount.textContent = gameState.battle.battleCount;
     }
-    elements.enemyName.textContent = gameState.enemy ? gameState.enemy.name : '';
-    
-    // 町状態では敵を非表示にする
-    const enemyImage = document.getElementById('enemyImage');
-    if (gameState.battle.inTown) {
-        if (enemyImage) {
-            enemyImage.style.display = 'none';
-        }
-    } else {
-        if (enemyImage) {
-            enemyImage.style.display = 'block';
+    // 敵名の表示更新（安全チェック付き、ストーリー進行中は非表示）
+    if (elements.enemyName) {
+        if (gameState.battle.storyInProgress) {
+            elements.enemyName.textContent = '';
+        } else {
+            elements.enemyName.textContent = gameState.enemy ? gameState.enemy.name : '';
         }
     }
     
@@ -392,8 +399,9 @@ function updateUI() {
         updateStageBackground();
     }
     
-    // 敵画像を更新（キャッシュバスター付き）
-    if (gameState.enemy && gameState.enemy.image && !gameState.battle.inTown) {
+    // 敵画像を更新（キャッシュバスター付き、安全チェック強化）
+    const enemyImage = document.getElementById('enemyImage');
+    if (gameState.enemy && gameState.enemy.image && !gameState.battle.inTown && elements.enemyImage && enemyImage) {
         const timestamp = Date.now();
         const imagePath = `./assets/images/enemies/${gameState.enemy.image}?v=${timestamp}`;
         
@@ -419,10 +427,28 @@ function updateUI() {
         };
     }
     
-    if (gameState.enemy) {
+    // 敵のHP表示更新（安全チェック付き、ストーリー進行中は非表示）
+    if (gameState.enemy && elements.enemyHpBar && elements.enemyHpText && !gameState.battle.storyInProgress) {
         const enemyHpPercent = (gameState.enemy.hp / gameState.enemy.maxHp) * 100;
         elements.enemyHpBar.style.width = `${enemyHpPercent}%`;
         elements.enemyHpText.textContent = `${gameState.enemy.hp}/${gameState.enemy.maxHp}`;
+    } else if (elements.enemyHpBar && elements.enemyHpText) {
+        // 敵がいない場合またはストーリー進行中はHP表示をクリア
+        elements.enemyHpBar.style.width = '0%';
+        elements.enemyHpText.textContent = '';
+    }
+    
+    // 【最重要】敵画像の表示・非表示を確実に制御（最後に実行）
+    if (enemyImage) {
+        if (gameState.battle.inTown || !gameState.enemy) {
+            // 町にいる、または敵がいない場合は確実に非表示
+            enemyImage.style.display = 'none';
+            console.log("👹 Enemy image hidden (inTown or no enemy)");
+        } else if (gameState.enemy && !gameState.battle.inTown) {
+            // 戦闘中で敵がいる場合のみ表示
+            enemyImage.style.display = 'block';
+            console.log("👹 Enemy image shown (battle mode)");
+        }
     }
     
     const playerHpPercent = (gameState.player.hp / gameState.player.maxHp) * 100;
@@ -451,6 +477,12 @@ function updateUI() {
     
     // ガチャボタンの状態更新
     updateGachaButtonState();
+    
+    // ダンジョン内UI制限の更新
+    updateDungeonUIRestrictions();
+    
+    // セーブボタンの状態更新
+    updateSaveButtonState();
     
     // ロケーション表示更新
     updateLocationDisplay();
@@ -537,10 +569,68 @@ function updateEquipmentDisplay() {
         bodyItem = gachaItems[bodyId];
     }
     
-    elements.equippedWeapon.textContent = weaponItem ? weaponItem.item_name : 'なし';
-    elements.equippedShield.textContent = shieldItem ? shieldItem.item_name : 'なし';
-    elements.equippedHead.textContent = headItem ? headItem.item_name : 'なし';
-    elements.equippedBody.textContent = bodyItem ? bodyItem.item_name : 'なし';
+    elements.equippedWeapon.textContent = weaponItem ? (weaponItem.name || weaponItem.item_name) : 'なし';
+    elements.equippedShield.textContent = shieldItem ? (shieldItem.name || shieldItem.name || shieldItem.item_name) : 'なし';
+    elements.equippedHead.textContent = headItem ? (headItem.name || headItem.item_name) : 'なし';
+    elements.equippedBody.textContent = bodyItem ? (bodyItem.name || bodyItem.item_name) : 'なし';
+}
+
+// ダンジョン内かどうかの判定ヘルパー関数
+function isInDungeon() {
+    return gameState.battle.location === 'dungeon' && !gameState.battle.inTown;
+}
+
+// ダンジョン内UI制限の更新
+function updateDungeonUIRestrictions() {
+    const isDungeon = isInDungeon();
+    
+    // 各ボタンの無効化
+    const guildBtn = document.getElementById('guildBtn');
+    const shopBtn = document.getElementById('shopBtn');
+    const innBtn = document.getElementById('innBtn');
+    const tavernBtn = document.getElementById('tavernBtn');
+    
+    if (guildBtn) {
+        guildBtn.title = isDungeon ? '街に戻るには「帰還の玉」が必要です' : '仲間との会話やクエスト情報を確認できます';
+    }
+    
+    if (shopBtn) {
+        shopBtn.title = isDungeon ? '街に戻るには「帰還の玉」が必要です' : 'アイテムの購入・売却・衣服の修理ができます';
+    }
+    
+    if (innBtn) {
+        innBtn.title = isDungeon ? '街に戻るには「帰還の玉」が必要です' : '100ゴールドでHP/MPを全回復します（フィールドからのみ利用可能）';
+    }
+    
+    if (tavernBtn) {
+        tavernBtn.title = isDungeon ? '街に戻るには「帰還の玉」が必要です' : 'ゴールドで仲間を雇ったり、キャラクターを切り替えることができます';
+    }
+    
+    // ガチャボタンのツールチップ更新
+    const gachaButtons = document.querySelectorAll('[onclick*="gacha"], [id*="gacha"], [class*="gacha"]');
+    gachaButtons.forEach(btn => {
+        if (isDungeon) {
+            btn.title = '街に戻るには「帰還の玉」が必要です';
+        }
+    });
+}
+
+// セーブボタンの状態更新
+function updateSaveButtonState() {
+    const saveBtn = document.getElementById('saveBtn');
+    if (!saveBtn) return;
+    
+    const inTown = gameState.battle.inTown;
+    
+    if (inTown) {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('disabled');
+        saveBtn.title = '現在の進行状況を保存します';
+    } else {
+        saveBtn.disabled = true;
+        saveBtn.classList.add('disabled');
+        saveBtn.title = 'セーブは街でのみ利用できます';
+    }
 }
 
 // 宿屋ボタンの状態更新
@@ -726,6 +816,12 @@ function getLocationBackgroundColor(locationType, chapter) {
 
 // ログ追加関数
 function addBattleLog(message) {
+    // 安全チェック：要素が存在するかと初期化済みかをチェック
+    if (!elements.battleLogContent) {
+        console.warn('⚠️ battleLogContent not found, skipping log:', message);
+        return;
+    }
+    
     const logEntry = document.createElement('div');
     logEntry.className = 'log-entry';
     logEntry.textContent = message;
@@ -966,9 +1062,9 @@ function useItem(itemId) {
             // 装備アイテム：装備後にインベントリから削除
             gameState.shared.inventory[itemId]--;
             if (equipItem('weapon', itemInfo)) {
-                effectMessage = `${itemInfo.item_name}を装備した！`;
+                effectMessage = `${itemInfo.name}を装備した！`;
             } else {
-                effectMessage = `${itemInfo.item_name}を装備できませんでした`;
+                effectMessage = `${itemInfo.name}を装備できませんでした`;
                 // 装備失敗時はアイテムをインベントリに戻す
                 gameState.shared.inventory[itemId]++;
             }
@@ -978,9 +1074,9 @@ function useItem(itemId) {
             // 装備アイテム：装備後にインベントリから削除
             gameState.shared.inventory[itemId]--;
             if (equipItem('shield', itemInfo)) {
-                effectMessage = `${itemInfo.item_name}を装備した！`;
+                effectMessage = `${itemInfo.name}を装備した！`;
             } else {
-                effectMessage = `${itemInfo.item_name}を装備できませんでした`;
+                effectMessage = `${itemInfo.name}を装備できませんでした`;
                 // 装備失敗時はアイテムをインベントリに戻す
                 gameState.shared.inventory[itemId]++;
             }
@@ -990,9 +1086,9 @@ function useItem(itemId) {
             // 装備アイテム：装備後にインベントリから削除
             gameState.shared.inventory[itemId]--;
             if (equipItem('head', itemInfo)) {
-                effectMessage = `${itemInfo.item_name}を装備した！`;
+                effectMessage = `${itemInfo.name}を装備した！`;
             } else {
-                effectMessage = `${itemInfo.item_name}を装備できませんでした`;
+                effectMessage = `${itemInfo.name}を装備できませんでした`;
                 // 装備失敗時はアイテムをインベントリに戻す
                 gameState.shared.inventory[itemId]++;
             }
@@ -1002,13 +1098,48 @@ function useItem(itemId) {
             // 装備アイテム：装備後にインベントリから削除
             gameState.shared.inventory[itemId]--;
             if (equipItem('body', itemInfo)) {
-                effectMessage = `${itemInfo.item_name}を装備した！`;
+                effectMessage = `${itemInfo.name}を装備した！`;
             } else {
-                effectMessage = `${itemInfo.item_name}を装備できませんでした`;
+                effectMessage = `${itemInfo.name}を装備できませんでした`;
                 // 装備失敗時はアイテムをインベントリに戻す
                 gameState.shared.inventory[itemId]++;
             }
             break;
+            
+        case 'return_town':
+            // ダンジョン内でのみ使用可能
+            if (gameState.battle.location !== 'dungeon') {
+                effectMessage = 'ダンジョン内でのみ使用できます';
+                return; // アイテムを消費しない
+            }
+            
+            // 帰還の玉を消費
+            gameState.shared.inventory[itemId]--;
+            
+            // 街に帰還
+            gameState.battle.location = 'field';
+            gameState.battle.inTown = true;
+            gameState.battle.dungeonFloor = 1; // ダンジョン階層をリセット
+            
+            // 戦闘終了
+            if (!gameState.battle.battleEnded) {
+                gameState.battle.battleEnded = true;
+                gameState.battle.isPlayerTurn = false;
+                gameState.battle.autoMode = false;
+            }
+            
+            // 背景を街に変更
+            changeBackground('town');
+            
+            effectMessage = '街に帰還しました！';
+            addBattleLog(effectMessage);
+            
+            // UI更新
+            updateUI();
+            updateItemDisplay();
+            
+            soundEffects.playHeal();
+            return; // 以降の処理をスキップ
             
         default:
             // 装備品の場合（equipment_typeフィールドを持つ）
@@ -1265,9 +1396,9 @@ function enemyTurn() {
     gameState.battle.isPlayerTurn = true;
     
     // オートモード時の自動攻撃
-    if (gameState.battle.isAutoMode) {
+    if (gameState.battle.isAutoMode && !gameState.battle.storyInProgress) {
         setTimeout(() => {
-            if (gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+            if (gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
                 playerAttack();
             }
         }, 1000);
@@ -1589,6 +1720,7 @@ function nextBattle() {
             const trigger = storyTriggerManager.checkBossDefeat(defeatedBossId);
             if (trigger) {
                 addBattleLog('📖 ストーリーイベントが発生しました');
+                gameState.battle.storyInProgress = true; // ストーリー開始
                 setTimeout(() => {
                     storyTriggerManager.triggerStory(trigger.story_id);
                 }, 1000);
@@ -1605,9 +1737,45 @@ function nextBattle() {
             checkLevelUp();
         }
         
-        setTimeout(() => {
-            showChapterClearDialog();
-        }, 2000);
+        // ダンジョンボス撃破後は自動で街に帰還
+        if (isInDungeon()) {
+            addBattleLog('🏠 ダンジョンボス撃破！自動的に街へ帰還します...');
+            setTimeout(() => {
+                // 街に帰還
+                gameState.battle.location = 'field';
+                gameState.battle.inTown = true;
+                gameState.battle.battleEnded = true;
+                gameState.battle.dungeonFloor = 1; // ダンジョン階層をリセット
+                gameState.enemy = null; // 敵をクリア
+                
+                // 背景を町に変更
+                changeBackground('town');
+                
+                // 敵画像を非表示
+                const enemyImage = document.getElementById('enemyImage');
+                if (enemyImage) {
+                    enemyImage.style.display = 'none';
+                }
+                
+                // 敵情報オーバーレイを非表示
+                const enemyInfoOverlay = document.querySelector('.enemy-info-overlay');
+                if (enemyInfoOverlay) {
+                    enemyInfoOverlay.style.display = 'none';
+                }
+                
+                updateUI();
+                addBattleLog('✅ 街に帰還しました。お疲れ様でした！');
+                
+                // 章クリアダイアログを表示
+                setTimeout(() => {
+                    showChapterClearDialog();
+                }, 1000);
+            }, 3000);
+        } else {
+            setTimeout(() => {
+                showChapterClearDialog();
+            }, 2000);
+        }
         return;
     }
     
@@ -1628,8 +1796,8 @@ function nextBattle() {
     addBattleLog(`${gameState.enemy.name}が現れた！`);
     updateUI();
     
-    // オートモード継続処理
-    if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+    // オートモード継続処理（ストーリー進行中は除く）
+    if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
         setTimeout(() => {
             autoPlayerAction();
         }, 2000); // エフェクトを考慮して少し長めに
@@ -1638,6 +1806,7 @@ function nextBattle() {
 
 // 章クリア会話画面表示
 function showChapterClearDialog() {
+    gameState.battle.storyInProgress = true; // ダイアログ表示中
     const currentStage = dataManager.getStageInfo(gameState.battle.chapter);
     const chapterName = currentStage ? currentStage.stage_name : `第${gameState.battle.chapter}章`;
     
@@ -1709,18 +1878,9 @@ function generateNewEnemy() {
     console.log('📖 現在の章:', gameState.battle.chapter);
     
     if (!dataManager.loaded) {
-        console.log('⚠️ データ未読み込み、フォールバック敵を使用');
-        // フォールバック敵
-        gameState.enemy = {
-            id: 'fallback_slime',
-            name: 'スライム',
-            hp: 50,
-            maxHp: 50,
-            attack: 15,
-            defense: 5,
-            magic: 0,
-            speed: 8
-        };
+        console.log('⚠️ データ未読み込み、敵生成をスキップ');
+        // データ未読み込み時は敵を作らない
+        gameState.enemy = null;
         return;
     }
 
@@ -1802,8 +1962,8 @@ function generateNewEnemy() {
             enemyInfoOverlay.style.display = 'block';
         }
         
-        // オートモードが有効で戦闘中なら自動攻撃を開始
-        if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded) {
+        // オートモードが有効で戦闘中なら自動攻撃を開始（ストーリー進行中は除く）
+        if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
             setTimeout(() => {
                 playerAttack();
             }, 1000);
@@ -1823,12 +1983,19 @@ function resetChapter() {
     // 状態異常クリア
     gameState.player.statusEffects = {};
     
-    // 新しい敵を生成
-    generateNewEnemy();
+    // ストーリー進行中は敵を生成せず町状態にする
+    if (gameState.battle.storyInProgress) {
+        gameState.battle.inTown = true;
+        gameState.enemy = null;
+        console.log('📖 ストーリー進行中のため敵生成をスキップ');
+    } else {
+        // 新しい敵を生成
+        generateNewEnemy();
+        addBattleLog(`${gameState.enemy.name}が現れた！`);
+    }
     
     gameState.battle.isPlayerTurn = true;
     elements.battleLogContent.innerHTML = '<div class="log-entry">戦闘が開始されました</div>';
-    addBattleLog(`${gameState.enemy.name}が現れた！`);
     updateUI();
 }
 
@@ -1858,6 +2025,7 @@ function resetAfterDefeat() {
 
 // 次章へ
 function nextChapter() {
+    gameState.battle.storyInProgress = false; // ストーリー終了
     const previousChapter = gameState.battle.chapter;
     gameState.battle.chapter++;
     gameState.battle.battleCount = 1;
@@ -1877,19 +2045,37 @@ function nextChapter() {
     gameState.player.hp = gameState.player.maxHp;
     gameState.player.mp = gameState.player.maxMp;
     
-    resetChapter();
-    addBattleLog(`${gameState.battle.chapter}章が始まりました！`);
+    // 章開始時は町状態にして敵は生成しない
+    gameState.battle.battleCount = 1;
+    gameState.battle.battleEnded = true;
+    gameState.battle.inTown = true;
+    gameState.enemy = null;
     
-    // 章開始時のストーリートリガーをチェック
+    // 状態異常クリア
+    gameState.player.statusEffects = {};
+    
+    // 町の背景に設定
+    changeBackground('town');
+    
+    gameState.battle.isPlayerTurn = true;
+    elements.battleLogContent.innerHTML = '<div class="log-entry">新章開始</div>';
+    addBattleLog(`${gameState.battle.chapter}章が始まりました！`);
+    addBattleLog('探索場所を選んで冒険を始めましょう！');
+    updateUI();
+    
+    // 章開始時のストーリートリガーをチェック（無効化：ギルド訪問時に移動）
+    /*
     setTimeout(() => {
         if (storyTriggerManager) {
             const trigger = storyTriggerManager.checkChapterStart(gameState.battle.chapter);
             if (trigger) {
+                gameState.battle.storyInProgress = true; // ストーリー開始
                 addBattleLog('📖 ストーリーイベントが発生しました');
                 storyTriggerManager.triggerStory(trigger.story_id);
             }
         }
     }, 1000);
+    */
 }
 
 // イベントリスナーの設定
@@ -1963,6 +2149,10 @@ function setupEventListeners() {
     // ショップイベントリスナー
     elements.shopBtn.addEventListener('click', () => {
         soundEffects.playClick();
+        if (isInDungeon()) {
+            addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+            return;
+        }
         openShop();
     });
 
@@ -1988,6 +2178,50 @@ function setupEventListeners() {
         soundEffects.playClick();
         closeShop();
     });
+
+    // オプションモーダル関連イベント
+    const closeOptionsModalBtn = document.getElementById('closeOptionsModal');
+    if (closeOptionsModalBtn) {
+        closeOptionsModalBtn.addEventListener('click', () => {
+            soundEffects.playClick();
+            closeOptionsModal();
+        });
+    }
+
+    // BGM音量スライダー
+    const bgmVolumeSlider = document.getElementById('bgmVolumeSlider');
+    const bgmVolumeValue = document.getElementById('bgmVolumeValue');
+    if (bgmVolumeSlider && bgmVolumeValue) {
+        bgmVolumeSlider.addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            bgmVolumeValue.textContent = volume + '%';
+            if (audioManager && audioManager.setBGMVolume) {
+                audioManager.setBGMVolume(volume / 100);
+            }
+        });
+    }
+
+    // SE音量スライダー
+    const seVolumeSlider = document.getElementById('seVolumeSlider');
+    const seVolumeValue = document.getElementById('seVolumeValue');
+    if (seVolumeSlider && seVolumeValue) {
+        seVolumeSlider.addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            seVolumeValue.textContent = volume + '%';
+            if (audioManager && audioManager.setSEVolume) {
+                audioManager.setSEVolume(volume / 100);
+            }
+        });
+    }
+
+    // タイトルへ戻るボタン
+    const returnToTitleBtn = document.getElementById('returnToTitleBtn');
+    if (returnToTitleBtn) {
+        returnToTitleBtn.addEventListener('click', () => {
+            soundEffects.playClick();
+            returnToTitle();
+        });
+    }
     
     // ショップタブ切り替え
     document.getElementById('buyTab').addEventListener('click', () => {
@@ -2047,6 +2281,10 @@ function setupEventListeners() {
     if (innBtn) {
         innBtn.addEventListener('click', () => {
             soundEffects.playClick();
+            if (isInDungeon()) {
+                addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+                return;
+            }
             stayAtInn();
         });
     }
@@ -2056,6 +2294,10 @@ function setupEventListeners() {
     if (tavernBtn) {
         tavernBtn.addEventListener('click', () => {
             soundEffects.playClick();
+            if (isInDungeon()) {
+                addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+                return;
+            }
             openTavern();
         });
     }
@@ -2085,6 +2327,10 @@ function setupEventListeners() {
     if (gachaShopBtn) {
         gachaShopBtn.addEventListener('click', () => {
             soundEffects.playClick();
+            if (isInDungeon()) {
+                addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+                return;
+            }
             openGachaShop();
         });
     }
@@ -2118,6 +2364,17 @@ function setupEventListeners() {
         soundEffects.playClick();
         drawIllustrationGacha(10);
     });
+    
+    // セーブボタンイベントリスナー
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            soundEffects.playClick();
+            if (saveGameState()) {
+                // セーブ成功時の処理（バトルログで通知済み）
+            }
+        });
+    }
 }
 
 // ショップ機能
@@ -2639,19 +2896,100 @@ function attemptFlee() {
 }
 
 // 装備システム
+// 武器タイプ制限チェック関数
+function canEquipWeapon(characterClass, weaponType) {
+    // 防具は全キャラクター共通で装備可能
+    if (weaponType === 'none') {
+        return true;
+    }
+    
+    // キャラクタークラスと武器タイプの対応
+    const classWeaponMap = {
+        'warrior': 'sword',
+        'martial_artist': 'fist', 
+        'archer': 'bow',
+        'mage': 'staff'
+    };
+    
+    return classWeaponMap[characterClass] === weaponType;
+}
+
+// 装備エラーメッセージ表示関数
+function showEquipmentError(message) {
+    const errorElement = document.getElementById('equipmentError');
+    const errorTextElement = document.getElementById('equipmentErrorText');
+    
+    if (errorElement && errorTextElement) {
+        errorTextElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        // 3秒後にエラーメッセージを隠す
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 3000);
+    }
+}
+
 function equipItem(slot, item) {
     // ガチャ専用アイテムの定義
     const gachaItems = {
-        'gacha-sword': { item_name: 'レアソード', item_id: 'gacha-sword', effect_value: 15 },
-        'gacha-shield': { item_name: 'レアシールド', item_id: 'gacha-shield', effect_value: 8 },
-        'gacha-helmet': { item_name: 'レアヘルム', item_id: 'gacha-helmet', effect_value: 6 },
-        'gacha-armor': { item_name: 'レアアーマー', item_id: 'gacha-armor', effect_value: 10 },
-        'legendary-sword': { item_name: 'レジェンドソード', item_id: 'legendary-sword', effect_value: 25 },
-        'legendary-shield': { item_name: 'レジェンドシールド', item_id: 'legendary-shield', effect_value: 15 }
+        'gacha-sword': { item_name: 'レアソード', item_id: 'gacha-sword', effect_value: 15, weapon_type: 'sword' },
+        'gacha-shield': { item_name: 'レアシールド', item_id: 'gacha-shield', effect_value: 8, weapon_type: 'none' },
+        'gacha-helmet': { item_name: 'レアヘルム', item_id: 'gacha-helmet', effect_value: 6, weapon_type: 'none' },
+        'gacha-armor': { item_name: 'レアアーマー', item_id: 'gacha-armor', effect_value: 10, weapon_type: 'none' },
+        'legendary-sword': { item_name: 'レジェンドソード', item_id: 'legendary-sword', effect_value: 25, weapon_type: 'sword' },
+        'legendary-shield': { item_name: 'レジェンドシールド', item_id: 'legendary-shield', effect_value: 15, weapon_type: 'none' },
+        'gacha-fists': { item_name: 'レアナックル', item_id: 'gacha-fists', effect_value: 12, weapon_type: 'fist' },
+        'legendary-claws': { item_name: 'レジェンドクロー', item_id: 'legendary-claws', effect_value: 20, weapon_type: 'fist' },
+        'gacha-bow': { item_name: 'レアボウ', item_id: 'gacha-bow', effect_value: 13, weapon_type: 'bow' },
+        'legendary-bow': { item_name: 'レジェンドボウ', item_id: 'legendary-bow', effect_value: 22, weapon_type: 'bow' },
+        'gacha-staff': { item_name: 'レアロッド', item_id: 'gacha-staff', effect_value: 5, weapon_type: 'staff' },
+        'legendary-staff': { item_name: 'レジェンドスタッフ', item_id: 'legendary-staff', effect_value: 10, weapon_type: 'staff' }
     };
 
     // アイテムIDを確定（itemオブジェクトから取得、またはガチャアイテムの場合は直接指定）
     const itemId = item.id;
+    
+    // 武器タイプ制限チェック（武器スロットの場合のみ）
+    if (slot === 'weapon') {
+        let weaponType = item.weapon_type;
+        
+        // ガチャアイテムの場合はgachaItemsからweapon_typeを取得
+        if (!weaponType && gachaItems[itemId]) {
+            weaponType = gachaItems[itemId].weapon_type;
+        }
+        
+        if (weaponType) {
+            console.log(`🔍 装備チェック: プレイヤークラス=${gameState.player.character_class}, 武器タイプ=${weaponType}`);
+            
+            if (!canEquipWeapon(gameState.player.character_class, weaponType)) {
+                // 武器タイプから専用クラスを取得
+                const weaponToClassMap = {
+                    'sword': 'warrior',
+                    'fist': 'martial_artist',
+                    'bow': 'archer',
+                    'staff': 'mage'
+                };
+                const classNames = {
+                    'warrior': '戦士',
+                    'martial_artist': '武闘家',
+                    'archer': '弓使い',
+                    'mage': '魔法使い'
+                };
+                
+                const requiredClass = weaponToClassMap[weaponType];
+                const requiredClassName = classNames[requiredClass];
+                
+                console.log(`❌ 装備不可: ${gameState.player.character_class} は ${weaponType} を装備できません`);
+                
+                // アイテムウィンドウ上部にエラー表示
+                showEquipmentError(`${requiredClassName}専用装備です`);
+                return false;
+            } else {
+                console.log(`✅ 装備可能: ${gameState.player.character_class} は ${weaponType} を装備できます`);
+            }
+        }
+    }
     
     // 古い装備を外してインベントリに戻す
     const oldEquipment = gameState.player.equipment[slot];
@@ -2670,7 +3008,7 @@ function equipItem(slot, item) {
             } else {
                 gameState.shared.inventory[oldEquipment] = 1;
             }
-            addBattleLog(`${oldItem.item_name}をインベントリに戻しました`);
+            addBattleLog(`${oldItem.name || oldItem.item_name}をインベントリに戻しました`);
         }
     }
     
@@ -2692,7 +3030,7 @@ function equipItem(slot, item) {
                 } else {
                     gameState.shared.inventory[oldShield] = 1;
                 }
-                addBattleLog(`${shieldItem.item_name}をインベントリに戻しました（両手武器のため）`);
+                addBattleLog(`${shieldItem.name || shieldItem.item_name}をインベントリに戻しました（両手武器のため）`);
             }
             gameState.player.equipment.shield = null;
         }
@@ -2714,32 +3052,52 @@ function equipItem(slot, item) {
 }
 
 function applyEquipmentEffect(item) {
-    // ガチャアイテムの場合、effect_typeがないのでスロットに基づいて判定
-    const effectValue = item.effect_value || 0;
-    
-    if (item.effect_type === 'equip_weapon' || item.id === 'gacha-sword' || item.id === 'legendary-sword') {
-        gameState.player.attack += effectValue;
-    } else if (item.effect_type === 'equip_shield' || item.id === 'gacha-shield' || item.id === 'legendary-shield') {
-        gameState.player.defense += effectValue;
-    } else if (item.effect_type === 'equip_head' || item.id === 'gacha-helmet') {
-        gameState.player.defense += effectValue;
-    } else if (item.effect_type === 'equip_body' || item.id === 'gacha-armor') {
-        gameState.player.defense += effectValue;
+    // 装備品の各ボーナスを適用
+    if (item.attack_bonus) {
+        gameState.player.attack += parseInt(item.attack_bonus);
+    }
+    if (item.defense_bonus) {
+        gameState.player.defense += parseInt(item.defense_bonus);
+    }
+    if (item.magic_bonus) {
+        gameState.player.magic += parseInt(item.magic_bonus);
+    }
+    if (item.speed_bonus) {
+        gameState.player.speed += parseInt(item.speed_bonus);
+    }
+    if (item.hp_bonus) {
+        gameState.player.maxHp += parseInt(item.hp_bonus);
+        gameState.player.hp += parseInt(item.hp_bonus); // 現在HPも回復
+    }
+    if (item.mp_bonus) {
+        gameState.player.maxMp += parseInt(item.mp_bonus);
+        gameState.player.mp += parseInt(item.mp_bonus); // 現在MPも回復
     }
 }
 
 function removeEquipmentEffect(item) {
-    // ガチャアイテムの場合、effect_typeがないのでスロットに基づいて判定
-    const effectValue = item.effect_value || 0;
-    
-    if (item.effect_type === 'equip_weapon' || item.id === 'gacha-sword' || item.id === 'legendary-sword') {
-        gameState.player.attack -= effectValue;
-    } else if (item.effect_type === 'equip_shield' || item.id === 'gacha-shield' || item.id === 'legendary-shield') {
-        gameState.player.defense -= effectValue;
-    } else if (item.effect_type === 'equip_head' || item.id === 'gacha-helmet') {
-        gameState.player.defense -= effectValue;
-    } else if (item.effect_type === 'equip_body' || item.id === 'gacha-armor') {
-        gameState.player.defense -= effectValue;
+    // 装備品の各ボーナスを削除
+    if (item.attack_bonus) {
+        gameState.player.attack -= parseInt(item.attack_bonus);
+    }
+    if (item.defense_bonus) {
+        gameState.player.defense -= parseInt(item.defense_bonus);
+    }
+    if (item.magic_bonus) {
+        gameState.player.magic -= parseInt(item.magic_bonus);
+    }
+    if (item.speed_bonus) {
+        gameState.player.speed -= parseInt(item.speed_bonus);
+    }
+    if (item.hp_bonus) {
+        gameState.player.maxHp -= parseInt(item.hp_bonus);
+        // 現在HPが最大HPを超えないように調整
+        gameState.player.hp = Math.min(gameState.player.hp, gameState.player.maxHp);
+    }
+    if (item.mp_bonus) {
+        gameState.player.maxMp -= parseInt(item.mp_bonus);
+        // 現在MPが最大MPを超えないように調整
+        gameState.player.mp = Math.min(gameState.player.mp, gameState.player.maxMp);
     }
 }
 
@@ -2765,6 +3123,18 @@ function switchLocation(location) {
     const fieldBtn = document.getElementById('fieldBtn');
     const dungeonBtn = document.getElementById('dungeonBtn');
     const locationInfo = document.getElementById('locationInfo');
+    
+    // ストーリーイベント進行中は移動禁止
+    if (gameState.battle.storyInProgress) {
+        addBattleLog('⚠️ ストーリーイベント進行中は移動できません');
+        return;
+    }
+    
+    // ダンジョンからフィールドへの移動を禁止
+    if (isInDungeon() && location === 'field') {
+        addBattleLog('⚠️ ダンジョンからフィールドには移動できません。街に戻るには「帰還の玉」が必要です');
+        return;
+    }
     
     if (gameState.battle.location === location && !gameState.battle.inTown) {
         return; // 既に同じ場所で町状態でない場合は何もしない
@@ -2967,11 +3337,28 @@ function populateAvailableCharacters() {
     availableCharactersList.innerHTML = '';
     
     // 購入可能なキャラクターを取得
-    const characters = dataManager.data.characters.filter(char => 
-        char.type === 'player' && 
-        char.is_purchasable === 'true' && 
-        !gameState.characters.purchasedCharacters.includes(char.id)
-    );
+    console.log('🍺 DEBUG: dataManager loaded?', dataManager.loaded);
+    console.log('🍺 DEBUG: dataManager.data?', dataManager.data);
+    console.log('🍺 All characters:', dataManager.data.characters);
+    console.log('🍺 Purchased characters:', gameState.characters.purchasedCharacters);
+    
+    if (!dataManager.data.characters) {
+        console.error('❌ Characters data not loaded!');
+        availableCharactersList.innerHTML = '<div class="tavern-empty">データ読み込み中...</div>';
+        return;
+    }
+    
+    const characters = dataManager.data.characters.filter(char => {
+        const typeCheck = char.type === 'player';
+        const purchasableCheck = (char.is_purchasable === 'true' || char.is_purchasable === 'TRUE');
+        const alreadyOwnedCheck = !gameState.characters.purchasedCharacters.includes(char.id);
+        
+        console.log(`🍺 ${char.name}: type=${char.type}(${typeCheck}), purchasable=${char.is_purchasable}(${purchasableCheck}), notOwned=${alreadyOwnedCheck}`);
+        
+        return typeCheck && purchasableCheck && alreadyOwnedCheck;
+    });
+    
+    console.log('🍺 Available characters:', characters);
     
     if (characters.length === 0) {
         availableCharactersList.innerHTML = '<div class="tavern-empty">購入可能なキャラクターがいません</div>';
@@ -3166,11 +3553,10 @@ function drawEquipmentGacha(count = 1) {
     const gachaResults = [];
     
     for (let i = 0; i < count; i++) {
-        // ガチャ結果を決定（70%で装備、30%でポーション）
-        const isEquipment = Math.random() < 0.7;
+        const random = Math.random();
         
-        if (isEquipment) {
-            // 装備をランダム取得（店売りよりも強力）
+        if (random < 0.5) {
+            // 50%：装備をランダム取得
             const equipmentPool = [
                 { id: 'gacha-sword', name: 'レアソード', type: 'weapon', power: 15 },
                 { id: 'gacha-shield', name: 'レアシールド', type: 'shield', defense: 8 },
@@ -3184,14 +3570,25 @@ function drawEquipmentGacha(count = 1) {
             addBattleLog(`✨ ${result.name}を獲得しました！`);
             gachaResults.push(result);
             
-            // アイテムをインベントリに追加（簡易実装）
+            // アイテムをインベントリに追加
             if (gameState.shared.inventory[result.id] === undefined) {
                 gameState.shared.inventory[result.id] = 0;
             }
             gameState.shared.inventory[result.id]++;
             
+        } else if (random < 0.7) {
+            // 20%：帰還の玉
+            addBattleLog(`🔮 帰還の玉を獲得しました！`);
+            gachaResults.push({ name: '帰還の玉', type: 'special' });
+            
+            // 帰還の玉をインベントリに追加
+            if (gameState.shared.inventory.return_orb === undefined) {
+                gameState.shared.inventory.return_orb = 0;
+            }
+            gameState.shared.inventory.return_orb++;
+            
         } else {
-            // ハズレ：ポーション
+            // 30%：ハズレ（ポーション）
             const potionCount = Math.floor(Math.random() * 3) + 1;
             gameState.shared.inventory.potion += potionCount;
             addBattleLog(`💊 ポーション${potionCount}個を獲得しました`);
@@ -3486,9 +3883,216 @@ function drawIllustrationGacha(count = 1) {
 
 // オプション機能
 function openOptionsFromGame() {
-    // title.htmlと同じオプション機能を実装
-    // 現在は簡易的にアラートで代用
-    alert('オプション機能は今後実装予定です\n・音量設定\n・画面設定\n・操作設定\nなどを追加予定');
+    const optionsModal = document.getElementById('optionsModal');
+    if (optionsModal) {
+        optionsModal.style.display = 'flex';
+        
+        // 現在の音量設定を反映
+        updateVolumeSliders();
+    }
+}
+
+function closeOptionsModal() {
+    const optionsModal = document.getElementById('optionsModal');
+    if (optionsModal) {
+        optionsModal.style.display = 'none';
+    }
+}
+
+function updateVolumeSliders() {
+    // BGM音量スライダーを更新
+    const bgmSlider = document.getElementById('bgmVolumeSlider');
+    const bgmValue = document.getElementById('bgmVolumeValue');
+    if (bgmSlider && bgmValue && audioManager.bgmVolume !== undefined) {
+        const volume = Math.round(audioManager.bgmVolume * 100);
+        bgmSlider.value = volume;
+        bgmValue.textContent = volume + '%';
+    }
+    
+    // SE音量スライダーを更新
+    const seSlider = document.getElementById('seVolumeSlider');
+    const seValue = document.getElementById('seVolumeValue');
+    if (seSlider && seValue && audioManager.seVolume !== undefined) {
+        const volume = Math.round(audioManager.seVolume * 100);
+        seSlider.value = volume;
+        seValue.textContent = volume + '%';
+    }
+}
+
+// ゲーム風確認モーダル表示関数
+function showGameConfirm(title, message, onYes, onNo = null) {
+    const modal = document.getElementById('gameConfirmModal');
+    const titleElement = document.getElementById('gameConfirmTitle');
+    const messageElement = document.getElementById('gameConfirmMessage');
+    const yesButton = document.getElementById('gameConfirmYes');
+    const noButton = document.getElementById('gameConfirmNo');
+    
+    // 内容を設定
+    titleElement.textContent = title;
+    messageElement.textContent = message;
+    
+    // 既存のイベントリスナーを削除
+    yesButton.replaceWith(yesButton.cloneNode(true));
+    noButton.replaceWith(noButton.cloneNode(true));
+    
+    // 新しい要素を取得
+    const newYesButton = document.getElementById('gameConfirmYes');
+    const newNoButton = document.getElementById('gameConfirmNo');
+    
+    // イベントリスナーを追加
+    newYesButton.addEventListener('click', () => {
+        soundEffects.playClick();
+        modal.style.display = 'none';
+        if (onYes) onYes();
+    });
+    
+    newNoButton.addEventListener('click', () => {
+        soundEffects.playClick();
+        modal.style.display = 'none';
+        if (onNo) onNo();
+    });
+    
+    // モーダル外クリックで閉じる
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            if (onNo) onNo();
+        }
+    });
+    
+    // モーダルを表示
+    modal.style.display = 'flex';
+}
+
+function returnToTitle() {
+    showGameConfirm(
+        '🏠 タイトルへ戻る',
+        'タイトル画面に戻りますか？',
+        () => {
+            // title.htmlにリダイレクト
+            window.location.href = 'title.html';
+        }
+    );
+}
+
+// セーブ機能
+function saveGameState() {
+    // 街にいる時のみセーブ可能
+    if (!gameState.battle.inTown) {
+        addBattleLog('❌ セーブは街でのみ利用できます');
+        return false;
+    }
+    
+    // 現在のキャラクターデータを保存
+    CharacterManager.saveCurrentCharacter();
+    
+    const saveData = {
+        version: "0.9.1",
+        timestamp: new Date().toISOString(),
+        player: {
+            name: gameState.player.name,
+            character_class: gameState.player.character_class,
+            level: gameState.player.level,
+            hp: gameState.player.hp,
+            maxHp: gameState.player.maxHp,
+            mp: gameState.player.mp,
+            maxMp: gameState.player.maxMp,
+            attack: gameState.player.attack,
+            defense: gameState.player.defense,
+            magic: gameState.player.magic,
+            speed: gameState.player.speed,
+            exp: gameState.player.exp,
+            statPoints: gameState.player.statPoints,
+            equipment: {...gameState.player.equipment},
+            clothingState: {...gameState.player.clothingState}
+        },
+        shared: {
+            gold: gameState.shared.gold,
+            inventory: {...gameState.shared.inventory}
+        },
+        battle: {
+            chapter: gameState.battle.chapter,
+            battleCount: gameState.battle.battleCount,
+            maxBattles: gameState.battle.maxBattles,
+            location: gameState.battle.location,
+            guildFirstVisits: {...gameState.battle.guildFirstVisits}
+        },
+        characters: {
+            currentCharacter: gameState.characters.currentCharacter,
+            purchasedCharacters: [...gameState.characters.purchasedCharacters],
+            characterData: JSON.parse(JSON.stringify(gameState.characterData))
+        }
+    };
+    
+    try {
+        localStorage.setItem('fallenHeroSave', JSON.stringify(saveData));
+        addBattleLog('✅ ゲームデータを保存しました');
+        console.log('💾 Game saved:', saveData);
+        return true;
+    } catch (error) {
+        addBattleLog('❌ セーブに失敗しました');
+        console.error('Save failed:', error);
+        return false;
+    }
+}
+
+// ロード機能
+function loadGameState() {
+    try {
+        const saveDataString = localStorage.getItem('fallenHeroSave');
+        if (!saveDataString) {
+            console.warn('No save data found');
+            return false;
+        }
+        
+        const saveData = JSON.parse(saveDataString);
+        console.log('📁 Loading game data:', saveData);
+        
+        // プレイヤーデータを復元
+        gameState.player.name = saveData.player.name;
+        gameState.player.character_class = saveData.player.character_class;
+        gameState.player.level = saveData.player.level;
+        gameState.player.hp = saveData.player.hp;
+        gameState.player.maxHp = saveData.player.maxHp;
+        gameState.player.mp = saveData.player.mp;
+        gameState.player.maxMp = saveData.player.maxMp;
+        gameState.player.attack = saveData.player.attack;
+        gameState.player.defense = saveData.player.defense;
+        gameState.player.magic = saveData.player.magic;
+        gameState.player.speed = saveData.player.speed;
+        gameState.player.exp = saveData.player.exp;
+        gameState.player.statPoints = saveData.player.statPoints;
+        gameState.player.equipment = {...saveData.player.equipment};
+        gameState.player.clothingState = {...saveData.player.clothingState};
+        
+        // 共有データを復元
+        gameState.shared.gold = saveData.shared.gold;
+        gameState.shared.inventory = {...saveData.shared.inventory};
+        
+        // 戦闘データを復元
+        gameState.battle.chapter = saveData.battle.chapter;
+        gameState.battle.battleCount = saveData.battle.battleCount;
+        gameState.battle.maxBattles = saveData.battle.maxBattles;
+        gameState.battle.location = saveData.battle.location;
+        gameState.battle.guildFirstVisits = saveData.battle.guildFirstVisits || {}; // ギルド訪問履歴を復元
+        gameState.battle.inTown = true; // ロード後は町状態
+        gameState.battle.battleEnded = true;
+        
+        // キャラクターデータを復元
+        gameState.characters.currentCharacter = saveData.characters.currentCharacter;
+        gameState.characters.purchasedCharacters = [...saveData.characters.purchasedCharacters];
+        gameState.characterData = JSON.parse(JSON.stringify(saveData.characters.characterData));
+        
+        // UI更新
+        updateUI();
+        updatePlayerMedia();
+        
+        console.log('✅ Game loaded successfully');
+        return true;
+    } catch (error) {
+        console.error('Load failed:', error);
+        return false;
+    }
 }
 
 // ガチャショップ機能
@@ -3559,6 +4163,15 @@ async function initGame() {
         console.log("🔧 Enemy info overlay hidden on initialization");
     }
     
+    // URLパラメータでロードが指定されているかチェック
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldLoad = urlParams.get('load') === 'true';
+    
+    if (shouldLoad) {
+        console.log("📁 ロードモードでゲーム開始");
+        addBattleLog("セーブデータを読み込み中...");
+    }
+    
     // CSV データ読み込み
     addBattleLog("ゲームデータを読み込み中...");
     console.log("🔄 Loading game data...");
@@ -3573,19 +4186,48 @@ async function initGame() {
         console.log("📋 初期インベントリ:", gameState.shared.inventory);
         console.log("📋 インベントリキー:", Object.keys(gameState.shared.inventory));
         
-        // CSV駆動でプレイヤーデータを初期化
-        const playerData = dataManager.getCharacter('player');
-        if (playerData) {
-            console.log("Player data loaded:", playerData);
-            gameState.player.name = playerData.name;
-            gameState.player.hp = playerData.base_hp;
-            gameState.player.maxHp = playerData.base_hp;
-            gameState.player.mp = playerData.base_mp;
-            gameState.player.maxMp = playerData.base_mp;
-            gameState.player.attack = playerData.base_attack;
-            gameState.player.defense = playerData.base_defense;
-            gameState.player.magic = playerData.base_magic;
-            gameState.player.speed = playerData.base_speed;
+        // セーブデータロード処理
+        if (shouldLoad) {
+            const loadResult = loadGameState();
+            if (loadResult) {
+                addBattleLog("✅ セーブデータを読み込みました");
+                console.log("📁 セーブデータ読み込み成功");
+            } else {
+                addBattleLog("❌ セーブデータの読み込みに失敗しました");
+                console.error("📁 セーブデータ読み込み失敗 - 初期データで開始");
+                // 失敗時は通常の初期化を実行
+                const playerData = dataManager.getCharacter('player');
+                if (playerData) {
+                    gameState.player.name = playerData.name;
+                    gameState.player.character_class = playerData.character_class;
+                    gameState.player.hp = playerData.base_hp;
+                    gameState.player.maxHp = playerData.base_hp;
+                    gameState.player.mp = playerData.base_mp;
+                    gameState.player.maxMp = playerData.base_mp;
+                    gameState.player.attack = playerData.base_attack;
+                    gameState.player.defense = playerData.base_defense;
+                    gameState.player.magic = playerData.base_magic;
+                    gameState.player.speed = playerData.base_speed;
+                }
+            }
+        } else {
+            // 新規ゲーム - CSV駆動でプレイヤーデータを初期化
+            const playerData = dataManager.getCharacter('player');
+            if (playerData) {
+                console.log("Player data loaded:", playerData);
+                console.log(`🎭 キャラクタークラス設定: ${playerData.character_class}`);
+                gameState.player.name = playerData.name;
+                gameState.player.character_class = playerData.character_class;
+                gameState.player.hp = playerData.base_hp;
+                gameState.player.maxHp = playerData.base_hp;
+                gameState.player.mp = playerData.base_mp;
+                gameState.player.maxMp = playerData.base_mp;
+                gameState.player.attack = playerData.base_attack;
+                gameState.player.defense = playerData.base_defense;
+                gameState.player.magic = playerData.base_magic;
+                gameState.player.speed = playerData.base_speed;
+                console.log(`🎭 gameState.player.character_class = ${gameState.player.character_class}`);
+            }
         }
         
         // プレイヤーメディア（画像/動画）を更新
@@ -3607,6 +4249,7 @@ async function initGame() {
     }
     
     // 町状態なので敵は生成せず、敵も非表示
+    gameState.enemy = null; // 初期化時は確実に敵を削除
     const enemyImage = document.getElementById('enemyImage');
     if (enemyImage) {
         enemyImage.style.display = 'none';
@@ -3640,8 +4283,8 @@ function reloadAllImages() {
         console.log(`🎬 Player video reloaded: ${playerVideo.src}`);
     }
     
-    // 敵画像
-    if (gameState.enemy && gameState.enemy.image) {
+    // 敵画像（戦闘中のみリロード）
+    if (gameState.enemy && gameState.enemy.image && !gameState.battle.inTown) {
         const imagePath = `./assets/images/enemies/${gameState.enemy.image}?v=${timestamp}`;
         elements.enemyImage.src = imagePath;
         console.log(`👹 Enemy image reloaded: ${imagePath}`);
@@ -4215,6 +4858,33 @@ function initGuild() {
     
     if (guildBtn) {
         guildBtn.addEventListener('click', () => {
+            if (isInDungeon()) {
+                addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+                return;
+            }
+            
+            // ギルド初回訪問チェック
+            const currentChapter = gameState.battle.chapter;
+            const visitKey = `chapter_${currentChapter}`;
+            
+            if (!gameState.battle.guildFirstVisits[visitKey]) {
+                // 初回訪問の場合、フラグをセットしてストーリーイベントを発生
+                gameState.battle.guildFirstVisits[visitKey] = true;
+                console.log(`First guild visit in chapter ${currentChapter}`);
+                
+                // ストーリーイベントをチェック
+                if (storyTriggerManager) {
+                    const trigger = storyTriggerManager.checkChapterStart(currentChapter);
+                    if (trigger) {
+                        addBattleLog('📖 ギルドでのストーリーイベントが発生しました');
+                        // ストーリーイベントを発生（フラグ設定なし、ギルド開封後に実行）
+                        setTimeout(() => {
+                            storyTriggerManager.triggerStory(trigger.story_id);
+                        }, 500);
+                    }
+                }
+            }
+            
             openModal('guildModal');
         });
     }
@@ -4343,8 +5013,8 @@ function processEnemyTurn() {
     gameState.battle.isPlayerTurn = true;
     updateUI();
     
-    // レベルアップ中でなければオートモード継続チェック
-    if (gameState.battle.isAutoMode && !gameState.battle.pausedForLevelUp) {
+    // レベルアップ中・ストーリー進行中でなければオートモード継続チェック
+    if (gameState.battle.isAutoMode && !gameState.battle.pausedForLevelUp && !gameState.battle.storyInProgress) {
         setTimeout(() => {
             autoPlayerAction();
         }, 1000);
@@ -4353,17 +5023,30 @@ function processEnemyTurn() {
 
 // オートモード時のプレイヤーアクション
 function autoPlayerAction() {
-    // レベルアップ中や戦闘終了時はアクションしない
+    // レベルアップ中や戦闘終了時、ストーリー進行中はアクションしない
     if (!gameState.battle.isAutoMode || 
         !gameState.battle.isPlayerTurn || 
         gameState.battle.battleEnded || 
-        gameState.battle.pausedForLevelUp) {
+        gameState.battle.pausedForLevelUp ||
+        gameState.battle.storyInProgress) {
         return;
     }
     
     // 基本的に攻撃を選択
     playerAttack();
 }
+
+// デバッグ用：ストーリーイベントフラグを手動でリセットする関数
+window.resetStoryFlag = function() {
+    if (gameState && gameState.battle) {
+        gameState.battle.storyInProgress = false;
+        console.log('✅ ストーリーイベントフラグをリセットしました');
+        addBattleLog('🔧 デバッグ：ストーリーフラグをリセットしました');
+        return true;
+    }
+    console.log('❌ gameStateが見つかりません');
+    return false;
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     initGame();

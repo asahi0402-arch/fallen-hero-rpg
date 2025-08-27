@@ -181,6 +181,10 @@ body {
     background: linear-gradient(135deg, rgba(245, 101, 101, 0.9), rgba(229, 62, 62, 0.9));
 }
 
+.load-btn:hover {
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.9), rgba(56, 161, 105, 0.9));
+}
+
 .continue-btn:hover {
     background: linear-gradient(135deg, rgba(72, 187, 120, 0.9), rgba(56, 161, 105, 0.9));
 }
@@ -324,6 +328,51 @@ body {
     font-size: 14px;
 }
 
+/* ギャラリーモーダル */
+.gallery-body {
+    padding: 20px 0;
+}
+
+.gallery-message {
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.gallery-message h4 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.gallery-message p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.feature-list {
+    margin-top: 20px;
+}
+
+.feature-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    position: relative;
+    text-align: left;
+}
+
+.feature-list li:before {
+    content: "🖼️";
+    margin-right: 10px;
+}
+
 /* レスポンシブ */
 @media (max-width: 768px) {
     .game-title {
@@ -340,5 +389,165 @@ body {
         margin: 20px;
         min-width: unset;
         width: calc(100% - 40px);
+    }
+}
+
+/* ゲーム風確認モーダル */
+.game-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.game-confirm-content {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border: 3px solid #ffd700;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.7),
+        0 0 30px rgba(255, 215, 0, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    animation: modalSlideIn 0.3s ease-out;
+    position: relative;
+}
+
+.game-confirm-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+    border-radius: 17px;
+    pointer-events: none;
+}
+
+.game-confirm-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-confirm-header h3 {
+    color: #ffd700;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-confirm-body {
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-confirm-body p {
+    color: #f7fafc;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    white-space: pre-line;
+}
+
+.game-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.game-btn {
+    padding: 12px 25px;
+    border: 2px solid;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    position: relative;
+    overflow: hidden;
+    min-width: 100px;
+}
+
+.game-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.game-btn:hover::before {
+    left: 100%;
+}
+
+.game-btn-primary {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    border-color: #68d391;
+    color: white;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.game-btn-primary:hover {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+}
+
+.game-btn-secondary {
+    background: linear-gradient(135deg, #718096, #4a5568);
+    border-color: #a0aec0;
+    color: white;
+    box-shadow: 0 4px 15px rgba(113, 128, 150, 0.3);
+}
+
+.game-btn-secondary:hover {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(113, 128, 150, 0.4);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }

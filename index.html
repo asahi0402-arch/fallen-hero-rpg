@@ -15,13 +15,12 @@
             <div class="player-portrait-area">
                 <!-- プレイヤー画像/動画コンテナ -->
                 <div id="playerMediaContainer" class="player-portrait">
-                    <img id="playerImage" src="./assets/images/characters/player_portrait.png" alt="主人公" class="player-media" 
-                         onerror="this.style.backgroundColor='#4299e1'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
+                    <!-- プレイヤー画像は JavaScript で動的に生成されます -->
                 </div>
                 
                 <!-- プレイヤーステータス（立ち絵下に移動） -->
                 <div class="player-stats-left">
-                    <div class="stat-title">プレイヤーステータス</div>
+                    <div class="stat-title" id="playerName">主人公</div>
                     <div class="level-display">
                         <div class="stat-item-left level-item">レベル: <span id="playerLevel">1</span></div>
                     </div>
@@ -162,6 +161,13 @@
                     </button>
                 </div>
 
+                <!-- セーブエリア -->
+                <div class="save-section">
+                    <button class="save-btn" id="saveBtn" title="現在の進行状況を保存します（街でのみ利用可能）">
+                        <span class="btn-text">💾 セーブ</span>
+                    </button>
+                </div>
+
                 <!-- オプションエリア -->
                 <div class="options-section">
                     <button class="options-btn" id="optionsBtn" title="ゲームの設定を変更できます">
@@ -250,6 +256,9 @@
                 <div class="modal-header">
                     <h3>アイテム使用</h3>
                     <button class="close-btn" id="closeItemModal">&times;</button>
+                </div>
+                <div class="equipment-error" id="equipmentError" style="display: none;">
+                    <span id="equipmentErrorText"></span>
                 </div>
                 <div class="item-list" id="itemList">
                     <!-- アイテムが動的に生成される -->
@@ -471,6 +480,58 @@
                         <div class="player-gold">所持金: <span id="gachaPlayerGold">100</span>G</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- オプションモーダル -->
+        <div class="modal" id="optionsModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ オプション</h3>
+                    <button class="close-btn" id="closeOptionsModal">&times;</button>
+                </div>
+                <div class="options-content">
+                    <!-- BGM音量調整 -->
+                    <div class="option-section">
+                        <h4>🎵 BGM音量</h4>
+                        <div class="volume-control">
+                            <input type="range" id="bgmVolumeSlider" min="0" max="100" value="50" class="volume-slider">
+                            <span id="bgmVolumeValue">50%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- SE音量調整 -->
+                    <div class="option-section">
+                        <h4>🔊 SE音量</h4>
+                        <div class="volume-control">
+                            <input type="range" id="seVolumeSlider" min="0" max="100" value="50" class="volume-slider">
+                            <span id="seVolumeValue">50%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- タイトルへ戻る -->
+                    <div class="option-section">
+                        <button class="return-title-btn" id="returnToTitleBtn">
+                            🏠 タイトルへ戻る
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- ゲーム風確認モーダル -->
+    <div class="game-confirm-modal" id="gameConfirmModal" style="display: none;">
+        <div class="game-confirm-content">
+            <div class="game-confirm-header">
+                <h3 id="gameConfirmTitle">確認</h3>
+            </div>
+            <div class="game-confirm-body">
+                <p id="gameConfirmMessage">実行しますか？</p>
+            </div>
+            <div class="game-confirm-buttons">
+                <button class="game-btn game-btn-primary" id="gameConfirmYes">はい</button>
+                <button class="game-btn game-btn-secondary" id="gameConfirmNo">いいえ</button>
             </div>
         </div>
     </div>

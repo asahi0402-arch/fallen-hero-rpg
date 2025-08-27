@@ -7,12 +7,45 @@ class TitleScreen {
             messageSpeed: 'normal'
         };
         
+        this.dataManager = new DataManager();
         this.init();
     }
     
-    init() {
+    async init() {
         this.setupEventListeners();
         this.loadSettings();
+        
+        // データ読み込み完了を待つ
+        await this.dataManager.loadAllData();
+        this.loadTitleCharacter();
+    }
+    
+    loadTitleCharacter() {
+        const portraitElement = document.getElementById('titleCharacterPortrait');
+        if (!portraitElement) {
+            console.warn('❌ タイトル立ち絵要素が見つかりません');
+            return;
+        }
+
+        // CSVから設定された画像ファイル名を取得
+        const titleImageFile = this.dataManager.getTitleSetting('title_character_image');
+        
+        if (titleImageFile) {
+            const imagePath = `./assets/images/characters/${titleImageFile}`;
+            portraitElement.src = imagePath;
+            portraitElement.alt = 'タイトルキャラクター';
+            console.log(`📸 タイトル画像設定 (CSV): ${imagePath}`);
+        } else {
+            // フォールバック：デフォルトで主人公の立ち絵を使用
+            console.warn('⚠️ タイトル画像設定が見つかりません。デフォルトを使用します。');
+            const playerData = this.dataManager.getCharacter('player');
+            if (playerData) {
+                const portraitPath = `./assets/images/characters/${playerData.portrait}`;
+                portraitElement.src = portraitPath;
+                portraitElement.alt = `${playerData.name}立ち絵`;
+                console.log(`📸 フォールバック立ち絵設定: ${playerData.name} - ${portraitPath}`);
+            }
+        }
     }
     
     setupEventListeners() {
@@ -21,12 +54,8 @@ class TitleScreen {
             this.startNewGame();
         });
         
-        document.getElementById('continueBtn').addEventListener('click', () => {
-            this.continueGame();
-        });
-        
-        document.getElementById('storyBtn').addEventListener('click', () => {
-            this.showStory();
+        document.getElementById('loadGameBtn').addEventListener('click', () => {
+            this.loadGame();
         });
         
         document.getElementById('galleryBtn').addEventListener('click', () => {
@@ -35,6 +64,11 @@ class TitleScreen {
         
         document.getElementById('settingsBtn').addEventListener('click', () => {
             this.openSettings();
+        });
+        
+        // ギャラリーモーダル
+        document.getElementById('closeGalleryModal').addEventListener('click', () => {
+            this.closeGallery();
         });
         
         // 設定モーダル
@@ -66,36 +100,127 @@ class TitleScreen {
                 this.closeSettings();
             }
         });
+        
+        document.getElementById('galleryModal').addEventListener('click', (e) => {
+            if (e.target.id === 'galleryModal') {
+                this.closeGallery();
+            }
+        });
     }
     
     startNewGame() {
-        // セーブデータをクリア
-        localStorage.removeItem('fallenHeroSave');
-        
         // ゲーム画面に遷移
         window.location.href = 'index.html';
     }
     
-    continueGame() {
-        // セーブデータの存在確認
+    loadGame() {
+        // セーブデータの存在チェック
         const saveData = localStorage.getItem('fallenHeroSave');
         
-        if (saveData) {
-            // ゲーム画面に遷移
-            window.location.href = 'index.html';
-        } else {
-            alert('セーブデータが見つかりません。\\n新しいゲームを開始してください。');
+        if (!saveData) {
+            this.showGameConfirm(
+                '📁 セーブデータなし',
+                'セーブデータが見つかりません。\n\n先にゲームを進めてセーブを作成してください。',
+                null,
+                null,
+                true // OKボタンのみ表示
+            );
+            return;
+        }
+        
+        try {
+            const parsedData = JSON.parse(saveData);
+            console.log('📁 セーブデータが見つかりました:', parsedData);
+            
+            // セーブデータの情報を表示
+            const playerName = parsedData.player?.name || '不明';
+            const level = parsedData.player?.level || 1;
+            const chapter = parsedData.battle?.chapter || 1;
+            const timestamp = parsedData.timestamp ? new Date(parsedData.timestamp).toLocaleString('ja-JP') : '不明';
+            
+            const confirmMessage = `セーブデータをロードしますか？\n\nキャラクター: ${playerName}\nレベル: ${level}\nチャプター: ${chapter}章\n保存日時: ${timestamp}`;
+            
+            this.showGameConfirm(
+                '📁 セーブデータロード',
+                confirmMessage,
+                () => {
+                    // ロード用のパラメータを付けてゲーム画面に遷移
+                    window.location.href = 'index.html?load=true';
+                }
+            );
+        } catch (error) {
+            console.error('セーブデータの読み込みエラー:', error);
+            this.showGameConfirm(
+                '❌ エラー',
+                'セーブデータが破損しています。\n\n新しいゲームを開始してください。',
+                null,
+                null,
+                true // OKボタンのみ表示
+            );
         }
     }
     
-    showStory() {
-        // ストーリー画面（会話イベント画面）に遷移
-        window.location.href = 'story.html';
+    // ゲーム風確認モーダル表示関数
+    showGameConfirm(title, message, onYes, onNo = null, singleButton = false) {
+        const modal = document.getElementById('gameConfirmModal');
+        const titleElement = document.getElementById('gameConfirmTitle');
+        const messageElement = document.getElementById('gameConfirmMessage');
+        const yesButton = document.getElementById('gameConfirmYes');
+        const noButton = document.getElementById('gameConfirmNo');
+        
+        // 内容を設定
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+        
+        // 単一ボタンモードの処理
+        if (singleButton) {
+            yesButton.textContent = 'OK';
+            noButton.style.display = 'none';
+        } else {
+            yesButton.textContent = 'はい';
+            noButton.textContent = 'いいえ';
+            noButton.style.display = 'block';
+        }
+        
+        // 既存のイベントリスナーを削除
+        yesButton.replaceWith(yesButton.cloneNode(true));
+        noButton.replaceWith(noButton.cloneNode(true));
+        
+        // 新しい要素を取得
+        const newYesButton = document.getElementById('gameConfirmYes');
+        const newNoButton = document.getElementById('gameConfirmNo');
+        
+        // イベントリスナーを追加
+        newYesButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+            if (onYes) onYes();
+        });
+        
+        if (!singleButton) {
+            newNoButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+                if (onNo) onNo();
+            });
+        }
+        
+        // モーダル外クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                if (!singleButton && onNo) onNo();
+            }
+        });
+        
+        // モーダルを表示
+        modal.style.display = 'flex';
     }
     
     openGallery() {
-        // ギャラリー画面に遷移（未実装）
-        alert('ギャラリー機能は今後実装予定です。');
+        document.getElementById('galleryModal').style.display = 'flex';
+    }
+    
+    closeGallery() {
+        document.getElementById('galleryModal').style.display = 'none';
     }
     
     openSettings() {

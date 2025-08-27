@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>堕ちた英雄 - タイトル画面</title>
-    <link rel="stylesheet" href="title.css">
+    <link rel="stylesheet" href="title.css?v=20250827">
 </head>
 <body>
     <div class="title-container">
@@ -22,23 +22,19 @@
         
         <!-- キャラクター立ち絵エリア -->
         <div class="character-display">
-            <img src="./assets/images/characters/player_portrait.png" alt="主人公立ち絵" class="character-portrait"
-                 onerror="this.style.backgroundColor='#4a5568'; this.innerHTML='<div class=\'placeholder-text\'>主人公<br>立ち絵</div>'">
+            <img id="titleCharacterPortrait" src="" alt="キャラクター立ち絵" class="character-portrait"
+                 onerror="this.style.backgroundColor='#4a5568'; this.innerHTML='<div class=\'placeholder-text\'>キャラクター<br>立ち絵</div>'">
         </div>
         
         <!-- メニューエリア -->
         <div class="menu-container">
             <div class="menu-buttons">
                 <button class="menu-btn start-btn" id="startGameBtn">
-                    <span class="btn-text">⚔️ ゲーム開始</span>
+                    <span class="btn-text">⚔️ ゲームスタート</span>
                 </button>
                 
-                <button class="menu-btn continue-btn" id="continueBtn">
-                    <span class="btn-text">📖 続きから</span>
-                </button>
-                
-                <button class="menu-btn story-btn" id="storyBtn">
-                    <span class="btn-text">📚 ストーリー</span>
+                <button class="menu-btn load-btn" id="loadGameBtn">
+                    <span class="btn-text">📁 ロード</span>
                 </button>
                 
                 <button class="menu-btn gallery-btn" id="galleryBtn">
@@ -46,15 +42,39 @@
                 </button>
                 
                 <button class="menu-btn settings-btn" id="settingsBtn">
-                    <span class="btn-text">⚙️ 設定</span>
+                    <span class="btn-text">⚙️ オプション</span>
                 </button>
             </div>
         </div>
         
         <!-- バージョン情報 -->
         <div class="version-info">
-            <p>Version 1.0.0</p>
+            <p>Version 0.9.2</p>
             <p>© 2025 Claude Code Project</p>
+        </div>
+    </div>
+    
+    <!-- ギャラリーモーダル -->
+    <div class="modal" id="galleryModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🖼️ ギャラリー</h3>
+                <button class="close-btn" id="closeGalleryModal">&times;</button>
+            </div>
+            <div class="gallery-body">
+                <div class="gallery-message">
+                    <h4>ギャラリー機能は今後実装予定です</h4>
+                    <p>ガチャで獲得した画像や動画を閲覧できるようになります</p>
+                    <div class="feature-list">
+                        <ul>
+                            <li>キャラクター立ち絵</li>
+                            <li>特殊イラスト</li>
+                            <li>背景画像</li>
+                            <li>アニメーション動画</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -89,6 +109,23 @@
         </div>
     </div>
 
-    <script src="title.js"></script>
+    <!-- ゲーム風確認モーダル -->
+    <div class="game-confirm-modal" id="gameConfirmModal" style="display: none;">
+        <div class="game-confirm-content">
+            <div class="game-confirm-header">
+                <h3 id="gameConfirmTitle">確認</h3>
+            </div>
+            <div class="game-confirm-body">
+                <p id="gameConfirmMessage">実行しますか？</p>
+            </div>
+            <div class="game-confirm-buttons">
+                <button class="game-btn game-btn-primary" id="gameConfirmYes">はい</button>
+                <button class="game-btn game-btn-secondary" id="gameConfirmNo">いいえ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data_manager.js?v=20250826_fix1"></script>
+    <script src="title.js?v=20250827"></script>
 </body>
 </html>

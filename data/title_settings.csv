@@ -1,0 +1,4 @@
+﻿setting_key,value,description
+title_character_image,player_portrait.png,タイトル画面に表示するキャラクター画像ファイル名
+title_background,title_bg.jpg,タイトル画面の背景画像ファイル名
+title_bgm,title_theme.mp3,タイトル画面のBGMファイル名

@@ -114,7 +114,8 @@ class DataManager {
                 this.loadCSV('./data/stages.csv'),
                 this.loadCSV('./data/locations.csv'),
                 this.loadCSV('./data/backgrounds.csv'),
-                this.loadCSV('./data/audio.csv')
+                this.loadCSV('./data/audio.csv'),
+                this.loadCSV('./data/title_settings.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -129,6 +130,7 @@ class DataManager {
             this.data.locations = results[7];
             this.data.backgrounds = results[8];
             this.data.audio = results[9];
+            this.data.titleSettings = results[10];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -467,6 +469,18 @@ class DataManager {
     // タイプ別音声データを取得（bgm or se）
     getAudioByType(type) {
         return this.data.audio.filter(audio => audio.type === type);
+    }
+
+    // タイトル設定を取得
+    getTitleSetting(settingKey) {
+        if (!this.data.titleSettings) return null;
+        const setting = this.data.titleSettings.find(s => s.setting_key === settingKey);
+        return setting ? setting.value : null;
+    }
+
+    // 全タイトル設定を取得
+    getAllTitleSettings() {
+        return this.data.titleSettings || [];
     }
 }
 

@@ -15,3 +15,4 @@ magic_gem,マジックジェム,permanent,boost,200,100,boost_magic,3,self,0,魔
 speed_boots,スピードブーツ,permanent,boost,200,100,boost_speed,3,self,0,素早さを永続的に3アップ,5,uncommon,speed_boots.png,4,5
 life_crystal,ライフクリスタル,permanent,boost,300,150,boost_max_hp,20,self,0,最大HPを永続的に20アップ,3,rare,life_crystal.png,5,3
 mana_crystal,マナクリスタル,permanent,boost,300,150,boost_max_mp,15,self,0,最大MPを永続的に15アップ,3,rare,mana_crystal.png,5,3
+return_orb,帰還の玉,consumable,utility,0,10,return_town,0,self,0,ダンジョンから街に帰還できる,99,uncommon,return_orb.png,0,0
