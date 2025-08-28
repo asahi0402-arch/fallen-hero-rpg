@@ -1,19 +1,17 @@
 ﻿chapter_id,segment_id,speaker,text,background_image,left_character,right_character,character_emotion
-chapter_1,1,ナレーター,かつて英雄と呼ばれた男は、今は人里離れた森の奥で静かに暮らしていた。,./assets/images/backgrounds/forest.jpg,,,
-chapter_1,2,リオン,あの頃の栄光なんて、もう遠い昔の話だ...,./assets/images/backgrounds/forest.jpg,./assets/images/characters/lion_normal.png,,normal
-chapter_1,3,ナレーター,そんなある日、村人が血相を変えて彼の元を訪れた。,./assets/images/backgrounds/forest.jpg,./assets/images/characters/lion_normal.png,,normal
-chapter_1,4,村人,リオンさん！大変です！盗賊団が村を襲っているんです！,./assets/images/backgrounds/forest.jpg,./assets/images/characters/lion_surprised.png,./assets/images/characters/villager_panic.png,surprised
-chapter_1,5,リオン,...分かった。久しぶりに剣を握ることになりそうだな。,./assets/images/backgrounds/forest.jpg,./assets/images/characters/lion_determined.png,./assets/images/characters/villager_panic.png,determined
-chapter_2,1,ナレーター,盗賊団を退けたリオンだったが、彼の中で何かが変わり始めていた。,./assets/images/backgrounds/village.jpg,,,
-chapter_2,2,リオン,まだ、戦えるじゃないか...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,,confident
-chapter_2,3,村長,ありがとうございます、リオンさん。あなたがいなければ...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/mayor_grateful.png,confident
-chapter_2,4,リオン,礼には及ばない。だが...何か変だな。,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_thinking.png,./assets/images/characters/mayor_grateful.png,thinking
-chapter_2,5,ナレーター,その時、遠くから不気味な笑い声が響いた。,./assets/images/backgrounds/village_evening.jpg,./assets/images/characters/lion_alert.png,./assets/images/characters/mayor_worried.png,alert
-chapter_1_start,1,ナレーター,新たな冒険が今、始まろうとしている...,./assets/images/backgrounds/title_bg.jpg,,,
-chapter_1_start,2,リオン,久しぶりの戦闘か。体が鈍っていなければいいが。,./assets/images/backgrounds/plains_bg.jpg,./assets/images/characters/lion_determined.png,,determined
-dungeon_1_intro,1,ナレーター,洞窟の入り口に立つリオン。奥からは不気味な気配が漂っている。,./assets/images/backgrounds/cave_entrance.jpg,./assets/images/characters/lion_normal.png,,normal
+chapter_1_start,1,リリィ,おはようございます、クロエさん♪ 今日も元気そうですね,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,,normal
+chapter_1_start,2,クロエ,おはよー、リリィ！ もちろん元気いっぱい！ ……で、今日はどんな依頼があるの？,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,,normal
+chapter_1_start,3,リリィ,実は……ちょっと厄介なものが来ていて……,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,,surprised
+chapter_1_start,4,クロエ,厄介って、また沼に住んでる巨大ヒルとかじゃないでしょーね？,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,,determined
+chapter_1_start,5,リリィ,それも嫌ですが、今回はもっと人間味があるというか……盗賊団、です。しかも、女性だけの集団らしくて,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,,worried
+dungeon_1_intro,1,リリィ（受付嬢）,洞窟の入り口に立つリオン。奥からは不気味な気配が漂っている。,./assets/images/backgrounds/cave_entrance.jpg,./assets/images/characters/lion_normal.png,,normal
 dungeon_1_intro,2,リオン,この洞窟に盗賊団が潜んでいるのか...注意深く進もう。,./assets/images/backgrounds/cave_entrance.jpg,./assets/images/characters/lion_alert.png,,alert
-boss_1_encounter,1,ゴブリンキング,グオオオ！よくここまで来たな、人間よ！,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_battle.png,./assets/images/characters/goblin_king.png,battle
+boss_1_encounter,1,リリィ（受付嬢）,グオオオ！よくここまで来たな、人間よ！,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_battle.png,./assets/images/characters/goblin_king.png,battle
 boss_1_encounter,2,リオン,これが盗賊団のボスか...手強そうだな。,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_determined.png,./assets/images/characters/goblin_king.png,determined
 boss_1_defeat,1,ゴブリンキング,グ...グオオオ...まさか、この俺が...！,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_victory.png,./assets/images/characters/goblin_king_defeated.png,victory
 boss_1_defeat,2,リオン,これで村は安全だ。まだ戦えるじゃないか。,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_confident.png,,confident
+chapter_2,1,リリィ（受付嬢）,盗賊団を退けたリオンだったが、彼の中で何かが変わり始めていた。,./assets/images/backgrounds/village.jpg,,,
+chapter_2,2,リオン,まだ、戦えるじゃないか...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,,confident
+chapter_2,3,リリィ（受付嬢）,ありがとうございます、リオンさん。あなたがいなければ...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/mayor_grateful.png,confident
+chapter_2,4,リオン,礼には及ばない。だが...何か変だな。,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_thinking.png,./assets/images/characters/mayor_grateful.png,thinking
+chapter_2,5,リリィ（受付嬢）,その時、遠くから不気味な笑い声が響いた。,./assets/images/backgrounds/village_evening.jpg,./assets/images/characters/lion_alert.png,./assets/images/characters/mayor_worried.png,alert

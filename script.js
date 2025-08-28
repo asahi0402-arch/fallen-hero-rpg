@@ -4874,14 +4874,23 @@ function initGuild() {
                 
                 // ストーリーイベントをチェック
                 if (storyTriggerManager) {
+                    console.log(`🔍 ギルド初回訪問: chapter ${currentChapter} のストーリーチェック開始`);
                     const trigger = storyTriggerManager.checkChapterStart(currentChapter);
+                    console.log('📋 取得したトリガー:', trigger);
+                    
                     if (trigger) {
                         addBattleLog('📖 ギルドでのストーリーイベントが発生しました');
+                        console.log(`🎭 ストーリー開始: ${trigger.story_id}`);
                         // ストーリーイベントを発生（フラグ設定なし、ギルド開封後に実行）
                         setTimeout(() => {
                             storyTriggerManager.triggerStory(trigger.story_id);
                         }, 500);
+                    } else {
+                        console.warn(`⚠️ chapter ${currentChapter} に対応するストーリートリガーが見つかりません`);
+                        addBattleLog(`⚠️ 章${currentChapter}のストーリーが見つかりません（デバッグ情報）`);
                     }
+                } else {
+                    console.error('❌ storyTriggerManager が見つかりません');
                 }
             }
             

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>story.js 読み込みテスト</title>
+</head>
+<body>
+    <h1>story.js 読み込みテスト</h1>
+    <div id="test-area">
+        <p>コンソールログを確認してください</p>
+        <button id="nextBtn">テストボタン</button>
+        <div id="dialogueText">テストエリア</div>
+        <div id="speakerName">テスト話者</div>
+        <div id="progressFill">プログレスバー</div>
+        <div id="progressText">プログレステキスト</div>
+        <button id="autoBtn">オートボタン</button>
+        <button id="skipBtn">スキップボタン</button>
+        <button id="menuBtn">メニューボタン</button>
+        <div id="menuModal" style="display: none;">
+            <button id="closeMenuModal">閉じる</button>
+            <button id="saveStoryBtn">保存</button>
+            <button id="loadStoryBtn">読み込み</button>
+            <button id="restartStoryBtn">再開</button>
+            <button id="backToTitleBtn">タイトル</button>
+            <button id="backToGameBtn">ゲーム</button>
+        </div>
+    </div>
+    
+    <script>
+        console.log('📍 test_story.html - JavaScript読み込み前');
+        console.log('📍 document.readyState:', document.readyState);
+    </script>
+    <script src="story.js?v=20250828-03"></script>
+    <script>
+        console.log('📍 test_story.html - JavaScript読み込み後');
+    </script>
+</body>
+</html>

@@ -1,9 +1,24 @@
 // ===================================
-// 会話イベントシステム - story.js
+// 会話イベントシステム - story.js (完全新規版)
 // ===================================
+
+alert('🚨 新しいstory.jsが読み込まれました！');
+console.log('🚀 story.js 完全新規版 - デモデータ完全削除済み');
+console.log('📍 document.readyState:', document.readyState);
+console.log('📍 window.location:', window.location.href);
+
+// DOM読み込み確認
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📍 DOMContentLoaded イベント発火');
+    });
+} else {
+    console.log('📍 DOM既に読み込み完了');
+}
 
 class StoryManager {
     constructor() {
+        console.log('📍 StoryManager コンストラクタ開始');
         this.currentStory = null;
         this.currentSegment = 0;
         this.isAutoPlay = false;
@@ -11,7 +26,9 @@ class StoryManager {
         this.typewriterSpeed = 50; // ms per character
         this.skipMode = false;
         
+        console.log('📍 StoryManager init() 呼び出し前');
         this.init();
+        console.log('📍 StoryManager コンストラクタ完了');
     }
 
     init() {
@@ -124,15 +141,14 @@ class StoryManager {
             const storyData = await this.loadStoryFromCSV(storyId);
             if (storyData) {
                 this.currentStory = storyData;
+                this.currentSegment = 0;
+                this.displaySegment(0);
+                this.updateProgress();
             } else {
-                // CSVに失敗した場合はデモデータを使用
-                console.warn('CSVからの読み込みに失敗、デモデータを使用します');
-                this.currentStory = this.getDemoStoryData(storyId);
+                // CSVに失敗した場合はエラー表示
+                console.error(`ストーリーID "${storyId}" のデータが見つかりません`);
+                this.showError(`ストーリー "${storyId}" が見つかりません。CSVファイルを確認してください。`);
             }
-            
-            this.currentSegment = 0;
-            this.displaySegment(0);
-            this.updateProgress();
         } catch (error) {
             console.error('ストーリーの読み込みに失敗しました:', error);
             this.showError('ストーリーデータの読み込みに失敗しました。');
@@ -142,37 +158,49 @@ class StoryManager {
     // CSVからストーリーデータを読み込み
     async loadStoryFromCSV(storyId) {
         try {
+            console.log('CSV読み込み開始:', storyId);
+            console.log('現在のURL:', window.location.href);
+            console.log('ベースURL:', window.location.origin);
+            
             // キャッシュ回避のためにタイムスタンプを追加
             const cacheBreaker = `?v=${Date.now()}`;
-            // 章情報とセリフデータを並行読み込み
-            const [chaptersResponse, dialoguesResponse] = await Promise.all([
-                fetch('./data/story_chapters.csv' + cacheBreaker),
-                fetch('./data/story_dialogues.csv' + cacheBreaker)
-            ]);
-
-            if (!chaptersResponse.ok || !dialoguesResponse.ok) {
-                throw new Error('CSV file not found');
+            // 相対パスと絶対パスの両方を試す
+            const csvUrl = './data/story_dialogues.csv' + cacheBreaker;
+            console.log('取得しようとするCSV URL:', csvUrl);
+            
+            let response = await fetch(csvUrl);
+            
+            // 相対パスで失敗した場合、絶対パスを試す
+            if (!response.ok) {
+                const absoluteUrl = '/data/story_dialogues.csv' + cacheBreaker;
+                console.log('相対パス失敗、絶対パスを試行:', absoluteUrl);
+                response = await fetch(absoluteUrl);
             }
 
-            const chaptersText = await chaptersResponse.text();
-            const dialoguesText = await dialoguesResponse.text();
-
-            const chapters = this.parseCSV(chaptersText);
-            const dialogues = this.parseCSV(dialoguesText);
-
-            // 指定された章のデータを構築
-            const chapterInfo = chapters.find(c => c.chapter_id === storyId);
-            if (!chapterInfo) {
-                throw new Error(`Chapter ${storyId} not found`);
+            if (!response.ok) {
+                throw new Error('story_dialogues.csv not found');
             }
 
+            const csvText = await response.text();
+            console.log('CSV読み込み成功:', csvText.substring(0, 200) + '...');
+            
+            const dialogues = this.parseCSV(csvText);
+            console.log('CSV解析結果:', dialogues);
+
+            // 指定されたstoryIdのデータを構築
             const chapterDialogues = dialogues
                 .filter(d => d.chapter_id === storyId)
                 .sort((a, b) => parseInt(a.segment_id) - parseInt(b.segment_id));
 
-            return {
-                title: chapterInfo.title,
-                description: chapterInfo.description,
+            console.log('フィルタ後の会話データ:', chapterDialogues);
+
+            if (chapterDialogues.length === 0) {
+                console.warn(`Story ID "${storyId}" のデータが見つかりません`);
+                return null;
+            }
+
+            const storyData = {
+                title: `${storyId}のストーリー`,
                 segments: chapterDialogues.map(d => ({
                     speaker: d.speaker,
                     text: d.text,
@@ -182,6 +210,9 @@ class StoryManager {
                     emotion: d.character_emotion
                 }))
             };
+            
+            console.log('最終ストーリーデータ:', storyData);
+            return storyData;
 
         } catch (error) {
             console.error('CSV読み込みエラー:', error);
@@ -234,72 +265,8 @@ class StoryManager {
         return result;
     }
 
-    // デモ用ストーリーデータ（後でCSVから読み込む形に変更予定）
-    getDemoStoryData(storyId) {
-        const demoStories = {
-            chapter_1: {
-                title: "第1章：盗賊団の隠れ家",
-                segments: [
-                    {
-                        speaker: "ナレーター",
-                        text: "かつて英雄と呼ばれた男は、今は人里離れた森の奥で静かに暮らしていた。",
-                        background: "./assets/images/backgrounds/forest.jpg",
-                        leftCharacter: "",
-                        rightCharacter: ""
-                    },
-                    {
-                        speaker: "リオン",
-                        text: "あの頃の栄光なんて、もう遠い昔の話だ...",
-                        background: "./assets/images/backgrounds/forest.jpg",
-                        leftCharacter: "./assets/images/characters/lion_normal.png",
-                        rightCharacter: ""
-                    },
-                    {
-                        speaker: "ナレーター", 
-                        text: "そんなある日、村人が血相を変えて彼の元を訪れた。",
-                        background: "./assets/images/backgrounds/forest.jpg",
-                        leftCharacter: "./assets/images/characters/lion_normal.png",
-                        rightCharacter: ""
-                    },
-                    {
-                        speaker: "村人",
-                        text: "リオンさん！大変です！盗賊団が村を襲っているんです！",
-                        background: "./assets/images/backgrounds/forest.jpg", 
-                        leftCharacter: "./assets/images/characters/lion_surprised.png",
-                        rightCharacter: "./assets/images/characters/villager_panic.png"
-                    },
-                    {
-                        speaker: "リオン",
-                        text: "...分かった。久しぶりに剣を握ることになりそうだな。",
-                        background: "./assets/images/backgrounds/forest.jpg",
-                        leftCharacter: "./assets/images/characters/lion_determined.png", 
-                        rightCharacter: "./assets/images/characters/villager_panic.png"
-                    }
-                ]
-            },
-            chapter_2: {
-                title: "第2章：復活の兆し", 
-                segments: [
-                    {
-                        speaker: "ナレーター",
-                        text: "盗賊団を退けたリオンだったが、彼の中で何かが変わり始めていた。",
-                        background: "./assets/images/backgrounds/village.jpg",
-                        leftCharacter: "",
-                        rightCharacter: ""
-                    },
-                    {
-                        speaker: "リオン",
-                        text: "まだ、戦えるじゃないか...",
-                        background: "./assets/images/backgrounds/village.jpg",
-                        leftCharacter: "./assets/images/characters/lion_confident.png",
-                        rightCharacter: ""
-                    }
-                ]
-            }
-        };
 
-        return demoStories[storyId] || demoStories.chapter_1;
-    }
+    // デモデータは削除 - CSVが読み込めない場合はエラーを表示
 
     // セグメントを表示
     displaySegment(index) {
@@ -567,6 +534,16 @@ class StoryManager {
 }
 
 // ページ読み込み時に初期化
-document.addEventListener('DOMContentLoaded', () => {
+console.log('📍 StoryManager初期化処理開始');
+console.log('📍 document.readyState:', document.readyState);
+
+if (document.readyState === 'loading') {
+    console.log('📍 DOM読み込み中 - DOMContentLoadedイベント待機');
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📍 DOMContentLoadedイベント発火 - StoryManager作成');
+        window.storyManager = new StoryManager();
+    });
+} else {
+    console.log('📍 DOM既に読み込み完了 - 直接StoryManager作成');
     window.storyManager = new StoryManager();
-});
+}

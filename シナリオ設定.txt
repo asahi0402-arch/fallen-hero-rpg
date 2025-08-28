@@ -1,0 +1,248 @@
+🔸第1章：盗賊団のアジトへ潜入せよ！
+【ギルド：依頼受注シーン】
+
+リリィ（受付嬢）
+「おはようございます、クロエさん♪ 今日も元気そうですね」
+
+クロエ（主人公）
+「おはよー、リリィ！ もちろん元気いっぱい！ ……で、今日はどんな依頼があるの？」
+
+リリィ
+「実は……ちょっと厄介なものが来ていて……」
+
+クロエ
+「厄介って、また沼に住んでる巨大ヒルとかじゃないでしょーね？」
+
+リリィ
+「それも嫌ですが、今回はもっと人間味があるというか……盗賊団、です。しかも、女性だけの集団らしくて」
+
+クロエ
+「えっ、女の子だけの盗賊団！？ ……なんかちょっと興味出てきたかも」
+
+リリィ
+「街道を荒らしているようで、最近では荷馬車ごと行方不明になる事件も……。市の商会が賞金を出して討伐を依頼してきました」
+
+クロエ
+「OK！ ガッツリ稼げて女の子と戦えるなら文句なしってやつね！」
+
+リリィ（小声で）
+「（いや……稼ぐよりそっちの方が楽しそうなのでは……？）」
+
+クロエ
+「ん？ なにか言った～？」
+
+リリィ
+「いえっ、気をつけて行ってきてくださいね、クロエさん！」
+
+【ダンジョン：盗賊団のアジト】
+※途中のザコ戦は割愛。必要に応じて演出追加可能。
+🔸中ボス戦：ティファとの誤解バトル
+
+（アジトの中層エリア。クロエが奥へ進もうとしたところ、通路の影から何者かが飛び出す）
+
+ティファ
+「そこまでよ！ ……盗賊団の仲間ってわけ？」
+
+クロエ
+「は！？ 誰！？ なんでいきなり殴りかかってくるのよ！」
+
+ティファ
+「盗賊団のアジトに踏み込んでるのがその証拠！ ……ここで倒す！」
+
+クロエ
+「ちょっとちょっと、待っ……！ って、聞く耳なし～～！！」
+
+――戦闘突入（ティファとの1対1）
+
+（戦闘終了後、ティファが膝をつく）
+
+ティファ
+「っ……ふぅ。やるじゃない……。まさか、盗賊団じゃないなんて……」
+
+クロエ
+「やっと信じた？ あたしは冒険者！ ギルドの依頼で来たの！」
+
+ティファ
+「ごめんなさい。仲間を探してたらここに来て……盗賊団の情報だけで、あなたのことも敵だと……」
+
+クロエ
+「まぁ、誤解だったんならしょうがないよね。でも、手加減しなかったんだから！？」
+
+ティファ（少し照れて）
+「……ふふ。じゃあこれでおあいこね。私はティファ。今はひとりで旅してるけど、こういう事件は見逃せなくて」
+
+クロエ
+「ティファね。うん、強くてかっこいいじゃん。気に入った！」
+
+ティファ
+「え？」
+
+クロエ
+「一緒に行こ！ ボスっぽいやつが奥にいるっぽいし、ふたりなら楽勝でしょ♪」
+
+ティファ
+「ふふ、いいわよ。お互い誤解で始まったけど……今度は、信じて戦えると思う」
+
+🔸ボス前イベント：盗賊頭メレル登場
+
+（広間に到着。中央の玉座に女性が座っている）
+
+メレル
+「まあ、侵入者とはいえ随分と賑やかね。ふたりとも……いい目をしているわ」
+
+クロエ
+「うわ、ボスっぽさ満点……その余裕の笑み、ムカつく～！」
+
+ティファ
+「あなたが、盗賊団の頭目ね。今すぐこの所業をやめなさい！」
+
+メレル
+「やめる？ ふふ……力なき者が搾取されるのが、この世界の“本質”。その流れに逆らうつもりかしら？」
+
+クロエ
+「うん、そういうの、あたし大っ嫌い！」
+
+ティファ
+「クロエ、気をつけて。……この女、只者じゃない」
+
+メレル
+「さあ、踊りましょう。あなたたちがどこまで踊れるか、見せてちょうだい？」
+
+――ボス戦：メレル
+
+🔸ボス撃破後イベント
+
+メレル
+「はぁ……はぁ……まさか、ここまでの力とは……。ふふ……これは“新しい時代”の兆しかしら……」
+
+（メレル、気絶）
+
+クロエ
+「ふぅ～……強かったー。でも、やっぱ勝つと気持ちいいね！」
+
+ティファ
+「見事だったわ、クロエ。あなた、本当に頼りになる」
+
+クロエ
+「えへへ～。あたしのこと、気に入った？」
+
+ティファ（苦笑）
+「そうね。……また会えるといいわね」
+
+クロエ
+「えっ、もう行っちゃうの！？」
+
+ティファ
+「私には、まだやるべきことがあるから。けど、どこかでまた一緒に戦えるって信じてる」
+
+（ティファ退場）
+
+---------------------------------------------------
+
+【フィールド：クレスト街道東部】
+・リスティア（女盗賊）
+　BREAK slim build, athletic, mid-length ponytail, mischievous expression, scar under eye,  
+　BREAK light armor, leather corset, cropped jacket, fingerless gloves, dagger holster, high boots,
+
+・マグナ（女傭兵風）
+　BREAK tall muscular woman, strong build, short spiky hair, battle-hardened expression, tan skin,  
+　BREAK studded leather armor, open-shoulder vest, iron gauntlets, utility belt, heavy boots,
+
+・カリナ（スカウト系盗賊）
+　BREAK slender, agile body, short messy hair, sharp eyes, stealthy appearance,  
+　BREAK dual dagger belt, hooded tunic, leg wraps, elbow guards, thigh pouch,
+
+・ネラ（野盗レンジャー）
+　BREAK athletic archer girl, shoulder-length hair, freckles, sharp glare, focused stance,  
+　BREAK ranger cloak, leather chestplate, quiver and bow, arm guards, forest-toned outfit,
+
+
+・“おとり人形”レアナ（魔導人形）
+　BREAK petite doll-like girl, emotionless face, porcelain skin, keyhole in chest, glassy eyes,  
+　BREAK victorian-style dress, gothic ribbons, mechanical joints, metallic lace gloves, ornate boots,
+
+
+
+
+
+
+---------------------------------------------------
+
+【ダンジョン：盗賊団のアジト】
+🔹登場雑魚敵（5体）
+
+・軽装盗賊（女）
+
+細身、軽装レザー、ポニーテール
+
+スキル：すばやい斬り
+
+プロンプト例
+slim woman, ponytail, leather armor, agile stance, smirking, female thief BREAK
+
+・見張り盗賊（女）
+
+フード付きマント、双眼鏡、警戒ポーズ
+
+スキル：仲間を呼ぶ
+
+プロンプト例
+cautious woman, hooded cloak, binoculars, scout look, fantasy thief style BREAK
+
+・怪力盗賊（女）
+
+大柄、筋肉質、胸元の開いた服、短髪
+
+スキル：一撃大振り
+
+プロンプト例
+muscular woman, short hair, exposed cleavage, thick arms, brute type thief BREAK
+
+・幻惑盗賊（女）
+
+妖艶な姿、露出高めの布装備、髪長め
+
+スキル：幻惑の舞（魅了）
+
+プロンプト例
+seductive woman, long hair, revealing cloth outfit, dancer thief style, alluring eyes BREAK
+
+・魔法盗賊（女）
+
+魔導の杖を持ちローブを着た姿、眼鏡
+
+スキル：火球、スリープ
+
+プロンプト例
+magic thief girl, robe, glasses, holding staff, casting spell, fantasy female mage BREAK
+
+---------------------------------------------------
+
+🔸中ボス：ティファ
+
+勘違いからクロエに襲いかかる。
+
+拳法スタイルで戦闘。
+
+HPを削ると会話が入り誤解が解ける。
+
+---------------------------------------------------
+🔸ボス：盗賊団の女頭目「メレル」
+
+細身で妖艶な美貌のリーダータイプ。
+
+高貴な振る舞いと魔法剣術を使う。
+
+プロンプト例
+elegant female thief boss, long silver hair, black corset, red cape, seductive villainess, confident smile BREAK
+
+
+ボススキル例
+
+デスキス：確率で即死
+
+ブレイドダンス：全体斬撃
+
+ベール・オブ・シャドウ：数ターン無敵化
+
+
