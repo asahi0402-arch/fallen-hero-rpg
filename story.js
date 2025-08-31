@@ -2,7 +2,6 @@
 // 会話イベントシステム - story.js (完全新規版)
 // ===================================
 
-alert('🚨 新しいstory.jsが読み込まれました！');
 console.log('🚀 story.js 完全新規版 - デモデータ完全削除済み');
 console.log('📍 document.readyState:', document.readyState);
 console.log('📍 window.location:', window.location.href);
@@ -476,11 +475,11 @@ class StoryManager {
         
         try {
             localStorage.setItem('storyProgress', JSON.stringify(saveData));
-            alert('進行状況を保存しました！');
+            console.log('進行状況を保存しました');
             this.closeMenu();
         } catch (error) {
             console.error('保存に失敗しました:', error);
-            alert('保存に失敗しました。');
+            console.error('保存に失敗しました。');
         }
     }
 
@@ -492,14 +491,14 @@ class StoryManager {
                 const data = JSON.parse(saveData);
                 this.currentSegment = data.currentSegment;
                 this.displaySegment(this.currentSegment);
-                alert('進行状況を読み込みました！');
+                console.log('進行状況を読み込みました');
                 this.closeMenu();
             } else {
-                alert('保存データが見つかりません。');
+                console.log('保存データが見つかりません。');
             }
         } catch (error) {
             console.error('読み込みに失敗しました:', error);
-            alert('読み込みに失敗しました。');
+            console.error('読み込みに失敗しました。');
         }
     }
 

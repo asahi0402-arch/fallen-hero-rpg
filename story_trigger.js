@@ -184,11 +184,30 @@ class StoryTriggerManager {
         } else {
             console.log('❌ Story window failed to open (popup blocked?)');
             // ウィンドウが開けない場合は簡単なメッセージ表示後にフラグをリセット
-            alert(`📖 ストーリー「${storyId}」が発生しました！\n（本来はストーリー画面が開きますが、ポップアップがブロックされているようです）`);
+            console.log(`📖 ストーリー「${storyId}」が発生しました（ポップアップがブロックされています）`);
             setTimeout(() => {
                 if (window.gameState && window.gameState.battle) {
                     console.log('Resetting storyInProgress due to popup failure');
                     window.gameState.battle.storyInProgress = false;
+                    
+                    // 中ボス撃破後のポップアップブロック時の処理
+                    if (window.gameState.battle.midBossDefeated) {
+                        console.log('中ボス撃破後のポップアップブロック - ダンジョン探索を開始');
+                        window.gameState.battle.midBossDefeated = false;
+                        
+                        setTimeout(() => {
+                            if (window.generateNewEnemy && window.gameState && window.updateUI) {
+                                window.gameState.battle.battleCount++; 
+                                window.generateNewEnemy();
+                                window.gameState.battle.isPlayerTurn = true;
+                                window.updateUI();
+                                
+                                if (window.addBattleLog) {
+                                    window.addBattleLog('🗡️ ダンジョン探索を開始します！');
+                                }
+                            }
+                        }, 500);
+                    }
                 }
             }, 500);
             return false;
@@ -201,6 +220,26 @@ class StoryTriggerManager {
                     // メインウィンドウのstoryInProgressフラグをリセット
                     if (window.gameState && window.gameState.battle) {
                         window.gameState.battle.storyInProgress = false;
+                        
+                        // 中ボス撃破後の会話終了時の特別処理
+                        if (window.gameState.battle.midBossDefeated) {
+                            console.log('中ボス撃破後の会話終了 - ダンジョン探索を開始');
+                            window.gameState.battle.midBossDefeated = false; // フラグをリセット
+                            
+                            // ダンジョン探索開始
+                            setTimeout(() => {
+                                if (window.generateNewEnemy && window.gameState && window.updateUI) {
+                                    window.gameState.battle.battleCount++; 
+                                    window.generateNewEnemy();
+                                    window.gameState.battle.isPlayerTurn = true;
+                                    window.updateUI();
+                                    
+                                    if (window.addBattleLog) {
+                                        window.addBattleLog('🗡️ ダンジョン探索を開始します！');
+                                    }
+                                }
+                            }, 500);
+                        }
                     }
                     clearInterval(checkClosed);
                 }
@@ -211,6 +250,25 @@ class StoryTriggerManager {
                 if (window.gameState && window.gameState.battle && window.gameState.battle.storyInProgress) {
                     console.log('Story timeout: Force resetting storyInProgress flag');
                     window.gameState.battle.storyInProgress = false;
+                    
+                    // 中ボス撃破後のタイムアウト時も同様の処理
+                    if (window.gameState.battle.midBossDefeated) {
+                        console.log('中ボス撃破後のタイムアウト - ダンジョン探索を開始');
+                        window.gameState.battle.midBossDefeated = false;
+                        
+                        setTimeout(() => {
+                            if (window.generateNewEnemy && window.gameState && window.updateUI) {
+                                window.gameState.battle.battleCount++; 
+                                window.generateNewEnemy();
+                                window.gameState.battle.isPlayerTurn = true;
+                                window.updateUI();
+                                
+                                if (window.addBattleLog) {
+                                    window.addBattleLog('🗡️ ダンジョン探索を開始します！');
+                                }
+                            }
+                        }, 500);
+                    }
                 }
                 clearInterval(checkClosed);
             }, 30000); // 30秒のタイムアウト

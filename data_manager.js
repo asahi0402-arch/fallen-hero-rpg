@@ -115,7 +115,8 @@ class DataManager {
                 this.loadCSV('./data/locations.csv'),
                 this.loadCSV('./data/backgrounds.csv'),
                 this.loadCSV('./data/audio.csv'),
-                this.loadCSV('./data/title_settings.csv')
+                this.loadCSV('./data/title_settings.csv'),
+                this.loadCSV('./data/dungeon_events.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -131,6 +132,7 @@ class DataManager {
             this.data.backgrounds = results[8];
             this.data.audio = results[9];
             this.data.titleSettings = results[10];
+            this.data.dungeonEvents = results[11];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -171,16 +173,13 @@ class DataManager {
         return this.data.enemies.find(enemy => enemy.id === id);
     }
 
-    // 章の敵プールを取得
+    // 章の敵プールを取得（locationシステム統一版）
     getChapterEnemies(chapter) {
-        const stage = this.data.stages.find(s => parseInt(s.chapter) === parseInt(chapter));
-        if (!stage || !stage.enemy_pool) {
-            // フォールバック：該当章の敵を直接検索
-            return this.data.enemies.filter(enemy => parseInt(enemy.chapter) === parseInt(chapter));
+        // enemies.csvから該当章の敵を直接取得（locationは考慮しない）
+        if (!this.loaded || !this.data.enemies) {
+            return [];
         }
-        
-        const enemyIds = stage.enemy_pool.split(',').map(id => id.trim());
-        return enemyIds.map(id => this.getEnemy(id)).filter(enemy => enemy);
+        return this.data.enemies.filter(enemy => parseInt(enemy.chapter) === parseInt(chapter));
     }
 
     getBossEnemy(chapter) {
@@ -358,9 +357,9 @@ class DataManager {
         return null;
     }
 
-    // 章の敵をランダムに生成
-    generateRandomEnemy(chapter) {
-        const enemies = this.getChapterEnemies(chapter);
+    // 章と場所の敵をランダムに生成
+    generateRandomEnemy(chapter, location = 'field') {
+        const enemies = this.getChapterLocationEnemies(chapter, location);
         if (enemies.length === 0) {
             // フォールバック：デフォルト敵
             return this.getEnemy('slime') || this.createDefaultEnemy();
@@ -368,6 +367,19 @@ class DataManager {
         
         const randomIndex = Math.floor(Math.random() * enemies.length);
         return enemies[randomIndex];
+    }
+    
+    // 章と場所に対応する敵を取得
+    getChapterLocationEnemies(chapter, location) {
+        if (!this.loaded || !this.data.enemies) {
+            return [];
+        }
+        
+        return this.data.enemies.filter(enemy => {
+            const matchChapter = parseInt(enemy.chapter) === chapter;
+            const matchLocation = enemy.location === location || enemy.location === 'both';
+            return matchChapter && matchLocation;
+        });
     }
 
     // デフォルト敵を作成（CSVが読み込まれない場合のフォールバック）
@@ -481,6 +493,27 @@ class DataManager {
     // 全タイトル設定を取得
     getAllTitleSettings() {
         return this.data.titleSettings || [];
+    }
+
+    // ダンジョンイベントを取得
+    getDungeonEvent(chapter, location, eventType, triggerCondition) {
+        if (!this.data.dungeonEvents) return null;
+        
+        return this.data.dungeonEvents.find(event => {
+            return parseInt(event.chapter) === chapter && 
+                   event.location === location && 
+                   event.event_type === eventType &&
+                   event.trigger_condition === triggerCondition;
+        });
+    }
+
+    // 章・場所の全ダンジョンイベントを取得
+    getChapterLocationEvents(chapter, location) {
+        if (!this.data.dungeonEvents) return [];
+        
+        return this.data.dungeonEvents.filter(event => {
+            return parseInt(event.chapter) === chapter && event.location === location;
+        });
     }
 }
 

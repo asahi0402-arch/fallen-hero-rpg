@@ -162,59 +162,40 @@
 　BREAK victorian-style dress, gothic ribbons, mechanical joints, metallic lace gloves, ornate boots,
 
 
-
-
-
-
 ---------------------------------------------------
 
 【ダンジョン：盗賊団のアジト】
 🔹登場雑魚敵（5体）
 
 ・軽装盗賊（女）
-
-細身、軽装レザー、ポニーテール
-
-スキル：すばやい斬り
-
-プロンプト例
-slim woman, ponytail, leather armor, agile stance, smirking, female thief BREAK
+　細身、軽装レザー、ポニーテール
+　スキル：すばやい斬り
+　プロンプト例
+　BREAK slim woman, ponytail, leather armor, agile stance, smirking, female thief,
 
 ・見張り盗賊（女）
-
-フード付きマント、双眼鏡、警戒ポーズ
-
-スキル：仲間を呼ぶ
-
-プロンプト例
-cautious woman, hooded cloak, binoculars, scout look, fantasy thief style BREAK
+　フード付きマント、双眼鏡、警戒ポーズ
+　スキル：仲間を呼ぶ
+　プロンプト例
+　BREAK cautious woman, hooded cloak, binoculars, scout look, fantasy thief style, 
 
 ・怪力盗賊（女）
-
-大柄、筋肉質、胸元の開いた服、短髪
-
-スキル：一撃大振り
-
-プロンプト例
-muscular woman, short hair, exposed cleavage, thick arms, brute type thief BREAK
+　大柄、筋肉質、胸元の開いた服、短髪
+　スキル：一撃大振り
+　プロンプト例
+　BREAK muscular woman, short hair, exposed cleavage, thick arms, brute type thief,
 
 ・幻惑盗賊（女）
-
-妖艶な姿、露出高めの布装備、髪長め
-
-スキル：幻惑の舞（魅了）
-
-プロンプト例
-seductive woman, long hair, revealing cloth outfit, dancer thief style, alluring eyes BREAK
+  妖艶な姿、露出高めの布装備、髪長め
+  スキル：幻惑の舞（魅了）
+  プロンプト例
+  BREAK seductive woman, long hair, revealing cloth outfit, dancer thief style, alluring eyes,
 
 ・魔法盗賊（女）
-
-魔導の杖を持ちローブを着た姿、眼鏡
-
-スキル：火球、スリープ
-
-プロンプト例
-magic thief girl, robe, glasses, holding staff, casting spell, fantasy female mage BREAK
+  魔導の杖を持ちローブを着た姿、眼鏡
+  スキル：火球、スリープ
+  プロンプト例
+  BREAK magic thief girl, robe, glasses, holding staff, casting spell, fantasy female mage,
 
 ---------------------------------------------------
 
@@ -228,21 +209,193 @@ HPを削ると会話が入り誤解が解ける。
 
 ---------------------------------------------------
 🔸ボス：盗賊団の女頭目「メレル」
-
 細身で妖艶な美貌のリーダータイプ。
-
 高貴な振る舞いと魔法剣術を使う。
 
 プロンプト例
-elegant female thief boss, long silver hair, black corset, red cape, seductive villainess, confident smile BREAK
-
+BREAK elegant female thief boss, long silver hair, black corset, red cape, seductive villainess, confident smile,
 
 ボススキル例
-
-デスキス：確率で即死
-
-ブレイドダンス：全体斬撃
-
-ベール・オブ・シャドウ：数ターン無敵化
+・デスキス：確率で即死
+・ブレイドダンス：全体斬撃
+・ベール・オブ・シャドウ：数ターン無敵化
 
 
+---------------------------------------------------
+
+
+🔷 第2章：水底に響く旋律
+【ダンジョン名】：セレネ湖畔の旧遺跡
+
+霧がかった湖のほとりにある、水没しかけた古代遺跡。時間の止まったような静けさが漂う。
+
+【目的】：遺跡の調査と、歌声の発生源の確認
+
+（ギルドの依頼内容）
+
+【ギルド：朝の会話イベント】
+
+クロエ：「ふぁ～、さてと……今日も何かいい仕事あるかなー？」
+
+リリィ：「おはようございます、クロエさん♪ 今日はちょっと珍しい依頼が来てますよ」
+
+クロエ：「おっ、珍しいって何？ 変なモンスターとか出た？」
+
+リリィ：「いえ、変というより……“古い遺跡から、歌声が聞こえる”という通報がありまして」
+
+クロエ：「歌声？ ってことは幽霊とかそういう系？ やだな～、そういうの地味に苦手なんだけど……」
+
+リリィ：「調査だけでもいいんですが、危険があれば対応をお願いしますね」
+
+クロエ：「うーん……面倒くさそうだけど、面白そうかも。よし、行ってみようかな～」
+
+---------------------------------------------------
+✅ フィールドエリアの敵（5体）
+
+舞台：旧遺跡へと続く湿地帯・崩れた街道・野営跡など
+
+① ミズクレイム
+
+種族：湿地スライム型モンスター
+特徴：半透明な青緑色、触手のような手足
+
+スキル：
+ぬめる捕縛：低確率で行動不能
+酸性の跳躍：防御力ダウン攻撃
+
+プロンプト：
+BBREAK slimy translucent blue-green creature, tentacle-like limbs, soft ripple surface, moist sheen, amphibious texture, BREAK swamp monster, bubbling surface, flexible body, glowing fluid core, open swamp terrain,
+
+② クラグレイス
+
+種族：野盗の残党（女性）
+特徴：ボロ布をまとった軽装、鋭いナイフ、獣のような目つき
+
+スキル：
+毒刃連撃：小ダメージ×3 + 毒
+逃走の煙幕：低確率で逃走
+
+プロンプト：
+BBREAK skinny female rogue, wild amber eyes, messy hair, tattered brown cloak, dirty leather wraps, BREAK bandit design, swamp mud-stained clothing, dual daggers, thief aesthetics, agile body stance,
+
+③ オールドコートン
+
+種族：魔力で動く旧式の人形兵
+特徴：顔は割れた仮面、関節はギシギシ鳴る
+
+スキル：
+パイル突撃：突進 + スタン
+魔力過熱：自爆（瀕死時）
+
+プロンプト：
+BBREAK humanoid automaton, cracked porcelain mask, rusted metal joints, long limbs, glowing cracks, BREAK ancient mechanical soldier, magical power leaks, worn-out ceremonial armor, eerie presence,
+
+④ シアリーハウンド
+
+種族：亡国の霊犬
+特徴：半透明な犬型モンスター、白く光る瞳
+
+スキル：
+吠え声の幻聴：混乱付与
+亡霊牙：確率で防御無視
+
+プロンプト：
+BBREAK ghostly wolf creature, glowing white eyes, semi-transparent fur, ethereal trail, spectral breath, BREAK cursed hound design, ancient ruins background, haunting expression, low mist ground,
+
+⑤ ドレイドワスプ
+種族：大型の毒蜂型魔獣
+特徴：鎧のような黒紫の甲殻、背中に紋章状の模様
+
+スキル：
+猛毒針：継続毒ダメージ
+羽音の暴風：全体微ダメ＋命中率ダウン
+
+プロンプト：
+BBREAK large venomous wasp creature, armored black-purple exoskeleton, glowing red compound eyes, rune pattern on back, 
+BREAK insectoid monster, buzzing wings, swamp vegetation, hostile posture, giant mandibles,
+
+---------------------------------------------------
+
+【雑魚敵（計5体）】
+
+・ミストレイス（霧の霊体）
+　半透明の女性型霊体。浮遊しながら氷属性魔法を放つ。　
+　プロンプト例　
+　BBREAK ghostly female spirit, ethereal body, glowing eyes, translucent skin,  
+　BREAK tattered robes, icy mist swirling around, chains wrapped loosely, floating posture,
+
+・アクアスライム（魔力汚染されたスライム）
+　青白く発光しながら、ゆっくりと這い寄ってくる粘液状の魔物。
+　プロンプト例
+　BBREAK gelatinous slime creature, glowing blue core, semi-transparent body,  
+　BREAK slick wet surface, dripping with magical essence, luminous veins, puddle trail,
+
+・セイレーンの欠片（壊れた精霊体）
+　壊れた歌声を断続的に響かせる、上半身のみの音霊。
+　プロンプト例
+　BBREAK broken siren spirit, fragmented body, fading features, cracked crystal eyes,  
+　BREAK faint glow, tattered silk veil, dissonant musical aura, shimmering vocal wave,
+
+・リリックバグ（音に反応する昆虫型魔物）
+　音に敏感な飛行魔物。群れで襲いかかる。
+　プロンプト例
+　BBREAK insectoid monster, glowing antennae, iridescent wings, sharp mandibles,  
+　BREAK armored shell with rune-like markings, surrounded by buzzing noise, rhythmic wingbeat,
+
+・ハーモニックドール（音楽を模倣する魔導人形）
+　古代文明の遺物で、自動演奏のように動き続ける少女型オートマトン。
+　プロンプト例
+　BBREAK mechanical girl, expressionless face, porcelain features, gear-driven joints,  
+　BREAK frilly gothic uniform, music box embedded in chest, winding key on back, metallic ribbons,
+
+---------------------------------------------------
+【ボス】：ネレイア（唄う水妖）
+
+設定：古代に封印された水の精霊。封印の緩みと共に目覚め、力を取り戻すために周囲の魔力と命を吸っている。
+外見イメージ：儚げな雰囲気を持つ美しい女性型モンスター。水と音を操る。
+スキル例：
+・「濁流のアリア」：全体水属性攻撃＋混乱付与
+・「水鏡の反響」：クロエの前ターンの行動をコピーして使用
+・「沈黙の詩」：行動封印＋MPダメージ
+
+プロンプト例：
+BBREAK elegant water spirit, serene expression, flowing aqua hair, glowing teal eyes,  
+BREAK translucent water-dress, liquid tendrils, ornate shell accessories, surrounded by floating musical notes,
+---------------------------------------------------
+【ボス前イベント】
+
+（遺跡の奥で、波の音と共に美しい旋律が響く）
+
+クロエ：「……うわ、何この声……心が吸い込まれそうな……」
+
+ネレイア：「あなたも……わたしの歌を聴きに来たのね……」
+
+クロエ：「っ！？ ……だ、誰……？　ここに住んでるの？」
+
+ネレイア：「水はすべてを包む……いずれ、あなたも静かな底へ……還る……」
+
+クロエ：「ふふ、そう簡単に溺れてあげないよっ！ ……来るなら、受けて立つ！」
+
+【撃破後イベント】
+
+（ネレイアが霧と共に消え、湖の波音だけが残る）
+
+クロエ：「……ふぅ、強かった……でも、あれもこの遺跡に閉じ込められてた存在だったのかな」
+
+（足元に落ちていた古い音叉のような道具を拾う）
+
+クロエ：「これ……魔力を音に変換してた？ ふーん、意外と繊細な装置だったんだね」
+
+【ギルド帰還・報告】
+
+リリィ：「おかえりなさいクロエさん♪ 無事でなによりです」
+
+クロエ：「今回は……ちょっと不思議な依頼だったよ。音の魔物って感じ？」
+
+リリィ：「霊的な干渉や魔力の共鳴って、よく記録に残ってますからね……お疲れさまでした♪」
+
+クロエ：「報酬はしっかりお願いね～！ めちゃくちゃ濡れたし寒かったし……」
+---------------------------------------------------
+
+
+---------------------------------------------------

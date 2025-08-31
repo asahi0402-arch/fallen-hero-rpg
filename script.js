@@ -514,12 +514,48 @@ function changeBackground(locationType) {
         console.log(`Changing background to: ${imagePath}`);
         backgroundElement.src = imagePath;
         backgroundElement.alt = background.description || locationType;
+        
+        // 背景に応じたBGMを再生
+        playLocationBGM(locationType);
     } else {
         console.warn(`Background not found for location type: ${locationType}`);
         // フォールバック背景を設定
         const timestamp = Date.now();
         backgroundElement.src = `./assets/images/backgrounds/town.png?v=${timestamp}`;
         backgroundElement.alt = '背景画像';
+        
+        // フォールバック時は街BGMを再生
+        playLocationBGM('town');
+    }
+}
+
+// 場所に応じたBGMを再生
+function playLocationBGM(locationType) {
+    if (!audioManager || !dataManager.loaded) return;
+    
+    let bgmId = null;
+    
+    switch(locationType) {
+        case 'town':
+        case 'inn':
+        case 'item_shop':
+        case 'gacha_shop':
+            bgmId = 'bgm_town';
+            break;
+        case 'field':
+        case 'plains':
+            bgmId = 'bgm_field';
+            break;
+        case 'dungeon':
+        case 'cave':
+        case 'dark_forest':
+            bgmId = 'bgm_dungeon';
+            break;
+    }
+    
+    if (bgmId) {
+        console.log(`🎵 Playing BGM: ${bgmId} for location: ${locationType}`);
+        audioManager.playBGM(bgmId);
     }
 }
 
@@ -1709,6 +1745,40 @@ function nextBattle() {
     // レベルアップチェック
     checkLevelUp();
     
+    // 中ボス戦後の処理
+    if (gameState.enemy.isMidBoss) {
+        // 中ボス撃破メッセージ
+        const midBossEvent = dataManager.getDungeonEvent(gameState.battle.chapter, gameState.battle.location, 'mid_boss', 'on_enter');
+        if (midBossEvent && midBossEvent.victory_text) {
+            addBattleLog(`🏆 ${midBossEvent.victory_text}`);
+        }
+        
+        // 中ボス報酬処理
+        if (midBossEvent && midBossEvent.rewards) {
+            handleEventRewards(midBossEvent.rewards);
+        }
+        
+        // 中ボス撃破後は会話イベントを発生
+        if (midBossEvent && midBossEvent.story_id && storyTriggerManager) {
+            addBattleLog('📖 ストーリーイベントが発生しました');
+            gameState.battle.storyInProgress = true; // ストーリー開始
+            gameState.battle.midBossDefeated = true; // 中ボス撃破フラグ
+            setTimeout(() => {
+                storyTriggerManager.triggerStory(midBossEvent.story_id);
+            }, 1000);
+        } else {
+            // story_idがない場合は従来通り通常戦闘へ
+            addBattleLog('中ボス撃破！ダンジョン探索を続行します...');
+            setTimeout(() => {
+                gameState.battle.battleCount++; 
+                generateNewEnemy();
+                gameState.battle.isPlayerTurn = true;
+                updateUI();
+            }, 2000);
+        }
+        return;
+    }
+
     // ボス戦後の章クリア判定
     if (gameState.enemy.isBoss) {
         addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
@@ -1928,7 +1998,9 @@ function generateNewEnemy() {
 
     // 通常敵を生成
     console.log('🎯 通常敵生成中...');
-    const enemyData = dataManager.generateRandomEnemy(gameState.battle.chapter);
+    const location = gameState.battle.location || 'field'; // 現在の場所を取得
+    console.log('📍 現在の場所:', location);
+    const enemyData = dataManager.generateRandomEnemy(gameState.battle.chapter, location);
     console.log('🎲 選択された敵データ:', enemyData);
     
     if (enemyData) {
@@ -3199,12 +3271,108 @@ function switchLocation(location) {
         }, 500);
     }
     
+    // ダンジョン入場時の中ボスイベントをチェック
+    if (location === 'dungeon' && dataManager.loaded) {
+        const midBossEvent = dataManager.getDungeonEvent(gameState.battle.chapter, location, 'mid_boss', 'on_enter');
+        if (midBossEvent) {
+            setTimeout(() => {
+                handleDungeonMidBossEvent(midBossEvent);
+            }, 1000);
+        }
+    }
+    
     // 戦闘をリセットして新しい敵を生成
     gameState.battle.battleCount = 1;
     gameState.battle.battleEnded = false;
     gameState.battle.inTown = false; // 探索場所を選んだので町を出る
     generateNewEnemy();
     updateUI();
+}
+
+// ダンジョン中ボスイベントを処理
+function handleDungeonMidBossEvent(event) {
+    console.log('🏰 中ボスイベント発生:', event);
+    
+    // イベントテキストを表示
+    if (event.event_text) {
+        addBattleLog(`📖 ${event.event_text}`);
+    }
+    
+    // 中ボス戦闘前テキスト
+    if (event.pre_battle_text) {
+        addBattleLog(`💬 ${event.pre_battle_text}`);
+    }
+    
+    // 中ボス敵を生成
+    const midBossData = dataManager.getEnemy(event.mid_boss_enemy);
+    if (midBossData) {
+        gameState.enemy = {
+            id: midBossData.id,
+            name: midBossData.name + ' (中ボス)',
+            hp: midBossData.hp,
+            maxHp: midBossData.hp,
+            attack: midBossData.attack,
+            defense: midBossData.defense,
+            magic: midBossData.magic || 0,
+            speed: midBossData.speed,
+            exp_reward: midBossData.exp_reward || 50,
+            gold_reward: midBossData.gold_reward || 30,
+            drop_rate: midBossData.drop_rate || 0,
+            drop_item: midBossData.drop_item,
+            image: midBossData.image || 'mid_boss.png',
+            isMidBoss: true
+        };
+        
+        addBattleLog(`⚔️ 中ボス「${gameState.enemy.name}」が現れた！`);
+        
+        // 敵画像を表示
+        const enemyImage = document.getElementById('enemyImage');
+        if (enemyImage) {
+            enemyImage.style.display = 'block';
+        }
+        
+        // 敵情報オーバーレイを表示
+        const enemyInfoOverlay = document.querySelector('.enemy-info-overlay');
+        if (enemyInfoOverlay) {
+            enemyInfoOverlay.style.display = 'block';
+        }
+        
+        updateUI();
+    } else {
+        console.error('中ボスデータが見つかりません:', event.mid_boss_enemy);
+    }
+}
+
+// イベント報酬を処理
+function handleEventRewards(rewardsString) {
+    if (!rewardsString) return;
+    
+    const rewards = rewardsString.split(';');
+    rewards.forEach(reward => {
+        const [type, value] = reward.split(':');
+        
+        switch (type.trim()) {
+            case 'experience':
+                const exp = parseInt(value);
+                gameState.player.exp += exp;
+                addBattleLog(`🎯 ボーナス経験値${exp}を獲得！`);
+                break;
+                
+            case 'gold':
+                const gold = parseInt(value);
+                gameState.shared.gold += gold;
+                addBattleLog(`💰 ボーナスゴールド${gold}を獲得！`);
+                break;
+                
+            case 'item':
+                // アイテム追加処理（将来実装）
+                addBattleLog(`📦 特別アイテム「${value}」を獲得！`);
+                break;
+                
+            default:
+                console.log('Unknown reward type:', type);
+        }
+    });
 }
 
 // 敗北時のペナルティ処理
@@ -4547,6 +4715,28 @@ class AudioManager {
                 }
             });
         }
+    }
+
+    // BGM音量設定
+    setBGMVolume(volume) {
+        this.bgmVolume = Math.max(0, Math.min(1, volume)); // 0-1の範囲に制限
+        
+        // 現在再生中のBGMの音量も更新
+        if (this.currentBGM) {
+            const audioId = Array.from(this.audioCache.entries())
+                .find(([id, audio]) => audio === this.currentBGM)?.[0];
+            if (audioId) {
+                const audioData = dataManager.getAudio(audioId);
+                if (audioData) {
+                    this.currentBGM.volume = (parseFloat(audioData.volume) || 0.5) * this.bgmVolume;
+                }
+            }
+        }
+    }
+    
+    // SE音量設定
+    setSEVolume(volume) {
+        this.seVolume = Math.max(0, Math.min(1, volume)); // 0-1の範囲に制限
     }
 
     // ミュート切り替え
