@@ -9,7 +9,7 @@ watch_thief,見張り盗賊,1,dungeon,60,0,18,15,5,12,15,8,0.2,potion,watch_thie
 power_thief,怪力盗賊,1,dungeon,50,0,15,10,0,20,20,12,0.25,equipment_fragment,power_thief.png,盗賊,normal_attack
 genwaku_thief,幻惑盗賊,1,dungeon,50,0,18,15,3,15,20,12,0.25,equipment_fragment,genwaku_thief.png,レンジャー,heavy_attacker
 magic_thief,魔法盗賊,1,dungeon,30,0,15,15,3,6,20,12,0.25,equipment_fragment,magic_thief.png,最弱のモンスター。しかし数が多い,normal_attack
-tifa,ティファ,1,boss,30,0,15,15,3,6,20,12,0.25,equipment_fragment,tifa.png,最弱のモンスター。しかし数が多い,normal_attack
+tifa,ティファ,1,boss,150,0,25,20,0,20,150,100,0.25,equipment_fragment,tifa.png,ティファ,tifa_1
 merel,盗賊団の頭目 メレル,1,boss,30,0,15,15,3,6,20,12,0.25,equipment_fragment,merel.png,最弱のモンスター。しかし数が多い,normal_attack
 orc,オーク,2,field,80,5,25,12,3,6,20,12,0.25,equipment_fragment,orc.png,筋肉質で攻撃力が高い,heavy_attacker
 skeleton,スケルトン,2,field,40,15,20,10,10,15,18,10,0.3,ether,skeleton.png,魔力を持つアンデッド,magic_user

@@ -30,3 +30,7 @@ reveal_truth,真実暴露,special,magic,100,single_enemy,truth,5,magic,1,truth_r
 ice_shard,アイスシャード,attack,magic,12,single_enemy,ice,1.4,magic,1,freeze,2,氷の欠片で攻撃,ice_projectile,ice_sound
 thunder_bolt,サンダーボルト,attack,magic,15,single_enemy,lightning,1.6,magic,1,paralysis,2,雷撃で攻撃,lightning_strike,thunder_sound
 poison_mist,ポイズンミスト,debuff,magic,18,single_enemy,poison,0,magic,1,poison,5,毒の霧を展開,poison_cloud,poison_sound
+tifa_1,掌打ラッシュ,debuff,physical,10,single_enemy,physical,1.5,attack,1,,0,拳によるラッシュ,heavy_strike,power_attack
+tifa_2,サマーソルト,debuff,physical,10,single_enemy,physical,1.8,attack,1,,0,強力な蹴り,heavy_strike,power_attack
+poison_mist,ポイズンミスト,debuff,magic,18,single_enemy,poison,0,magic,1,poison,5,毒の霧を展開,poison_cloud,poison_sound
+poison_mist,ポイズンミスト,debuff,magic,18,single_enemy,poison,0,magic,1,poison,5,毒の霧を展開,poison_cloud,poison_sound

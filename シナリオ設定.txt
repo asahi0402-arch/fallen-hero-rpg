@@ -396,6 +396,588 @@ BREAK translucent water-dress, liquid tendrils, ornate shell accessories, surrou
 
 クロエ：「報酬はしっかりお願いね～！ めちゃくちゃ濡れたし寒かったし……」
 ---------------------------------------------------
+🌕 第3章「魔窟の魔道書庫」
+
+🔹 シナリオ概要
+
+古代王国時代の書物や秘術が封じられた禁書庫の調査任務。
+近年、付近のフィールドで魔導兵器の暴走や、言葉を話す魔物の目撃情報が相次ぎ、ギルドは調査依頼を発行。
+クロエは調査のために現地へ向かうが、そこで “ルナクレス騎士団” に所属するぺこらと遭遇。彼女も別件で禁書庫に入る準備をしていた。
+
+
+
+🔹 ギルドでの会話イベント
+【ミナ：ギルド受付】
+
+（クロエがギルドカウンターに近づく）
+
+ミナ
+「おはよう、クロエ。ちょうど良かった。今朝、少し物騒な依頼が入ったの」
+
+クロエ
+「物騒って……また盗賊退治？」
+
+ミナ
+「いいえ、今回はもっと厄介かも。古代魔法文明時代に作られた“禁書庫”が暴走を始めたらしいの。周辺の動物が突然狂暴化したり、宙に浮く魔導兵器が出現したって報告も来てる」
+
+クロエ
+「禁書庫……またそういう危険そうな場所ね。でも、腕試しには良さそう」
+
+ミナ
+「心強いわ。詳しい場所は“ミリトラ平原”の先。地形は荒れてるけど、まだダンジョン本体には誰も踏み入ってないの」
+
+クロエ
+「じゃあ私が調査第一号ってわけね。報酬、期待してるわよ」
+
+ミナ
+「ふふ、帰ってきたらたっぷり支払うわ。無理はしないでね、クロエ」
+
+🏞 フィールド探索：ミリトラ平原
+
+魔素の濃度が濃い場所を通過しながら、荒れ地や魔法廃墟を進む。
+
+敵と戦いながら、書庫の封印された入口へ。
+
+（途中でゲストキャラとの遭遇）
+
+【兎田ぺこら 登場シーン】
+
+クロエが廃墟の入口に近づいた時、草むらからぴょんと跳ねるようにぺこらが登場
+
+ぺこら
+「おっとぺこ！ この先立ち入り禁止ぺこよ！ 魔導騎士団の調査区域ぺこ！」
+
+クロエ
+「うわっ、急に飛び出さないでよ……。あなた、騎士団の人？」
+
+ぺこら
+「ふっふっふ、そうぺこ！ ルナクレス騎士団特級探索官、兎田ぺこら！ ……って、誰ぺこ？ 新人？」
+
+クロエ
+「冒険者よ。ギルドから依頼を受けてここに来ただけ。あなたの邪魔はしないわ」
+
+ぺこら
+「ふーん、ま、今のところ共通の目的ってわけぺこね。じゃあ……一緒に潜ってみるぺこ？」
+
+クロエ
+「いいの？ 騎士団の人って、基本的に単独行動じゃない？」
+
+ぺこら
+「だってぺこーら、1人より2人の方が安心ぺこ。敵多いし、情報は分け合う主義ぺこよ！」
+
+🏛 ダンジョン：魔窟の魔道書庫
+
+内部は崩壊しかけた書架が並ぶ迷路構造。
+
+禁書が勝手に浮遊して襲ってくるなど、奇怪な仕掛けも多い。
+
+【ダンジョン攻略中の会話】
+
+ぺこら
+「ここって……もともと図書館だったんだよね？ なんでこんな怖いことになってるぺこ？」
+
+クロエ
+「禁書ってそういうものよ。知識が危険になることもある……」
+
+ぺこら
+「うぇえ、ぺこーら本読むの好きだけど、読んで呪われるのはごめんぺこ……」
+
+🦹‍♀️ ボス戦直前
+
+ダンジョン最奥、巨大な魔法陣の中心で浮かぶ魔導書と融合した女性が現れる。
+
+メルティナ（ボス）
+「……知識の器は壊されぬ。肉体も魂も、書の糧とせよ」
+
+クロエ
+「来たわね、禁書の守護者……！」
+
+ぺこら
+「こいつ、明らかにやばいぺこ！！ ちょっと後悔してきたぺこ！！」
+
+💥 ボス撃破後
+
+メルティナ
+「……知識は……また、巡る……」
+
+メルティナは静かに崩れ、魔導書は黒い霧となって消滅する。
+
+ぺこら
+「ふーっ……危なかったぺこ。あんなの、放置してたら国一個潰れたぺこね」
+
+クロエ
+「騎士団の調査も一段落ってところ？」
+
+ぺこら
+「ぺこーらは報告があるけど……そっちは依頼完了ぺこよね？」
+
+クロエ
+「そうね。次の仕事までは、ゆっくりできるといいけど」
+
+🎀 ぺこら別れの会話
+
+ぺこら
+「またどこかで会ったら、背中は任せていいぺこよ？」
+
+クロエ
+「……その時は、お手柔らかにね」
+
 
 
 ---------------------------------------------------
+🏙 フィールド名：「ミリトラ平原」
+
+書庫の前に広がる魔法汚染地帯。大昔の実験跡が点在しており、魔素の濃度が異常に高い。
+
+フィールド雑魚敵（5種）
+
+マジカルスライム
+
+半透明で青紫色、魔法陣模様が体内に浮かぶスライム
+
+プロンプト:
+BBREAK glowing magical slime, bluish-purple transparent body, magic circles inside, slippery surface, pulsating core, BREAK ambient glow, swirling mist, eerie light reflections, no visible limbs
+
+エーテルラビット
+
+魔素の影響で巨大化・暴走した白いウサギ型の魔物。目が真っ赤。
+
+プロンプト:
+BBREAK oversized white rabbit monster, red glowing eyes, twitching ears, chaotic aura, shadowy claws, BREAK corrupted fur, arcane runes etched in skin, floating with magic energy
+
+浮遊魔眼ドール
+
+空中に浮かぶ少女型の無表情な魔導人形。瞳から魔弾を発射する。
+
+プロンプト:
+BBREAK doll-like flying girl, blank stare, porcelain skin, single glowing eye, no mouth, BREAK gothic frilly dress, levitating, crystal core, casting magic projectiles
+
+狂信者の残滓
+
+書庫の魔力に取り憑かれた元人間。もはや意思はなく、暴力的に襲いかかる。
+
+プロンプト:
+BBREAK corrupted priest, tattered robes, twisted limbs, exposed veins glowing red, maddened grin, BREAK burnt scripture pages, black chains, holy symbol turned upside-down
+
+爆裂マナカラス
+
+鳥型の魔物。近づくと自爆魔法を放ってくる。
+
+プロンプト:
+BBREAK mutated crow monster, glowing beak, smoky feathers, floating with mana trails, BREAK magical runes on wings, unstable core, sparks around body
+---------------------------------------------------
+
+🏛 ダンジョン名：「魔窟の魔道書庫」
+
+古代文明の遺構。図書館というより“禁忌の魔法工房”に近い造り。
+
+ダンジョン雑魚敵（5種）
+
+自動防衛機械（マギ・ガード）
+
+魔力で動く鎧兵器。目に当たる宝玉がコア。
+
+プロンプト:
+BBREAK enchanted armor soldier, hollow interior, glowing red crystal eye, steam pipes on back, BREAK arcane engravings on steel plates, magical glow, ancient tech look
+
+スペルイーター
+
+空中に浮かぶ黒い触手の集合体。魔法を吸収して反撃してくる。
+
+プロンプト:
+BBREAK floating mass of black tentacles, glowing mouths, arcane sigils inside body, BREAK glowing runes orbiting around, unstable magic energy, horror-like texture
+
+本の守護者（ブックキーパー）
+
+巨大な書籍に擬態する魔導生物。ページを剣のように飛ばす。
+
+プロンプト:
+BBREAK giant sentient book monster, open pages with sharp edges, demonic eyes on cover, BREAK leather-bound surface, floating bookmarks, magical glow from text
+
+ミミック魔導箱
+
+書庫の中の宝箱に擬態していた。魔法で拘束してくる。
+
+プロンプト:
+BBREAK mimic treasure chest monster, long tongue, glowing eyes inside, magical glyphs on lid, BREAK wooden box with metal edges, false loot inside, sinister aura
+
+ナイト・アルケミスト（中型）
+
+黒い外套をまとった人型錬金術師。小型爆弾や毒霧を使う。
+
+プロンプト:
+BBREAK hooded alchemist humanoid, gas mask, smoke vials, belts with potions, silver gloves, BREAK black robes, chemical flasks, glowing green liquids
+
+🦹‍♀️ ボス：「禁書を纏う者メルティナ」
+
+謎の女魔導士。古代魔導書と一体化しており、触れる者の魔力を奪う。
+
+ボスプロンプト：
+
+BBREAK pale skinned female sorceress, glowing eyes, floating ancient tome, ethereal hair, arcane runes orbiting body, BREAK tattered spellcaster robes, clawed fingers, pages floating like wings, corrupted magical aura
+
+🧙‍♀️ ゲストキャラ：兎田ぺこら（ルナクレス騎士団）
+プロンプト：
+
+BBREAK petite rabbit girl, long silver hair with twin tails, sharp red eyes, confident expression, BREAK armored battle robe with gold trim, knight insignia, spell holsters, magic firearm with glowing barrel
+
+タイプ：魔法使い系
+
+武器：魔法銃＋呪符
+
+設定：ルナクレス騎士団所属の特級探索官。書庫の封印調査を担当中にクロエと出会う。
+---------------------------------------------------
+
+🌊 第4章「深緑の泉と鏡の城」
+🏛 概要
+
+舞台：水と光が交差する神秘の森「ネメリア樹海」
+
+目的：樹海の奥地にある「鏡の城」で暴走する魔力を封じる依頼
+
+ゲストキャラ：金色の闇（ToLOVEる）
+
+フリーの傭兵設定。依頼内容が被っていたため、途中で邂逅。
+
+ボス：「鏡の主 リゼリア」（オリジナル）
+
+新要素：幻影による分身バトル、スキル無効ゾーンのギミック
+
+🎬 ギルドでの会話
+
+ミナ（受付嬢）
+「クロエ、今回はちょっと“変わった依頼”よ。ネメリア樹海にある《鏡の城》の封印が緩んで、幻影の魔物が樹海に溢れ出してるの」
+
+クロエ
+「幻影の魔物って……触れられるの？」
+
+ミナ
+「実体はあるけど、不安定。中には『自分自身』の姿で襲ってくる幻影もあるって噂……」
+
+クロエ
+「めんどくさそうね……でも、悪くない。自分の幻影と戦うなんて、ちょっとワクワクするかも」
+
+ミナ
+「それと、もう一人依頼を受けた人がいるんだけど……ちょっと変わった子らしいの」
+
+クロエ
+「現地で会うことになるわね。相棒になるか、敵になるかはその時次第か」
+
+🗺 フィールド：ネメリア樹海
+
+光が霧の中で乱反射する、幻想的な森林地帯。
+
+魔力が濃く、幻覚を見せる植物や動物が出現する。
+
+【フィールドの敵キャラ5体とプロンプト】
+1. ミストウルフ（幻影獣）
+
+BBREAK ethereal wolf, mist body, glowing cyan eyes, phantasmal fur, semi-transparent legs
+BREAK mystical aura, forest shadow camouflage, particle dispersion effect, long spectral tail,
+
+2. フェイグラス（植物型）
+
+BBREAK feminine-shaped flower spirit, vine limbs, glowing petals, semi-humanoid plant creature
+BREAK overgrown forest dress, blooming chest flowers, pollen trail, enchanted flora pattern,
+
+3. イリュージョンスライム
+
+BBREAK translucent slime girl, floating orbs inside body, shifting rainbow glow
+BREAK fluid-like magical dress, everchanging armor patterns, refracted light effects,
+
+4. シャドーミラー
+
+BBREAK dark humanoid, mirror-like face, void-black armor, no mouth, eerie aura
+BREAK fragmented plate armor, glimmering with glass edges, echoing silhouette cape,
+
+5. リフレクトメイジ（幻影魔法使い）
+
+BBREAK floating illusionist girl, veiled eyes, twin ponytails of smoke, grinning shadow mask
+BREAK layered magician robe, inverted color symbols, glowing glyphs, translucent sleeves,
+
+🛕 ダンジョン：鏡の城
+
+全面が鏡面素材で覆われた、幻想的な構造の迷宮。
+
+幻影の自分と戦う“自己再帰ゾーン”や、スキルが使えない“沈黙の回廊”が存在。
+
+🧍‍♀️ ゲストキャラ：金色の闇 登場
+
+ダンジョン入口で戦闘の音。クロエが駆けつけると、一人で幻影を次々と倒す金色の闇。
+
+クロエ
+「……あれ、普通に強い。あれが、もう一人の依頼者？」
+
+ヤミ
+「……邪魔。あなたは、私の依頼対象ではない」
+
+クロエ
+「そっちもギルドから？ 一緒に来ない？」
+
+ヤミ
+「命令には従う。でも、目的が重なるなら行動を合わせるのは合理的」
+
+クロエ
+「（機械みたいな子……でも、頼れそうではある）」
+
+🧟‍♀️ ダンジョンの敵キャラ5体とプロンプト
+1. リフレクターガール
+
+BBREAK humanoid mirror golem, chrome skin, one-eyed reflection orb, no mouth
+BREAK mirror plate bikini armor, crystal core on chest, jagged reflective crown,
+
+2. フォトンイーター
+
+BBREAK energy-absorbing ghost girl, glowing circuits over pale body, spectral fangs
+BREAK transparent layered suit, photonic ripple effects, anti-light sigils,
+
+3. ミラーシャドウ（クロエの幻影）
+
+BBREAK dark clone of Chloe, reversed eye color, eerie smile, blood mist aura
+BREAK cracked adventurer armor, mirrored sword, flowing torn cape,
+
+4. クリスタルメイデン
+
+BBREAK tall glass statue girl, emotionless, glowing inside from core crystal
+BREAK elegant crystal gown, refractive shoulder guards, glass heels, halo crown,
+
+5. スペクトラルクィーン（中ボス）
+
+BBREAK tall magical queen, four arms, glowing mirrored mask, white flowing hair
+BREAK regal transparent gown, glyph tattoos, multiple staff floating behind her,
+
+👑 最終ボス：鏡の主 リゼリア
+
+BBREAK goddess-like mage, one horn, platinum braid, glowing third eye, floating stance
+BREAK broken mirror armor, fragmented crystal wings, glowing magical runes on skin,
+
+💬 ボス戦・会話イベント
+
+リゼリア
+「己を見つめよ、過去を照らせ。汝らは何を映す――」
+
+クロエ
+「自分の過去を突きつけるなんて……嫌な趣味ね」
+
+ヤミ
+「……分析不要。危険対象。排除する」
+
+✅ 撃破後
+
+リゼリア
+「……鏡が砕けても……映るものは……失われぬ……」
+
+ヤミ
+「依頼、完了。報告へ向かう」
+
+クロエ
+「あなたって……最後まで無表情ね。でも、助かったわ」
+
+ヤミ
+「そう。ではまた、どこかで」
+----------------------------------------------------------------------------------
+🏜️ 第5章「砂と月のカタコンベ」
+🏛 概要
+
+舞台：乾いた風が吹く灼熱のフィールド「バルナ砂原」および、地下遺跡「ルナティカの地下神殿」
+
+目的：「夜間に発生する怪奇現象」の調査依頼
+
+ゲストキャラ：ララ（ToLOVEる）
+
+冒険ギルドには属さず、「面白そうだったから来た」という自由人
+
+陽気で天才肌。どこか抜けているが、技術と知識は一級品
+
+ボス：「月蝕の霊姫 ファルティナ」（オリジナル）
+
+ギミック：昼夜で敵が変化、魔力の潮が満ちると敵が強化される
+
+🎬 ギルドでの会話
+
+ミナ（受付嬢）
+「クロエ、今回は変わり種よ。“月夜にだけ出現する地下神殿”の調査依頼。バルナ砂原に現れたって話なの」
+
+クロエ
+「地下神殿が夜になると“出現”する……？ 幻想の話か、古代魔術か……どっちにしろ面倒そうね」
+
+ミナ
+「依頼にはこう書かれてる。“地の底で、月に祈る姫の声がする”って……ちょっとロマンあるわよね」
+
+クロエ
+「まぁ、悪くない。たまには幻想的な景色も見てみたいし」
+
+📍 フィールド：バルナ砂原
+
+枯れた大地に遺跡が点在する、灼熱の砂漠地帯
+
+夕暮れから夜になると、魔力の反応が活発化し、フィールドの雰囲気が一変する
+
+【フィールド敵キャラ5体 & プロンプト】
+1. デューンサーペント（砂蛇）
+
+BBREAK massive serpent girl, sandy skin tone, glowing red eyes, cracked scales
+BREAK tribal wrappings, sand-dusted armor plates, coiled lower body, fang earring,
+
+2. サンドシェイド（幽霊兵）
+
+BBREAK desert ghost warrior, hollow armor, glowing eye slits, flowing tattered cape
+BREAK faded desert garb, rusted scimitar, spectral sand trails, crescent tattoo,
+
+3. スカラベマギ（虫魔導士）
+
+BBREAK humanoid beetle girl, chitinous limbs, golden mandibles, glowing antennae
+BREAK desert sorceress robes, insect jewelry, scarab-shaped staff, shimmer veil,
+
+4. デザートファタ（蜃気楼妖精）
+
+BBREAK illusion fairy, heat-haze wings, glowing aura, floating barefoot girl
+BREAK see-through scarf outfit, gold bangles, mirage shimmer effects, jewel belt,
+
+5. クレストウォーカー（遺跡歩行者）
+
+BBREAK ancient golem girl, sandstone body, carved runes, moss patches
+BREAK crumbling temple dress, cragged shoulder plates, jewel-core chest, twin obelisks as arms,
+
+🎀 ゲストキャラ：ララ（ToLOVEる）登場シーン
+
+神殿前で、奇妙な装置を組み立てているララ。
+
+クロエ
+「……何やってるの？」
+
+ララ
+「おー、ちょうどいいところに来た！ あなた、地面が爆発して飛ぶ装置、興味ある？」
+
+クロエ
+「……ない（即答）」
+
+ララ
+「えー！？ でもこれで神殿の天井もぶち抜けるんだよ！？」
+
+クロエ
+「神殿を壊すな」
+
+ララ
+「ふふ、でも面白そうな遺跡だから一緒に調査しない？ 私、超頭いいからきっと役に立つよ～」
+
+クロエ
+「不安しかないけど……まぁ、戦えるならついてきて」
+
+🛕 ダンジョン：ルナティカの地下神殿
+
+月光が差し込む神秘的な地下空間。反射する魔力と音が迷路のような感覚を生む
+
+月の力に影響される敵が多数。満月になるとエリアギミックが活性化
+
+【ダンジョン内の敵キャラ5体 & プロンプト】
+1. ルナワーデン（神殿守）
+
+BBREAK silver knight girl, crescent helm, glowing white hair, lunar emblem armor
+BREAK enchanted plate, moonlight cape, radiant halberd, gemstone embedded shield,
+
+2. ミラージュウィッチ
+
+BBREAK elegant moon witch, glowing runes, long flowing hair, face veil
+BREAK moon phase robes, floating star orbs, silver heeled boots, ancient wand,
+
+3. シャインゴーレム（光の幻影）
+
+BBREAK transparent humanoid, refracted glass body, glowing inner core
+BREAK crystal armor, prism blade arms, floating aura crown, shimmering feet,
+
+4. ルナフォックス（幻獣）
+
+BBREAK humanoid fox girl, multiple glowing tails, silver-blue fur, starlight eyes
+BREAK celestial garb, spirit beads, veil sash, glowing moon rings,
+
+5. 月蝕の霊姫 ファルティナ（ボス）
+
+BBREAK ethereal princess, pale lavender skin, white hair haloed by crescent moon
+BREAK ceremonial moon dress, glowing chains, runed circlet, ghostly veil cloak,
+
+💬 ボス戦前イベント
+
+ファルティナ
+「月に焦がれ、地に縛られし我が魂……光の代償を、今こそ捧げよ」
+
+ララ
+「うわー、めちゃくちゃ綺麗な人！ でもちょっとヤバそう！」
+
+クロエ
+「ララ、いつでも逃げていいわよ？」
+
+ララ
+「え？ 逃げるとかないない！ 戦いは爆発の始まりだから！」
+
+✅ 撃破後
+
+ファルティナ
+「……解かれし鎖……月が……また……見える……」
+
+ララ
+「ふぅ～、やったー！ これで地下でも爆発テストができるね！」
+
+クロエ
+「お前、絶対に爆破する気だろ……」
+
+🎮 ララ設定情報まとめ
+
+所属：なし（自由に活動する天才発明家）
+
+戦闘タイプ：魔法使い系
+
+武器：多機能ロッド（変形型の科学×魔術アイテム）
+
+衣装：軽装のSF風アレンジ魔術ローブ
+　（プロンプトは次で提示）
+
+🎨 ララの衣装プロンプト
+
+BBREAK cheerful pink-haired girl, alien princess look, sparkling magenta eyes, side ponytail, confident smile
+BREAK sci-fi inspired mage outfit, high-tech spell rod, glowing circuit patterns, white-purple robe with gold trims, floating accessory drones,
+
+
+了解しました！
+それでは**「各章でダンジョン到着時に中ボス戦を必ず挟む」**というルールを今後のシナリオに取り入れます。
+
+🔄 追加設定（今後の章に共通）
+
+ダンジョンに到着した直後、中ボス戦を挟む
+
+中ボスは「ボスの配下」「ダンジョンを守護する番人」などで、物語的にも存在に意味を持たせる
+
+会話イベントあり（クロエとのやりとりや、ゲストキャラのセリフ含む）
+
+デザイン＆プロンプトも毎回用意
+
+
+🛕 第5章への反映
+
+すでに進行中の第5章「砂と月のカタコンベ」に中ボス戦を追記します。
+
+⚔️ 中ボス：ルナガーディアン・ネフィア
+
+役割：神殿内部に入る資格を試す「月の試練者」
+
+性格：冷静沈着、試験官のような態度でクロエたちを審査する
+
+外見：月を模した盾と、曲線を描く槍を使う女性型ガーディアン
+
+💬 中ボス戦前イベント
+
+ネフィア
+「ここは月の聖域。光に導かれし者よ、汝の意志と力を示せ」
+
+ララ
+「えぇー！ 入るだけで戦うの？ まぁ爆発があればどうにかなるか～！」
+
+クロエ
+「やっぱりそういうノリなのね……」
+
+🎨 ネフィアのプロンプト
+
+BBREAK stoic moon guardian girl, pale silver hair, sharp eyes, calm expression, crescent tattoo on cheek
+BREAK moonlight armor, mirrored shield, curved halberd, celestial priestess garb, radiant dust floating,
+
+--------------------------------------------------------------------

@@ -177,7 +177,7 @@
             </div>
         </div>
 
-        <!-- 下部：プレイヤーコントロール＋戦闘ログ -->
+        <!-- 下部：プレイヤーコントロール＋ログ -->
         <div class="bottom-controls">
             <!-- 左側：プレイヤーHP/MPとコマンド -->
             <div class="player-controls-left">
@@ -216,9 +216,9 @@
                 </div>
             </div>
             
-            <!-- 右側：戦闘ログ -->
+            <!-- 右側：ログ -->
             <div class="battle-log-right">
-                <div class="log-header">戦闘ログ</div>
+                <div class="log-header">ログ</div>
                 <div class="log-content" id="battleLogContent">
                     <div class="log-entry">戦闘が開始されました</div>
                     <div class="log-entry">プレイヤーの攻撃！</div>
@@ -478,6 +478,47 @@
                     
                     <div class="gacha-info">
                         <div class="player-gold">所持金: <span id="gachaPlayerGold">100</span>G</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ストーリー会話モーダル -->
+        <div class="story-modal" id="storyModal" style="display: none;">
+            <div class="story-modal-content">
+                <!-- 上半分：背景画像＋立ち絵エリア -->
+                <div class="story-visual-area">
+                    <div class="story-background-layer">
+                        <img id="storyBackground" class="story-bg-image" alt="背景">
+                    </div>
+                    
+                    <!-- キャラクター立ち絵レイヤー -->
+                    <div class="story-character-layer">
+                        <div class="story-character-left">
+                            <img id="storyCharacterLeft" class="story-character-image" alt="左キャラクター" style="display: none;">
+                        </div>
+                        <div class="story-character-right">
+                            <img id="storyCharacterRight" class="story-character-image" alt="右キャラクター" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 下半分：セリフログエリア -->
+                <div class="story-dialogue-area">
+                    <div class="story-speaker-name" id="storySpeakerName">話し手</div>
+                    <div class="story-dialogue-window">
+                        <div class="story-dialogue-text" id="storyDialogueText">会話テキストがここに表示されます。</div>
+                    </div>
+                    <div class="story-control-buttons">
+                        <button class="story-control-btn story-next-btn" id="storyNextBtn">次へ</button>
+                        <button class="story-control-btn" id="storySkipBtn">スキップ</button>
+                        <button class="story-control-btn" id="storyCloseBtn">閉じる</button>
+                    </div>
+                    
+                    <!-- プログレスバー -->
+                    <div class="story-progress-bar">
+                        <div class="story-progress-fill" id="storyProgressFill"></div>
+                        <div class="story-progress-text" id="storyProgressText">1/5</div>
                     </div>
                 </div>
             </div>

@@ -68,6 +68,7 @@ let gameState = {
         battleCount: 1,
         maxBattles: 10,
         isPlayerTurn: true,
+        actionInProgress: false,
         isAutoMode: false,
         autoLevelUpMode: 'manual', // 'manual' or 'random'
         battleEnded: false,
@@ -489,6 +490,54 @@ function updateUI() {
     
     // 逃げるボタンの状態更新
     updateFleeButtonState();
+    
+    // アクション進行中のボタン無効化
+    updateActionButtonsState();
+}
+
+// アクションボタンの状態更新
+function updateActionButtonsState() {
+    const actionInProgress = gameState.battle.actionInProgress;
+    const isPlayerTurn = gameState.battle.isPlayerTurn;
+    const battleEnded = gameState.battle.battleEnded;
+    const storyInProgress = gameState.battle.storyInProgress;
+    const inTown = gameState.battle.inTown;
+    
+    // 戦闘系ボタンを無効化する条件（攻撃・スキル）
+    const shouldDisableBattleActions = actionInProgress || !isPlayerTurn || battleEnded || storyInProgress;
+    
+    // アイテムボタンを無効化する条件（街中では常に有効）
+    const shouldDisableItems = !inTown && (actionInProgress || storyInProgress);
+    
+    // 攻撃ボタン（戦闘専用）
+    if (elements.attackBtn) {
+        elements.attackBtn.disabled = shouldDisableBattleActions || inTown;
+        if (shouldDisableBattleActions || inTown) {
+            elements.attackBtn.classList.add('disabled');
+        } else {
+            elements.attackBtn.classList.remove('disabled');
+        }
+    }
+    
+    // スキルボタン（戦闘専用）
+    if (elements.skillBtn) {
+        elements.skillBtn.disabled = shouldDisableBattleActions || inTown;
+        if (shouldDisableBattleActions || inTown) {
+            elements.skillBtn.classList.add('disabled');
+        } else {
+            elements.skillBtn.classList.remove('disabled');
+        }
+    }
+    
+    // アイテムボタン（街中でも使用可能）
+    if (elements.itemBtn) {
+        elements.itemBtn.disabled = shouldDisableItems;
+        if (shouldDisableItems) {
+            elements.itemBtn.classList.add('disabled');
+        } else {
+            elements.itemBtn.classList.remove('disabled');
+        }
+    }
 }
 
 // 背景画像を切り替える
@@ -535,22 +584,36 @@ function playLocationBGM(locationType) {
     
     let bgmId = null;
     
-    switch(locationType) {
-        case 'town':
-        case 'inn':
-        case 'item_shop':
-        case 'gacha_shop':
-            bgmId = 'bgm_town';
-            break;
-        case 'field':
-        case 'plains':
-            bgmId = 'bgm_field';
-            break;
-        case 'dungeon':
-        case 'cave':
-        case 'dark_forest':
-            bgmId = 'bgm_dungeon';
-            break;
+    // 敵の種類に応じてBGMを決定（優先順位：ボス > 中ボス > 通常敵）
+    if (gameState.enemy) {
+        if (gameState.enemy.isBoss) {
+            bgmId = 'bgm_boss';
+            console.log(`🎵 Boss battle detected, playing boss BGM for enemy: ${gameState.enemy.name}`);
+        } else if (gameState.enemy.isMidBoss) {
+            bgmId = 'bgm_boss';  // 中ボスもボスBGMを使用
+            console.log(`🎵 Mid-boss battle detected, playing boss BGM for enemy: ${gameState.enemy.name}`);
+        }
+    }
+    
+    // 敵がいない、または通常敵の場合は場所に応じたBGM
+    if (!bgmId) {
+        switch(locationType) {
+            case 'town':
+            case 'inn':
+            case 'item_shop':
+            case 'gacha_shop':
+                bgmId = 'bgm_town';
+                break;
+            case 'field':
+            case 'plains':
+                bgmId = 'bgm_field';
+                break;
+            case 'dungeon':
+            case 'cave':
+            case 'dark_forest':
+                bgmId = 'bgm_dungeon';
+                break;
+        }
     }
     
     if (bgmId) {
@@ -946,7 +1009,7 @@ function useSkill(skillName) {
     }
     
     gameState.battle.isPlayerTurn = false;
-    setTimeout(enemyTurn, 1000);
+    setTimeout(processEnemyTurn, 1000);
 }
 
 // アイテム使用
@@ -1220,7 +1283,7 @@ function useItem(itemId) {
     // 戦闘中の場合のみターン切り替え
     if (!gameState.battle.inTown) {
         gameState.battle.isPlayerTurn = false;
-        setTimeout(enemyTurn, 1000);
+        setTimeout(processEnemyTurn, 1000);
     }
 }
 
@@ -1394,101 +1457,7 @@ function updateItemDisplay() {
     }
 }
 
-// 敵のターン（CSV駆動）
-function enemyTurn() {
-    console.log('🔄 enemyTurn関数が呼ばれました！');
-    if (gameState.battle.battleEnded) {
-        console.log('❌ 戦闘終了済みのため敵ターンをスキップ');
-        return;
-    }
-    
-    console.log('📊 dataManager.loaded:', dataManager.loaded);
-    console.log('👹 gameState.enemy:', gameState.enemy);
-    
-    // CSV駆動の敵行動選択
-    if (dataManager.loaded && gameState.enemy && gameState.enemy.id) {
-        console.log('✅ CSV駆動の敵行動を実行');
-        const action = dataManager.selectEnemyAction(gameState.enemy.id);
-        console.log('🎲 選択された行動:', action);
-        executeEnemyAction(action);
-    } else {
-        console.log('⚠️ フォールバック：従来の行動パターン');
-        // フォールバック：従来の行動パターン
-        if (Math.random() < 0.8) {
-            console.log('✅ executeEnemyAttack()を実行');
-            executeEnemyAttack();
-            
-            if (gameState.player.hp <= 0) {
-                handlePlayerDefeat();
-                return;
-            }
-        } else {
-            console.log('😴 敵は様子見');
-            addBattleLog(`${gameState.enemy.name}は様子を見ている...`);
-        }
-    }
-    
-    updateUI();
-    gameState.battle.isPlayerTurn = true;
-    
-    // オートモード時の自動攻撃
-    if (gameState.battle.isAutoMode && !gameState.battle.storyInProgress) {
-        setTimeout(() => {
-            if (gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
-                playerAttack();
-            }
-        }, 1000);
-    }
-}
 
-// 敵の行動を実行
-function executeEnemyAction(action) {
-    console.log('⚔️ executeEnemyAction関数が呼ばれました！');
-    console.log('🎲 受け取った行動:', action);
-    
-    if (!action) {
-        console.log('❌ 行動データがnullまたはundefined');
-        return;
-    }
-
-    console.log('🔍 行動タイプ:', action.action_type);
-    
-    switch (action.action_type) {
-        case 'attack':
-            console.log('⚔️ 通常攻撃を実行');
-            executeEnemyAttack();
-            break;
-            
-        case 'skill':
-            console.log('🪄 スキル行動を実行');
-            if (action.skill_id) {
-                const skill = dataManager.getSkill(action.skill_id);
-                if (skill) {
-                    executeEnemySkill(skill);
-                } else {
-                    console.log('⚠️ スキルが見つからないため通常攻撃に切り替え');
-                    executeEnemyAttack();
-                }
-            } else {
-                console.log('⚠️ スキルIDが無いため通常攻撃に切り替え');
-                executeEnemyAttack();
-            }
-            break;
-            
-        case 'wait':
-            console.log('😴 敵は様子見');
-            addBattleLog(`${gameState.enemy.name}は様子を見ている...`);
-            break;
-            
-        default:
-            console.log('❓ 不明な行動タイプ、通常攻撃に切り替え');
-            executeEnemyAttack();
-    }
-    
-    if (gameState.player.hp <= 0) {
-        handlePlayerDefeat();
-    }
-}
 
 // 敵の通常攻撃処理（ダメージSE+シェイク付き）
 function executeEnemyAttack() {
@@ -1525,6 +1494,24 @@ function executeEnemyAttack() {
     
     // HPが変更されたのでプレイヤーメディアを更新
     updatePlayerMedia();
+    
+    // プレイヤー敗北チェック
+    if (gameState.player.hp <= 0) {
+        addBattleLog('💀 あなたは倒れてしまった...');
+        gameState.battle.battleEnded = true;
+        gameState.battle.actionInProgress = false; // アクション完了
+        
+        // 敗北処理
+        setTimeout(() => {
+            handlePlayerDefeat();
+        }, 2000);
+        return;
+    }
+    
+    // プレイヤーターンに戻る
+    gameState.battle.isPlayerTurn = true;
+    gameState.battle.actionInProgress = false; // アクション完了
+    updateUI();
 }
 
 // 敵のスキル実行
@@ -1545,7 +1532,7 @@ function executeEnemySkill(skill) {
 
     console.log('🔍 スキルタイプ:', skill.type);
     
-    if (skill.type === 'attack') {
+    if (skill.type === 'attack' || skill.type === 'debuff') {
         console.log('⚔️ 攻撃スキルを実行中');
         
         // 敵の拡大アニメーションを常に表示
@@ -1617,6 +1604,24 @@ function executeEnemySkill(skill) {
             audioManager.playSE(skill.sound_effect);
         }
     }
+    
+    // プレイヤー敗北チェック
+    if (gameState.player.hp <= 0) {
+        addBattleLog('💀 あなたは倒れてしまった...');
+        gameState.battle.battleEnded = true;
+        gameState.battle.actionInProgress = false; // アクション完了
+        
+        // 敗北処理
+        setTimeout(() => {
+            handlePlayerDefeat();
+        }, 2000);
+        return;
+    }
+    
+    // プレイヤーターンに戻る
+    gameState.battle.isPlayerTurn = true;
+    gameState.battle.actionInProgress = false; // アクション完了
+    updateUI();
 }
 
 // プレイヤー敗北処理
@@ -1632,6 +1637,12 @@ function handlePlayerDefeat() {
         autoBtn.style.backgroundColor = '#3498db';
     }
     
+    // 敗北処理が既に実行済みかチェック
+    if (gameState.battle.defeatProcessed) {
+        return; // 既に処理済みなら何もしない
+    }
+    gameState.battle.defeatProcessed = true; // 処理済みフラグ
+    
     // フィールド/ダンジョン対応の敗北ペナルティ
     applyDefeatPenalty();
     
@@ -1642,7 +1653,11 @@ function handlePlayerDefeat() {
 
 // 敗北モーダル表示
 function showDefeatModal() {
-    const lostGold = Math.floor(gameState.shared.gold * 0.5);
+    // 敗北ペナルティは既にapplyDefeatPenalty()で適用済み
+    // ここでは表示用の情報のみ取得
+    const currentGold = gameState.shared.gold;
+    const lostGoldDisplay = Math.floor(currentGold / (0.5)); // 元の金額から逆算
+    const actualLostGold = lostGoldDisplay - currentGold; // 実際に失った金額
     const isInDungeon = gameState.battle.location === 'dungeon';
     
     const modal = document.createElement('div');
@@ -1665,13 +1680,13 @@ function showDefeatModal() {
                     <div class="loss-items">
                         <div class="loss-item">
                             <span class="loss-type">💰 ゴールド</span>
-                            <span class="loss-value">${lostGold}</span>
+                            <span class="loss-value">${actualLostGold}</span>
                         </div>
                         ${isInDungeon ? '<div class="loss-item"><span class="loss-type">⛰️ 進行度</span><span class="loss-value">1階からやり直し</span></div>' : ''}
                     </div>
                 </div>
                 <div class="defeat-hope">
-                    <p>💪 ${isInDungeon ? 'ダンジョン1階から' : '現在の場所で'}再び立ち上がり、挑戦しましょう！</p>
+                    <p>💪 街に戻って体勢を立て直し、再び挑戦しましょう！</p>
                 </div>
                 <button class="command-btn retry-btn" id="retryBtn">
                     <span class="btn-text">🔄 再挑戦</span>
@@ -1732,6 +1747,15 @@ function nextBattleAfterFlee() {
 
 // 次の戦闘
 function nextBattle() {
+    // 戦闘終了時のフラグをリセット（最初に実行）
+    gameState.battle.battleEnded = false;
+    gameState.battle.actionInProgress = false;
+    
+    console.log('🔄 nextBattle started - flags reset:', {
+        battleEnded: gameState.battle.battleEnded,
+        actionInProgress: gameState.battle.actionInProgress
+    });
+    
     // 経験値・ゴールド獲得処理
     if (gameState.enemy.exp_reward) {
         gameState.player.exp += gameState.enemy.exp_reward;
@@ -1965,7 +1989,7 @@ function generateNewEnemy() {
         if (bossData) {
             gameState.enemy = {
                 id: bossData.id,
-                name: bossData.name + ' (ボス)',
+                name: bossData.name,
                 hp: bossData.hp,
                 maxHp: bossData.hp,
                 attack: bossData.attack,
@@ -1980,6 +2004,9 @@ function generateNewEnemy() {
                 isBoss: true
             };
             addBattleLog(`章ボス「${gameState.enemy.name}」が現れた！`);
+            
+            // ボス戦BGMに切り替え
+            playLocationBGM(gameState.battle.location);
             
             // ボス遭遇時のストーリートリガーをチェック
             setTimeout(() => {
@@ -2034,6 +2061,9 @@ function generateNewEnemy() {
             enemyInfoOverlay.style.display = 'block';
         }
         
+        // 敵生成後にBGMを更新（敵の種類に応じて）
+        playLocationBGM(gameState.battle.location);
+        
         // オートモードが有効で戦闘中なら自動攻撃を開始（ストーリー進行中は除く）
         if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
             setTimeout(() => {
@@ -2074,24 +2104,39 @@ function resetChapter() {
 // 敗北後のリセット（フィールド/ダンジョン対応）
 function resetAfterDefeat() {
     gameState.battle.battleCount = 1;
-    gameState.battle.battleEnded = false;
+    gameState.battle.battleEnded = true; // 戦闘終了状態に
+    gameState.battle.defeatProcessed = false; // 敗北処理フラグをリセット
     gameState.player.hp = gameState.player.maxHp;
     gameState.player.mp = gameState.player.maxMp;
     
     // 状態異常クリア
     gameState.player.statusEffects = {};
     
-    // ダンジョンの場合は1階からやり直し
-    if (gameState.battle.location === 'dungeon') {
-        gameState.battle.dungeonFloor = 1;
+    // フィールド・ダンジョン問わず街に戻る
+    gameState.battle.location = 'field';
+    gameState.battle.inTown = true;
+    gameState.battle.dungeonFloor = 1; // ダンジョン階層をリセット
+    gameState.enemy = null; // 敵をクリア
+    
+    // 背景を町に変更
+    changeBackground('town');
+    
+    // 敵画像を非表示
+    const enemyImage = document.getElementById('enemyImage');
+    if (enemyImage) {
+        enemyImage.style.display = 'none';
     }
     
-    // 新しい敵を生成
-    generateNewEnemy();
+    // 敵情報オーバーレイを非表示
+    const enemyInfoOverlay = document.querySelector('.enemy-info-overlay');
+    if (enemyInfoOverlay) {
+        enemyInfoOverlay.style.display = 'none';
+    }
     
     gameState.battle.isPlayerTurn = true;
-    elements.battleLogContent.innerHTML = '<div class="log-entry">戦闘を再開しました</div>';
-    addBattleLog(`${gameState.enemy.name}が現れた！`);
+    elements.battleLogContent.innerHTML = '<div class="log-entry">街に帰還しました</div>';
+    addBattleLog('💔 敗北したため街に戻りました...');
+    addBattleLog('🏠 体勢を立て直して再び挑戦しましょう！');
     updateUI();
 }
 
@@ -2154,6 +2199,12 @@ function nextChapter() {
 function setupEventListeners() {
     // コマンドボタン
     elements.attackBtn.addEventListener('click', () => {
+        // 連打防止：既に処理中の場合は無視
+        if (gameState.battle.actionInProgress) {
+            console.log('🚫 Attack button clicked but action is already in progress');
+            return;
+        }
+        
         soundEffects.playClick();
         playerAttack();
     });
@@ -2222,7 +2273,17 @@ function setupEventListeners() {
     elements.shopBtn.addEventListener('click', () => {
         soundEffects.playClick();
         if (isInDungeon()) {
+            console.log('🏪 Shop blocked in dungeon - battle state before:', {
+                isPlayerTurn: gameState.battle.isPlayerTurn,
+                battleEnded: gameState.battle.battleEnded,
+                storyInProgress: gameState.battle.storyInProgress
+            });
             addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+            console.log('🏪 Shop blocked in dungeon - battle state after:', {
+                isPlayerTurn: gameState.battle.isPlayerTurn,
+                battleEnded: gameState.battle.battleEnded,
+                storyInProgress: gameState.battle.storyInProgress
+            });
             return;
         }
         openShop();
@@ -2367,7 +2428,17 @@ function setupEventListeners() {
         tavernBtn.addEventListener('click', () => {
             soundEffects.playClick();
             if (isInDungeon()) {
+                console.log('🍺 Tavern blocked in dungeon - battle state before:', {
+                    isPlayerTurn: gameState.battle.isPlayerTurn,
+                    battleEnded: gameState.battle.battleEnded,
+                    storyInProgress: gameState.battle.storyInProgress
+                });
                 addBattleLog('⚠️ 街に戻るには「帰還の玉」が必要です');
+                console.log('🍺 Tavern blocked in dungeon - battle state after:', {
+                    isPlayerTurn: gameState.battle.isPlayerTurn,
+                    battleEnded: gameState.battle.battleEnded,
+                    storyInProgress: gameState.battle.storyInProgress
+                });
                 return;
             }
             openTavern();
@@ -2766,6 +2837,26 @@ function checkLevelUp() {
             // ランダム割り振り
             autoAllocateStatPoints(3);
             addBattleLog('🎲 ステータスポイントを自動で割り振りました');
+            
+            // HP・MPを全回復
+            gameState.player.hp = gameState.player.maxHp;
+            gameState.player.mp = gameState.player.maxMp;
+            addBattleLog('HP・MPが全回復しました！');
+            
+            // 自動レベルアップ完了後のフラグリセット
+            gameState.battle.pausedForLevelUp = false;
+            gameState.battle.actionInProgress = false;
+            gameState.battle.isPlayerTurn = true;
+            
+            console.log('✅ Auto level up completed - flags reset:', {
+                pausedForLevelUp: gameState.battle.pausedForLevelUp,
+                actionInProgress: gameState.battle.actionInProgress,
+                isPlayerTurn: gameState.battle.isPlayerTurn
+            });
+            
+            // UIを更新してボタンを有効化
+            updateUI();
+            updatePlayerMedia();
         } else {
             // レベルアップモーダルを表示（オートモードでも手動設定の場合は表示）
             // 戦闘を一時停止
@@ -2914,6 +3005,19 @@ function confirmLevelUpAllocation() {
     // レベルアップ一時停止フラグを解除
     gameState.battle.pausedForLevelUp = false;
     
+    // actionInProgressフラグをリセット（レベルアップ後の重要な処理）
+    gameState.battle.actionInProgress = false;
+    gameState.battle.isPlayerTurn = true; // プレイヤーターンに確実に戻す
+    
+    console.log('✅ Level up completed - flags reset:', {
+        pausedForLevelUp: gameState.battle.pausedForLevelUp,
+        actionInProgress: gameState.battle.actionInProgress,
+        isPlayerTurn: gameState.battle.isPlayerTurn
+    });
+    
+    // UIを更新してボタンを有効化
+    updateUI();
+    
     // 元々オートモードで手動設定を選んでいた場合、オートモードを再開
     const autoBtn = document.getElementById('autoBtn');
     if (autoBtn && autoBtn.textContent === '手動') {
@@ -2939,7 +3043,7 @@ function attemptFlee() {
     if (isBoss) {
         addBattleLog('💀 ボス戦では逃げることができない！');
         gameState.battle.isPlayerTurn = false;
-        setTimeout(enemyTurn, 1500);
+        setTimeout(processEnemyTurn, 1500);
         return;
     }
     
@@ -2963,7 +3067,7 @@ function attemptFlee() {
         
         // 敵のターンになる
         gameState.battle.isPlayerTurn = false;
-        setTimeout(enemyTurn, 1500);
+        setTimeout(processEnemyTurn, 1500);
     }
 }
 
@@ -3202,6 +3306,19 @@ function switchLocation(location) {
         return;
     }
     
+    // ダンジョン入場前にギルド会話イベント必須チェック
+    if (location === 'dungeon') {
+        const currentChapter = gameState.battle.chapter;
+        const visitKey = `chapter_${currentChapter}`; // ギルドフラグと同じ形式に修正
+        const hasVisitedGuild = gameState.battle.guildFirstVisits[visitKey];
+        
+        if (!hasVisitedGuild) {
+            addBattleLog('⚠️ ダンジョンに入る前に、まずギルドで情報を収集してください');
+            addBattleLog('💡 ギルドで依頼内容や敵の情報を確認してからダンジョンに挑戦しましょう');
+            return;
+        }
+    }
+    
     // ダンジョンからフィールドへの移動を禁止
     if (isInDungeon() && location === 'field') {
         addBattleLog('⚠️ ダンジョンからフィールドには移動できません。街に戻るには「帰還の玉」が必要です');
@@ -3271,20 +3388,23 @@ function switchLocation(location) {
         }, 500);
     }
     
+    // 戦闘をリセット
+    gameState.battle.battleCount = 1;
+    gameState.battle.battleEnded = false;
+    gameState.battle.inTown = false; // 探索場所を選んだので町を出る
+    
     // ダンジョン入場時の中ボスイベントをチェック
     if (location === 'dungeon' && dataManager.loaded) {
         const midBossEvent = dataManager.getDungeonEvent(gameState.battle.chapter, location, 'mid_boss', 'on_enter');
         if (midBossEvent) {
-            setTimeout(() => {
-                handleDungeonMidBossEvent(midBossEvent);
-            }, 1000);
+            console.log('🎯 Mid-boss event found, handling immediately');
+            handleDungeonMidBossEvent(midBossEvent);
+            updateUI();
+            return; // 通常の敵生成はスキップ
         }
     }
     
-    // 戦闘をリセットして新しい敵を生成
-    gameState.battle.battleCount = 1;
-    gameState.battle.battleEnded = false;
-    gameState.battle.inTown = false; // 探索場所を選んだので町を出る
+    // 通常の敵を生成（中ボスイベントがない場合のみ）
     generateNewEnemy();
     updateUI();
 }
@@ -3308,7 +3428,7 @@ function handleDungeonMidBossEvent(event) {
     if (midBossData) {
         gameState.enemy = {
             id: midBossData.id,
-            name: midBossData.name + ' (中ボス)',
+            name: midBossData.name,
             hp: midBossData.hp,
             maxHp: midBossData.hp,
             attack: midBossData.attack,
@@ -3324,6 +3444,9 @@ function handleDungeonMidBossEvent(event) {
         };
         
         addBattleLog(`⚔️ 中ボス「${gameState.enemy.name}」が現れた！`);
+        
+        // ボス戦BGMに切り替え
+        playLocationBGM(gameState.battle.location);
         
         // 敵画像を表示
         const enemyImage = document.getElementById('enemyImage');
@@ -5071,10 +5194,11 @@ function initGuild() {
                     if (trigger) {
                         addBattleLog('📖 ギルドでのストーリーイベントが発生しました');
                         console.log(`🎭 ストーリー開始: ${trigger.story_id}`);
-                        // ストーリーイベントを発生（フラグ設定なし、ギルド開封後に実行）
+                        // ストーリーイベントを即座に実行（モーダルを開かずに）
                         setTimeout(() => {
                             storyTriggerManager.triggerStory(trigger.story_id);
                         }, 500);
+                        return; // ストーリーイベント発生時はここで終了
                     } else {
                         console.warn(`⚠️ chapter ${currentChapter} に対応するストーリートリガーが見つかりません`);
                         addBattleLog(`⚠️ 章${currentChapter}のストーリーが見つかりません（デバッグ情報）`);
@@ -5082,9 +5206,14 @@ function initGuild() {
                 } else {
                     console.error('❌ storyTriggerManager が見つかりません');
                 }
+            } else {
+                // 2回目以降の訪問時は通常のギルドメッセージを表示
+                addBattleLog('🏛️ ギルドに入りました');
+                addBattleLog('💼 「今回はこれといった依頼はないようですね」');
+                addBattleLog('📝 「また新しい依頼があれば声をかけてください」');
             }
             
-            openModal('guildModal');
+            // モーダルを開かずに終了（openModal('guildModal'); を削除）
         });
     }
     
@@ -5156,50 +5285,187 @@ function startAutoModeWithSettings() {
 // プレイヤー攻撃関数
 function playerAttack() {
     console.log('⚔️ playerAttack called, dataManager.loaded:', dataManager?.loaded);
-    if (!gameState.battle.isPlayerTurn || gameState.battle.battleEnded) return;
     
-    // 攻撃エフェクトと音響効果
-    audioManager.playSE('se_attack'); // CSVの攻撃SEを再生
-    showPlayerAttackEffect();
-    screenShake(10);
-    
-    // 基本攻撃の処理（クリティカル判定込み）
-    const result = calculateDamage(gameState.player, gameState.enemy);
-    gameState.enemy.hp = Math.max(0, gameState.enemy.hp - result.damage);
-    
-    let message = `${gameState.player.name}の攻撃！ ${gameState.enemy.name}に${result.damage}のダメージ！`;
-    if (result.critical) {
-        message += " クリティカルヒット！";
-    }
-    addBattleLog(message);
-    
-    // 敵撃破チェック
-    if (gameState.enemy.hp <= 0) {
-        addBattleLog(`${gameState.enemy.name}を倒した！`);
-        gameState.battle.battleEnded = true;
+    // 重複実行防止チェック（強化版）
+    if (!gameState.battle.isPlayerTurn || 
+        gameState.battle.battleEnded || 
+        gameState.battle.storyInProgress ||
+        gameState.battle.actionInProgress) {
+        console.warn('🚫 playerAttack blocked (multiple click protection):', {
+            isPlayerTurn: gameState.battle.isPlayerTurn,
+            battleEnded: gameState.battle.battleEnded,
+            storyInProgress: gameState.battle.storyInProgress,
+            actionInProgress: gameState.battle.actionInProgress,
+            timestamp: Date.now()
+        });
         
-        // 次の戦闘への移行（オートモードは nextBattle 内で管理）
-        setTimeout(nextBattle, 1500);
+        // UIボタンの状態も更新して確実に無効化
+        updateActionButtonsState();
         return;
     }
     
-    // ターン終了
-    gameState.battle.isPlayerTurn = false;
-    updateUI();
+    // アクション進行中フラグを設定
+    gameState.battle.actionInProgress = true;
     
-    // 敵のターンへ移行
-    setTimeout(() => {
-        processEnemyTurn();
-    }, 1000);
+    try {
+        // 攻撃エフェクトと音響効果
+        audioManager.playSE('se_attack'); // CSVの攻撃SEを再生
+        showPlayerAttackEffect();
+        screenShake(10);
+        
+        // 基本攻撃の処理（クリティカル判定込み）
+        const result = calculateDamage(gameState.player, gameState.enemy);
+        gameState.enemy.hp = Math.max(0, gameState.enemy.hp - result.damage);
+        
+        let message = `${gameState.player.name}の攻撃！ ${gameState.enemy.name}に${result.damage}のダメージ！`;
+        if (result.critical) {
+            message += " クリティカルヒット！";
+        }
+        addBattleLog(message);
+        
+        // 敵撃破チェック
+        if (gameState.enemy.hp <= 0) {
+            addBattleLog(`${gameState.enemy.name}を倒した！`);
+            gameState.battle.battleEnded = true;
+            gameState.battle.actionInProgress = false; // アクション完了
+            
+            // 次の戦闘への移行（オートモードは nextBattle 内で管理）
+            setTimeout(nextBattle, 1500);
+            return;
+        }
+        
+        // ターン終了
+        gameState.battle.isPlayerTurn = false;
+        gameState.battle.actionInProgress = false; // アクション完了
+        updateUI();
+        
+        // 敵のターンへ移行
+        setTimeout(() => {
+            processEnemyTurn();
+        }, 1000);
+    } catch (error) {
+        console.error('❌ Error in playerAttack:', error);
+        // エラー時も確実にフラグをリセット
+        gameState.battle.actionInProgress = false;
+        gameState.battle.isPlayerTurn = true;
+        updateUI();
+    }
+}
+
+// 敵の行動を決定して実行
+function executeEnemyAction() {
+    console.log('🎯 executeEnemyAction called for enemy:', gameState.enemy?.id || 'undefined');
+    console.log('🎯 Enemy object:', gameState.enemy);
+    console.log('🎯 DataManager loaded:', dataManager?.loaded);
+    
+    // 敵の行動パターンを取得
+    const enemyActions = dataManager.getEnemyActions(gameState.enemy.id);
+    console.log('📊 Available actions for', gameState.enemy.id, ':', enemyActions);
+    
+    if (!enemyActions || enemyActions.length === 0) {
+        console.log('⚠️ No actions found, using default attack');
+        // フォールバック：通常攻撃
+        executeEnemyAttack();
+        return;
+    }
+    
+    // 確率に基づいて行動を選択
+    const selectedAction = selectActionByProbability(enemyActions);
+    console.log('🎲 Selected action:', selectedAction);
+    
+    if (!selectedAction) {
+        console.log('❌ No action selected, using default attack');
+        executeEnemyAttack();
+        return;
+    }
+    
+    // 行動タイプに応じて処理を実行
+    switch (selectedAction.action_type) {
+        case 'skill':
+            if (selectedAction.skill_id) {
+                const skill = dataManager.getSkill(selectedAction.skill_id);
+                if (skill) {
+                    console.log('⚔️ Executing skill:', skill.name);
+                    executeEnemySkill(skill);
+                } else {
+                    console.log('❌ Skill not found:', selectedAction.skill_id);
+                    executeEnemyAttack();
+                }
+            } else {
+                console.log('❌ No skill_id specified, using default attack');
+                executeEnemyAttack();
+            }
+            break;
+        case 'wait':
+            console.log('⏸️ Enemy is waiting this turn');
+            addBattleLog(`${gameState.enemy.name}は様子を見ている...`);
+            
+            // 待機時も確実にターンを終了
+            gameState.battle.isPlayerTurn = true;
+            gameState.battle.actionInProgress = false;
+            updateUI();
+            break;
+        default:
+            console.log('❓ Unknown action_type:', selectedAction.action_type);
+            executeEnemyAttack();
+            break;
+    }
+}
+
+// 確率に基づいて行動を選択
+function selectActionByProbability(actions) {
+    // 確率の合計を計算
+    const totalProbability = actions.reduce((sum, action) => sum + parseFloat(action.probability), 0);
+    console.log('📈 Total probability:', totalProbability);
+    
+    // ランダムな値を生成（0 〜 合計確率）
+    const random = Math.random() * totalProbability;
+    console.log('🎲 Random value:', random);
+    
+    // 累積確率で行動を選択
+    let cumulativeProbability = 0;
+    for (const action of actions) {
+        cumulativeProbability += parseFloat(action.probability);
+        if (random <= cumulativeProbability) {
+            return action;
+        }
+    }
+    
+    // フォールバック：最後の行動を返す
+    return actions[actions.length - 1];
 }
 
 // 敵のターン処理
 function processEnemyTurn() {
-    // レベルアップ中や戦闘終了時は敵もアクションしない
-    if (gameState.battle.battleEnded || gameState.battle.pausedForLevelUp) return;
+    console.log('🔥 processEnemyTurn called!');
+    // 重複実行防止チェック
+    if (gameState.battle.battleEnded || 
+        gameState.battle.pausedForLevelUp || 
+        gameState.battle.isPlayerTurn ||
+        gameState.battle.actionInProgress) {
+        console.log('⚠️ processEnemyTurn blocked:', {
+            battleEnded: gameState.battle.battleEnded,
+            pausedForLevelUp: gameState.battle.pausedForLevelUp,
+            isPlayerTurn: gameState.battle.isPlayerTurn,
+            actionInProgress: gameState.battle.actionInProgress
+        });
+        return;
+    }
     
-    // 敵の攻撃をエフェクト込みで実行
-    executeEnemyAttack();
+    // 敵のアクション開始
+    gameState.battle.actionInProgress = true;
+    console.log('🤖 Enemy turn started');
+    
+    try {
+        // 敵の行動を決定して実行
+        executeEnemyAction();
+    } catch (error) {
+        console.error('❌ Error in executeEnemyAttack:', error);
+        // エラー時も確実にフラグをリセット
+        gameState.battle.actionInProgress = false;
+        gameState.battle.isPlayerTurn = true;
+        updateUI();
+    }
     
     // プレイヤー敗北チェック
     if (gameState.player.hp <= 0) {
@@ -5210,6 +5476,8 @@ function processEnemyTurn() {
     
     // プレイヤーのターンに戻す
     gameState.battle.isPlayerTurn = true;
+    gameState.battle.actionInProgress = false; // アクション完了
+    console.log('✅ Enemy turn completed, back to player turn');
     updateUI();
     
     // レベルアップ中・ストーリー進行中でなければオートモード継続チェック
@@ -5247,7 +5515,369 @@ window.resetStoryFlag = function() {
     return false;
 };
 
+// ===================================
+// モーダル管理関数
+// ===================================
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        console.log(`📱 Modal opened: ${modalId}`);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        console.log(`📱 Modal closed: ${modalId}`);
+    }
+}
+
+// ===================================
+// メインウィンドウ内ストーリーマネージャー
+// ===================================
+
+class InGameStoryManager {
+    constructor() {
+        this.currentStoryId = null;
+        this.dialogues = [];
+        this.currentSegment = 0;
+        this.isLoading = false;
+        
+        this.initEventListeners();
+    }
+    
+    initEventListeners() {
+        // 次へボタン
+        document.getElementById('storyNextBtn')?.addEventListener('click', () => {
+            this.nextSegment();
+        });
+        
+        // スキップボタン
+        document.getElementById('storySkipBtn')?.addEventListener('click', () => {
+            this.skipStory();
+        });
+        
+        // 閉じるボタン
+        document.getElementById('storyCloseBtn')?.addEventListener('click', () => {
+            this.closeStory();
+        });
+        
+        // キーボードイベント
+        document.addEventListener('keydown', (e) => {
+            if (this.isStoryActive()) {
+                switch(e.key) {
+                    case ' ':
+                    case 'Enter':
+                        e.preventDefault();
+                        this.nextSegment();
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.closeStory();
+                        break;
+                }
+            }
+        });
+    }
+    
+    // ストーリーが表示中かチェック
+    isStoryActive() {
+        const modal = document.getElementById('storyModal');
+        return modal && modal.style.display !== 'none';
+    }
+    
+    // ストーリーを開始
+    async startStory(storyId) {
+        console.log('📖 Starting in-game story:', storyId);
+        
+        if (this.isLoading) {
+            console.log('⚠️ Story is already loading');
+            return;
+        }
+        
+        this.isLoading = true;
+        this.currentStoryId = storyId;
+        
+        try {
+            // ストーリーデータを読み込み
+            await this.loadStoryData(storyId);
+            
+            // モーダルを表示
+            this.showModal();
+            
+            // 最初のセグメントを表示
+            this.currentSegment = 0;
+            this.displaySegment(0);
+            
+        } catch (error) {
+            console.error('Failed to start story:', error);
+            this.closeStory();
+        } finally {
+            this.isLoading = false;
+        }
+    }
+    
+    // ストーリーデータを読み込み
+    async loadStoryData(storyId) {
+        if (!dataManager || !dataManager.loaded) {
+            throw new Error('DataManager not ready');
+        }
+        
+        // story_dialogues.csvからデータを取得
+        const allDialogues = dataManager.data.storyDialogues || [];
+        this.dialogues = allDialogues.filter(dialogue => dialogue.chapter_id === storyId);
+        
+        if (this.dialogues.length === 0) {
+            throw new Error(`No dialogues found for story: ${storyId}`);
+        }
+        
+        // セグメントIDでソート
+        this.dialogues.sort((a, b) => parseInt(a.segment_id) - parseInt(b.segment_id));
+        
+        console.log(`📚 Loaded ${this.dialogues.length} dialogue segments for story: ${storyId}`);
+    }
+    
+    // モーダルを表示
+    showModal() {
+        const modal = document.getElementById('storyModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            
+            // ストーリー進行中フラグを設定
+            if (gameState && gameState.battle) {
+                gameState.battle.storyInProgress = true;
+            }
+        }
+    }
+    
+    // セグメントを表示
+    displaySegment(index) {
+        if (index < 0 || index >= this.dialogues.length) {
+            console.log('📖 Story completed');
+            this.closeStory();
+            return;
+        }
+        
+        const dialogue = this.dialogues[index];
+        console.log('📝 Displaying segment:', dialogue);
+        
+        // 背景画像を設定
+        this.setBackground(dialogue.background_image);
+        
+        // キャラクター立ち絵を設定
+        this.setCharacters(dialogue.left_character, dialogue.right_character, dialogue.speaker);
+        
+        // 話者名とセリフを設定
+        this.setSpeakerAndText(dialogue.speaker, dialogue.text);
+        
+        // プログレスバーを更新
+        this.updateProgress(index + 1, this.dialogues.length);
+        
+        this.currentSegment = index;
+    }
+    
+    // 背景画像を設定
+    setBackground(backgroundPath) {
+        const bgElement = document.getElementById('storyBackground');
+        if (bgElement && backgroundPath) {
+            bgElement.src = backgroundPath;
+            bgElement.style.display = 'block';
+        }
+    }
+    
+    // キャラクター立ち絵を設定
+    setCharacters(leftChar, rightChar, speaker) {
+        const leftElement = document.getElementById('storyCharacterLeft');
+        const rightElement = document.getElementById('storyCharacterRight');
+        
+        // 左キャラクター
+        if (leftElement) {
+            if (leftChar) {
+                leftElement.src = leftChar;
+                leftElement.style.display = 'block';
+                leftElement.className = 'story-character-image';
+                
+                // 話者の場合は光らせる
+                if (this.isSpeakerLeft(speaker)) {
+                    leftElement.classList.add('speaking');
+                } else {
+                    leftElement.classList.add('dimmed');
+                }
+            } else {
+                leftElement.style.display = 'none';
+            }
+        }
+        
+        // 右キャラクター
+        if (rightElement) {
+            if (rightChar) {
+                rightElement.src = rightChar;
+                rightElement.style.display = 'block';
+                rightElement.className = 'story-character-image';
+                
+                // 話者の場合は光らせる
+                if (this.isSpeakerRight(speaker)) {
+                    rightElement.classList.add('speaking');
+                } else {
+                    rightElement.classList.add('dimmed');
+                }
+            } else {
+                rightElement.style.display = 'none';
+            }
+        }
+    }
+    
+    // 左側キャラクターが話者かチェック
+    isSpeakerLeft(speaker) {
+        // 簡単なロジック：リオンやプレイヤー関連は左側
+        const leftSpeakers = ['リオン', '主人公', 'プレイヤー'];
+        return leftSpeakers.some(name => speaker.includes(name));
+    }
+    
+    // 右側キャラクターが話者かチェック
+    isSpeakerRight(speaker) {
+        // 簡単なロジック：リリィやNPCは右側
+        const rightSpeakers = ['リリィ', 'クロエ', 'ティファ', 'メレル'];
+        return rightSpeakers.some(name => speaker.includes(name));
+    }
+    
+    // 話者名とセリフを設定
+    setSpeakerAndText(speaker, text) {
+        const speakerElement = document.getElementById('storySpeakerName');
+        const textElement = document.getElementById('storyDialogueText');
+        
+        if (speakerElement) {
+            speakerElement.textContent = speaker;
+        }
+        
+        if (textElement) {
+            textElement.textContent = text;
+        }
+    }
+    
+    // プログレスバーを更新
+    updateProgress(current, total) {
+        const fillElement = document.getElementById('storyProgressFill');
+        const textElement = document.getElementById('storyProgressText');
+        
+        if (fillElement) {
+            const percentage = (current / total) * 100;
+            fillElement.style.width = `${percentage}%`;
+        }
+        
+        if (textElement) {
+            textElement.textContent = `${current}/${total}`;
+        }
+    }
+    
+    // 次のセグメントへ
+    nextSegment() {
+        if (this.currentSegment < this.dialogues.length - 1) {
+            this.displaySegment(this.currentSegment + 1);
+        } else {
+            this.closeStory();
+        }
+    }
+    
+    // ストーリーをスキップ
+    skipStory() {
+        if (confirm('ストーリーをスキップしますか？')) {
+            this.closeStory();
+        }
+    }
+    
+    // ストーリーを閉じる
+    closeStory() {
+        const modal = document.getElementById('storyModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        
+        // ストーリー進行中フラグをリセット
+        if (gameState && gameState.battle) {
+            gameState.battle.storyInProgress = false;
+            
+            console.log('🔍 Checking battle state:', {
+                midBossDefeated: gameState.battle.midBossDefeated,
+                battleEnded: gameState.battle.battleEnded,
+                currentEnemyName: gameState.enemy?.name
+            });
+            
+            // 中ボス撃破後の処理
+            if (gameState.battle.midBossDefeated) {
+                console.log('中ボス撃破後のストーリー終了 - ダンジョン探索を開始');
+                gameState.battle.midBossDefeated = false;
+                
+                // 中ボス画像とデータをクリア
+                const enemyImage = document.getElementById('enemyImage');
+                const enemyInfoOverlay = document.querySelector('.enemy-info-overlay');
+                console.log('🖼️ Clearing mid-boss data:', {
+                    enemyImageFound: !!enemyImage,
+                    enemyInfoOverlayFound: !!enemyInfoOverlay,
+                    currentEnemyName: gameState.enemy?.name
+                });
+                
+                // 中ボス画像を非表示（データは後でクリア）
+                if (enemyImage) {
+                    enemyImage.style.display = 'none';
+                    console.log('✅ Enemy image hidden');
+                }
+                if (enemyInfoOverlay) {
+                    enemyInfoOverlay.style.display = 'none';
+                    console.log('✅ Enemy info overlay hidden');
+                }
+                
+                setTimeout(() => {
+                    console.log('🔄 Starting dungeon exploration after mid-boss');
+                    
+                    // 敵データをクリアしてから新しい敵を生成
+                    gameState.enemy = null;
+                    gameState.battle.battleCount++;
+                    gameState.battle.battleEnded = false; // 戦闘継続状態にリセット
+                    generateNewEnemy();
+                    gameState.battle.isPlayerTurn = true;
+                    updateUI();
+                    
+                    addBattleLog('🗡️ ダンジョン探索を開始します！');
+                    console.log('✅ New enemy generated for dungeon exploration');
+                }, 500);
+            }
+        }
+        
+        console.log('📖 Story closed');
+    }
+}
+
+// グローバルインスタンス
+let inGameStoryManager = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     initGame();
     initGuild();
+    
+    // データが読み込まれた後でストーリーマネージャーを初期化
+    const waitForDataManager = () => {
+        console.log('🔍 Checking DataManager status...', {
+            dataManagerExists: !!dataManager,
+            dataManagerLoaded: dataManager?.loaded,
+            storyDialogues: dataManager?.data?.storyDialogues?.length || 0
+        });
+        
+        if (dataManager && dataManager.loaded && dataManager.data.storyDialogues) {
+            console.log('🎬 Initializing InGameStoryManager');
+            inGameStoryManager = new InGameStoryManager();
+            console.log('✅ InGameStoryManager initialized successfully');
+            
+            // グローバルアクセス用
+            window.inGameStoryManager = inGameStoryManager;
+        } else {
+            console.log('⏳ Waiting for DataManager to load...');
+            setTimeout(waitForDataManager, 100);
+        }
+    };
+    
+    waitForDataManager();
 });

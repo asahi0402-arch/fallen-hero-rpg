@@ -169,9 +169,25 @@ class StoryTriggerManager {
         });
     }
 
-    // ストーリーを開始
+    // ストーリーを開始（メインウィンドウ内モーダル版）
     triggerStory(storyId) {
-        console.log('Triggering story:', storyId);
+        console.log('🎬 Triggering in-game story:', storyId);
+        
+        // メインウィンドウ内ストーリーマネージャーを使用
+        if (window.inGameStoryManager) {
+            console.log('📱 Using in-game story manager');
+            window.inGameStoryManager.startStory(storyId);
+            return true;
+        } else {
+            console.log('⚠️ InGameStoryManager not found, falling back to popup');
+            // フォールバック：従来のポップアップ方式
+            return this.triggerStoryPopup(storyId);
+        }
+    }
+    
+    // 従来のポップアップ方式（フォールバック用）
+    triggerStoryPopup(storyId) {
+        console.log('Triggering story popup:', storyId);
         
         // ストーリー画面を開く
         const storyUrl = `story.html?story=${storyId}&auto_return=true`;
@@ -225,6 +241,16 @@ class StoryTriggerManager {
                         if (window.gameState.battle.midBossDefeated) {
                             console.log('中ボス撃破後の会話終了 - ダンジョン探索を開始');
                             window.gameState.battle.midBossDefeated = false; // フラグをリセット
+                            
+                            // 中ボス画像を非表示にする
+                            const enemyImage = document.getElementById('enemyImage');
+                            const enemyInfoOverlay = document.querySelector('.enemy-info-overlay');
+                            if (enemyImage) {
+                                enemyImage.style.display = 'none';
+                            }
+                            if (enemyInfoOverlay) {
+                                enemyInfoOverlay.style.display = 'none';
+                            }
                             
                             // ダンジョン探索開始
                             setTimeout(() => {

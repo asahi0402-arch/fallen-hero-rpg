@@ -116,7 +116,8 @@ class DataManager {
                 this.loadCSV('./data/backgrounds.csv'),
                 this.loadCSV('./data/audio.csv'),
                 this.loadCSV('./data/title_settings.csv'),
-                this.loadCSV('./data/dungeon_events.csv')
+                this.loadCSV('./data/dungeon_events.csv'),
+                this.loadCSV('./data/story_dialogues.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -133,6 +134,7 @@ class DataManager {
             this.data.audio = results[9];
             this.data.titleSettings = results[10];
             this.data.dungeonEvents = results[11];
+            this.data.storyDialogues = results[12];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
