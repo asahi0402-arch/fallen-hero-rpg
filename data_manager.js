@@ -380,8 +380,38 @@ class DataManager {
         return this.data.enemies.filter(enemy => {
             const matchChapter = parseInt(enemy.chapter) === chapter;
             const matchLocation = enemy.location === location || enemy.location === 'both';
-            return matchChapter && matchLocation;
+            // 中ボスとボスは通常敵生成から除外
+            const isNotSpecialEnemy = enemy.location !== 'mid_boss' && enemy.location !== 'boss';
+            return matchChapter && matchLocation && isNotSpecialEnemy;
         });
+    }
+
+    // 中ボス取得
+    // 中ボス取得
+    getMidBossEnemy(chapter, enemyId = null) {
+        if (!this.loaded || !this.data.enemies) {
+            console.warn('❌ DataManager not loaded or enemies data missing');
+            return null;
+        }
+        
+        console.log('🔍 getMidBossEnemy called with:', { chapter, enemyId });
+        console.log('Available enemies:', this.data.enemies.map(e => ({ id: e.id, location: e.location })));
+        
+        if (enemyId) {
+            // 特定のIDの中ボスを取得
+            const enemy = this.data.enemies.find(enemy => 
+                enemy.id === enemyId && enemy.location === 'mid_boss'
+            );
+            console.log('🎯 Search result for ID:', enemyId, enemy ? 'FOUND' : 'NOT FOUND');
+            return enemy;
+        } else {
+            // 章の中ボスを取得
+            const enemy = this.data.enemies.find(enemy => 
+                parseInt(enemy.chapter) === chapter && enemy.location === 'mid_boss'
+            );
+            console.log('🎯 Search result for chapter:', chapter, enemy ? 'FOUND' : 'NOT FOUND');
+            return enemy;
+        }
     }
 
     // デフォルト敵を作成（CSVが読み込まれない場合のフォールバック）

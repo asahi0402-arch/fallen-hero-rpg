@@ -579,7 +579,7 @@ function changeBackground(locationType) {
 }
 
 // 場所に応じたBGMを再生
-function playLocationBGM(locationType) {
+function playLocationBGM(locationType, forcePlay = false) {
     if (!audioManager || !dataManager.loaded) return;
     
     let bgmId = null;
@@ -617,6 +617,12 @@ function playLocationBGM(locationType) {
     }
     
     if (bgmId) {
+        // 現在再生中のBGMと同じ場合は、強制再生指定がない限り再生しない
+        if (!forcePlay && audioManager.currentBGM === bgmId && audioManager.isPlaying()) {
+            console.log(`🎵 BGM ${bgmId} is already playing, skipping restart`);
+            return;
+        }
+        
         console.log(`🎵 Playing BGM: ${bgmId} for location: ${locationType}`);
         audioManager.playBGM(bgmId);
     }
@@ -1756,15 +1762,38 @@ function nextBattle() {
         actionInProgress: gameState.battle.actionInProgress
     });
     
+    // 戦闘結果データを保存
+    const defeatedEnemy = { ...gameState.enemy };
+    const expGained = gameState.enemy.exp_reward || 0;
+    const goldGained = gameState.enemy.gold_reward || 0;
+    let droppedItem = null;
+    
+    // ドロップ判定
+    if (gameState.enemy.drop_item && gameState.enemy.drop_rate) {
+        if (Math.random() < gameState.enemy.drop_rate) {
+            droppedItem = gameState.enemy.drop_item;
+            // インベントリに追加
+            if (gameState.shared.inventory[droppedItem] !== undefined) {
+                gameState.shared.inventory[droppedItem]++;
+            }
+        }
+    }
+    
     // 経験値・ゴールド獲得処理
-    if (gameState.enemy.exp_reward) {
-        gameState.player.exp += gameState.enemy.exp_reward;
-        addBattleLog(`経験値${gameState.enemy.exp_reward}を獲得！`);
+    if (expGained > 0) {
+        gameState.player.exp += expGained;
+        addBattleLog(`経験値${expGained}を獲得！`);
     }
-    if (gameState.enemy.gold_reward) {
-        gameState.shared.gold += gameState.enemy.gold_reward;
-        addBattleLog(`${gameState.enemy.gold_reward}ゴールドを獲得！`);
+    if (goldGained > 0) {
+        gameState.shared.gold += goldGained;
+        addBattleLog(`${goldGained}ゴールドを獲得！`);
     }
+    if (droppedItem) {
+        addBattleLog(`${droppedItem}をドロップした！`);
+    }
+    
+    // 戦闘結果オーバーレイを表示
+    showBattleResult(defeatedEnemy, expGained, goldGained, droppedItem);
     
     // レベルアップチェック
     checkLevelUp();
@@ -1873,29 +1902,64 @@ function nextBattle() {
         return;
     }
     
-    // 通常敵の場合の戦闘継続
-    if (gameState.battle.location === 'field') {
-        // フィールドでは無限戦闘（battleCountは増加しない）
-        addBattleLog('フィールドでの戦闘継続...');
+    // 通常敵の場合の戦闘継続（オーバーレイ表示後に実行）
+    setTimeout(() => {
+        if (gameState.battle.location === 'field') {
+            // フィールドでは無限戦闘（battleCountは増加しない）
+            addBattleLog('フィールドでの戦闘継続...');
+        } else {
+            // ダンジョンでは戦闘カウントを増加
+            gameState.battle.battleCount++;
+        }
+        
+        // CSVから新しい敵を生成
+        generateNewEnemy();
+        
+        gameState.battle.isPlayerTurn = true;
+        gameState.battle.battleEnded = false; // 戦闘状態をリセット
+        addBattleLog(`${gameState.enemy.name}が現れた！`);
+        updateUI();
+        
+        // オートモード継続処理（ストーリー進行中は除く）
+        if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
+            setTimeout(() => {
+                autoPlayerAction();
+            }, 2000); // エフェクトを考慮して少し長めに
+        }
+    }, 2200); // オーバーレイが閉じた後に実行
+}
+
+// 戦闘結果オーバーレイ表示
+function showBattleResult(enemy, expGained, goldGained, droppedItem = null) {
+    const overlay = document.getElementById('battleResultOverlay');
+    const enemyNameElement = document.getElementById('defeatedEnemyName');
+    const expRewardElement = document.getElementById('expReward');
+    const goldRewardElement = document.getElementById('goldReward');
+    const dropItemElement = document.getElementById('dropItemReward');
+    const dropItemNameElement = document.getElementById('dropItemName');
+    
+    // 敵名を設定
+    enemyNameElement.textContent = enemy.name;
+    
+    // 経験値・ゴールドを設定
+    expRewardElement.textContent = `+${expGained}`;
+    goldRewardElement.textContent = `+${goldGained}`;
+    
+    // ドロップアイテムがあれば表示
+    if (droppedItem) {
+        dropItemElement.style.display = 'flex';
+        dropItemNameElement.textContent = droppedItem;
     } else {
-        // ダンジョンでは戦闘カウントを増加
-        gameState.battle.battleCount++;
+        dropItemElement.style.display = 'none';
     }
     
-    // CSVから新しい敵を生成
-    generateNewEnemy();
+    // オーバーレイを表示
+    overlay.style.display = 'flex';
     
-    gameState.battle.isPlayerTurn = true;
-    gameState.battle.battleEnded = false; // 戦闘状態をリセット
-    addBattleLog(`${gameState.enemy.name}が現れた！`);
-    updateUI();
-    
-    // オートモード継続処理（ストーリー進行中は除く）
-    if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
-        setTimeout(() => {
-            autoPlayerAction();
-        }, 2000); // エフェクトを考慮して少し長めに
-    }
+    // 2秒後に自動で閉じる
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 2000);
 }
 
 // 章クリア会話画面表示
@@ -2003,10 +2067,10 @@ function generateNewEnemy() {
                 image: bossData.image || 'boss.png',
                 isBoss: true
             };
-            addBattleLog(`章ボス「${gameState.enemy.name}」が現れた！`);
+            addBattleLog(`${gameState.enemy.name}が現れた！`);
             
-            // ボス戦BGMに切り替え
-            playLocationBGM(gameState.battle.location);
+            // ボス戦BGMに切り替え（強制再生）
+            playLocationBGM(gameState.battle.location, true);
             
             // ボス遭遇時のストーリートリガーをチェック
             setTimeout(() => {
@@ -2061,8 +2125,8 @@ function generateNewEnemy() {
             enemyInfoOverlay.style.display = 'block';
         }
         
-        // 敵生成後にBGMを更新（敵の種類に応じて）
-        playLocationBGM(gameState.battle.location);
+        // 通常敵生成時はBGMを継続再生（再開しない）
+        // ボス敵以外の場合はBGMを変更しない
         
         // オートモードが有効で戦闘中なら自動攻撃を開始（ストーリー進行中は除く）
         if (gameState.battle.isAutoMode && gameState.battle.isPlayerTurn && !gameState.battle.battleEnded && !gameState.battle.storyInProgress) {
@@ -3413,18 +3477,10 @@ function switchLocation(location) {
 function handleDungeonMidBossEvent(event) {
     console.log('🏰 中ボスイベント発生:', event);
     
-    // イベントテキストを表示
-    if (event.event_text) {
-        addBattleLog(`📖 ${event.event_text}`);
-    }
+    // イベントテキストや会話テキストはストーリーイベントで表示するため、ここでは表示しない
     
-    // 中ボス戦闘前テキスト
-    if (event.pre_battle_text) {
-        addBattleLog(`💬 ${event.pre_battle_text}`);
-    }
-    
-    // 中ボス敵を生成
-    const midBossData = dataManager.getEnemy(event.mid_boss_enemy);
+    // 中ボス敵を生成（専用関数使用）
+    const midBossData = dataManager.getMidBossEnemy(gameState.battle.chapter, event.mid_boss_enemy);
     if (midBossData) {
         gameState.enemy = {
             id: midBossData.id,
@@ -3443,10 +3499,11 @@ function handleDungeonMidBossEvent(event) {
             isMidBoss: true
         };
         
-        addBattleLog(`⚔️ 中ボス「${gameState.enemy.name}」が現れた！`);
+        // シンプルな敵出現メッセージ（「中ボス」表記なし）
+        addBattleLog(`${gameState.enemy.name}が現れた！`);
         
-        // ボス戦BGMに切り替え
-        playLocationBGM(gameState.battle.location);
+        // ボス戦BGMに切り替え（強制再生）
+        playLocationBGM(gameState.battle.location, true);
         
         // 敵画像を表示
         const enemyImage = document.getElementById('enemyImage');
@@ -3462,7 +3519,9 @@ function handleDungeonMidBossEvent(event) {
         
         updateUI();
     } else {
-        console.error('中ボスデータが見つかりません:', event.mid_boss_enemy);
+        console.error('❌ 中ボスデータが見つかりません:', event.mid_boss_enemy);
+        console.error('Available mid-boss enemies:', dataManager.data.enemies?.filter(e => e.location === 'mid_boss'));
+        addBattleLog('⚠️ 中ボスデータの読み込みに失敗しました');
     }
 }
 
@@ -5286,6 +5345,16 @@ function startAutoModeWithSettings() {
 function playerAttack() {
     console.log('⚔️ playerAttack called, dataManager.loaded:', dataManager?.loaded);
     
+    // データの妥当性チェック
+    if (!gameState || !gameState.player || !gameState.enemy) {
+        console.error('❌ Invalid game state in playerAttack:', {
+            gameState: !!gameState,
+            player: !!gameState?.player,
+            enemy: !!gameState?.enemy
+        });
+        return;
+    }
+    
     // 重複実行防止チェック（強化版）
     if (!gameState.battle.isPlayerTurn || 
         gameState.battle.battleEnded || 
@@ -5309,7 +5378,9 @@ function playerAttack() {
     
     try {
         // 攻撃エフェクトと音響効果
-        audioManager.playSE('se_attack'); // CSVの攻撃SEを再生
+        if (audioManager) {
+            audioManager.playSE('se_attack'); // CSVの攻撃SEを再生
+        }
         showPlayerAttackEffect();
         screenShake(10);
         
@@ -5345,6 +5416,7 @@ function playerAttack() {
         }, 1000);
     } catch (error) {
         console.error('❌ Error in playerAttack:', error);
+        console.error('Stack trace:', error.stack);
         // エラー時も確実にフラグをリセット
         gameState.battle.actionInProgress = false;
         gameState.battle.isPlayerTurn = true;

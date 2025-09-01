@@ -523,6 +523,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- 戦闘結果オーバーレイ -->
+        <div class="battle-result-overlay" id="battleResultOverlay" style="display: none;">
+            <div class="battle-result-content">
+                <div class="battle-result-header">
+                    <h3>🏆 戦闘勝利！</h3>
+                </div>
+                <div class="battle-result-body">
+                    <div class="defeated-enemy">
+                        <span class="enemy-name" id="defeatedEnemyName">スライム</span>を倒した！
+                    </div>
+                    <div class="battle-rewards">
+                        <div class="reward-item">
+                            <span class="reward-icon">✨</span>
+                            <span class="reward-label">経験値</span>
+                            <span class="reward-value" id="expReward">+10</span>
+                        </div>
+                        <div class="reward-item">
+                            <span class="reward-icon">💰</span>
+                            <span class="reward-label">ゴールド</span>
+                            <span class="reward-value" id="goldReward">+5</span>
+                        </div>
+                        <div class="reward-item drop-item" id="dropItemReward" style="display: none;">
+                            <span class="reward-icon">🎁</span>
+                            <span class="reward-label">アイテム</span>
+                            <span class="reward-value" id="dropItemName">ポーション</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
         <!-- オプションモーダル -->

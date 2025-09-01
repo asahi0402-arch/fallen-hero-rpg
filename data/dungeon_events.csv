@@ -1,3 +1,3 @@
 ﻿chapter,location,event_type,trigger_condition,mid_boss_enemy,event_text,pre_battle_text,victory_text,defeat_text,rewards,story_id
-1,dungeon,mid_boss,on_enter,tifa,"盗賊団のアジトに侵入した！","「侵入者だ！やっちまえ、ティファ！」","ティファを撃破した！","ティファに敗れた...",experience:50;gold:30,dungeon_1_mid_boss_victory
-1,dungeon,final_boss,max_battles_reached,merel,"奥の間で盗賊団の頭目と対峙する","「よくもここまで...！覚悟しろ！」","メレルを撃破し、盗賊団を壊滅させた！","メレルに敗れた...",experience:100;gold:80;item:bandit_treasure,
+1,dungeon,mid_boss,on_enter,ch1_tifa_mid,"盗賊団のアジトに侵入した！","「侵入者だ！やっちまえ、ティファ！」","ティファを撃破した！","ティファに敗れた...",experience:50;gold:30,dungeon_1_mid_boss_victory
+1,dungeon,final_boss,max_battles_reached,ch1_merel_boss,"奥の間で盗賊団の頭目と対峙する","「よくもここまで...！覚悟しろ！」","メレルを撃破し、盗賊団を壊滅させた！","メレルに敗れた...",experience:100;gold:80;item:bandit_treasure,
