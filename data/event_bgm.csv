@@ -1,0 +1,9 @@
+﻿event_type,event_id,location_type,bgm_id,description
+guild_visit,chapter_1_first_visit,guild,bgm_town,第1章初回ギルド訪問
+guild_visit,chapter_2_first_visit,guild,bgm_mysterious,第2章初回ギルド訪問（神秘的な雰囲気）
+guild_visit,chapter_3_first_visit,guild,bgm_ancient,第3章初回ギルド訪問（古代の雰囲気）
+story_event,dramatic_reveal,any,bgm_dramatic,重要な真実の暴露シーン
+story_event,final_confrontation,any,bgm_final,最終対決前
+boss_encounter,ch1_merel_boss,dungeon,bgm_boss,メレル戦
+boss_encounter,ch2_nereia_boss,dungeon,bgm_boss,ネレイア戦
+boss_encounter,ch3_meltina_boss,dungeon,bgm_boss,メルティナ戦

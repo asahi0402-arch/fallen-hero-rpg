@@ -1,21 +1,47 @@
-﻿chapter_id,segment_id,speaker,text,background_image,left_character,right_character,character_emotion
-chapter_1_start,1,リリィ,おはようございます、クロエさん♪ 今日も元気そうですね,./assets/images/backgrounds/guild_interior.jpg,,./assets/images/characters/lily_normal.png,normal
-chapter_1_start,2,クロエ,おはよー、リリィ！ もちろん元気いっぱい！ ……で、今日はどんな依頼があるの？,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png,normal
-chapter_1_start,3,リリィ,実は……ちょっと厄介なものが来ていて……,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png,surprised
-chapter_1_start,4,クロエ,厄介って、また沼に住んでる巨大ヒルとかじゃないでしょーね？,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png,determined
-chapter_1_start,5,リリィ,それも嫌ですが、今回はもっと人間味があるというか……盗賊団、です。しかも、女性だけの集団らしくて,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png,worried
-dungeon_1_intro,1,リリィ（受付嬢）,洞窟の入り口に立つリオン。奥からは不気味な気配が漂っている。,./assets/images/backgrounds/cave_entrance.jpg,./assets/images/characters/lion_normal.png,./assets/images/characters/lily_normal.png,normal
-dungeon_1_intro,2,リオン,この洞窟に盗賊団が潜んでいるのか...注意深く進もう。,./assets/images/backgrounds/cave_entrance.jpg,./assets/images/characters/lion_alert.png,,alert
-boss_1_encounter,1,リリィ（受付嬢）,グオオオ！よくここまで来たな、人間よ！,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_battle.png,./assets/images/characters/goblin_king.png,battle
-boss_1_encounter,2,リオン,これが盗賊団のボスか...手強そうだな。,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_determined.png,./assets/images/characters/goblin_king.png,determined
-boss_1_defeat,1,ゴブリンキング,グ...グオオオ...まさか、この俺が...！,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_victory.png,./assets/images/characters/goblin_king_defeated.png,victory
-boss_1_defeat,2,リオン,これで村は安全だ。まだ戦えるじゃないか。,./assets/images/backgrounds/cave_boss.jpg,./assets/images/characters/lion_confident.png,,confident
-chapter_2,1,リリィ（受付嬢）,盗賊団を退けたリオンだったが、彼の中で何かが変わり始めていた。,./assets/images/backgrounds/village.jpg,,,
-chapter_2,2,リオン,まだ、戦えるじゃないか...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,,confident
-chapter_2,3,リリィ（受付嬢）,ありがとうございます、リオンさん。あなたがいなければ...,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/mayor_grateful.png,confident
-chapter_2,4,リオン,礼には及ばない。だが...何か変だな。,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_thinking.png,./assets/images/characters/mayor_grateful.png,thinking
-dungeon_1_mid_boss_victory,1,ティファ,きゃあ...！まさか、こんなに強いなんて...,./assets/images/backgrounds/cave_interior.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/tifa_defeated.png,defeated
-dungeon_1_mid_boss_victory,2,リオン,これで入り口は確保できた。奥にはまだ仲間がいるはずだ。,./assets/images/backgrounds/cave_interior.jpg,./assets/images/characters/lion_determined.png,./assets/images/characters/tifa_defeated.png,determined
-dungeon_1_mid_boss_victory,3,ティファ,くっ...頭目のところへは...絶対に行かせない...,./assets/images/backgrounds/cave_interior.jpg,./assets/images/characters/lion_determined.png,./assets/images/characters/tifa_angry.png,angry
-dungeon_1_mid_boss_victory,4,リオン,そうはいかないな。この盗賊団は今日で終わりだ。,./assets/images/backgrounds/cave_interior.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/tifa_angry.png,confident
-chapter_2,5,リリィ（受付嬢）,その時、遠くから不気味な笑い声が響いた。,./assets/images/backgrounds/village_evening.jpg,./assets/images/characters/lion_alert.png,./assets/images/characters/mayor_worried.png,alert
+﻿chapter_id,segment_id,speaker,text,speaker_side,background_image,left_character,right_character
+chapter_1_start,1,リリィ,おはようございます、クロエさん♪ 今日も元気そうですね,right,./assets/images/backgrounds/guild_interior.jpg,,./assets/images/characters/lily_normal.png
+chapter_1_start,2,クロエ,おはよー、リリィ！ もちろん元気いっぱい！ ……で、今日はどんな依頼があるの？,left,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,3,リリィ,実は……ちょっと厄介なものが来ていて……,right,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,4,クロエ,厄介って、また沼に住んでる巨大ヒルとかじゃないでしょーね？,left,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,5,リリィ,それも嫌ですが、今回はもっと人間味があるというか……盗賊団、です。しかも、女性だけの集団らしくて,right,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,7,クロエ,えっ、女の子だけの盗賊団！？ ……なんかちょっと興味出てきたかも,left,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,8,リリィ,街道を荒らしているようで、最近では荷馬車ごと行方不明になる事件も……。市の商会が賞金を出して討伐を依頼してきました,right,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,9,クロエ,OK！ ガッツリ稼げて女の子と戦えるなら文句なしってやつね！,left,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,10,リリィ,いや……稼ぐよりそっちの方が楽しそうなのでは……？）,right,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,11,クロエ,ん？ なにか言った～？,left,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+chapter_1_start,12,リリィ,いえっ、気をつけて行ってきてくださいね、クロエさん！,right,./assets/images/backgrounds/guild_interior.jpg,./assets/images/characters/chloe_normal.png,./assets/images/characters/lily_normal.png
+dungeon_1_intro,1,,クロエが盗賊団のアジト内へ進もうとしたところ、通路の影から何者かが飛び出す,,./assets/images/backgrounds/ch1_ajito_bg.png,,
+dungeon_1_intro,2,???,そこまでよ！ ……あなたも盗賊団の仲間ってわけ？,,./assets/images/backgrounds/ch1_ajito_bg.png,,
+dungeon_1_intro,3,クロエ,は！？ 誰！？ なんでいきなり殴りかかってくるのよ！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+dungeon_1_intro,4,???,盗賊団のアジトに踏み込んでるのがその証拠！ ……ここで倒す！,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_intro,5,クロエ,ちょっとちょっと、待っ……！ って、聞く耳なし～～！！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,1,???,っ……ふぅ。やるじゃない……。まさか、盗賊団じゃないなんて……,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,2,クロエ,やっと信じた？ あたしは冒険者！ ギルドの依頼で来たの！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,3,???,ごめんなさい。仲間を探してたらここに来て……盗賊団の情報だけで、あなたのことも敵だと……,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,4,クロエ,まぁ、誤解だったんならしょうがないよね。でも、手加減しなかったんだから！？,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,5,???,……ふふ。じゃあこれでおあいこね。私はティファ。今はひとりで旅してるけど、こういう事件は見逃せなくて,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,6,クロエ,ティファね。うん、強くてかっこいいじゃん。気に入った！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,7,ティファ,え？,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,8,クロエ,一緒に行こ！ ボスっぽいやつが奥にいるっぽいし、ふたりなら楽勝でしょ♪,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+dungeon_1_mid_boss_victory,9,ティファ,ふふ、いいわよ。お互い誤解で始まったけど……今度は、信じて戦えると思う,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+boss_1_encounter,1,,広間に到着。中央の玉座に女性が座っている,,./assets/images/backgrounds/ch1_ajito_bg.png,,
+boss_1_encounter,2,盗賊団のボス メレル,まあ、侵入者とはいえ随分と賑やかね。ふたりとも……いい目をしているわ,right,./assets/images/backgrounds/ch1_ajito_bg.png,,./assets/images/characters/merel_normal.png
+boss_1_encounter,3,クロエ,うわ、ボスっぽさ満点……その余裕の笑み、ムカつく～！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+boss_1_encounter,4,ティファ,あなたが、盗賊団の頭目ね。今すぐこの所業をやめなさい！,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+boss_1_encounter,5,盗賊団のボス メレル,やめる？ ふふ……力なき者が搾取されるのが、この世界の“本質”。その流れに逆らうつもりかしら？,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/merel_normal.png
+boss_1_encounter,6,クロエ,うん、そういうの、あたし大っ嫌い！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+boss_1_encounter,7,ティファ,クロエ、気をつけて。……この女、只者じゃない,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+boss_1_encounter,8,盗賊団のボス メレル,さあ、踊りましょう。あなたたちがどこまで踊れるか、見せてちょうだい？,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/merel_normal.png
+boss_1_defeat,1,盗賊団のボス メレル,はぁ……はぁ……まさか、ここまでの力とは……。ふふ……これは“新しい時代”の兆しかしら……,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/merel_normal.png
+boss_1_defeat,2,,メレルは気絶した,,./assets/images/backgrounds/ch1_ajito_bg.png,,
+boss_1_defeat,3,クロエ,ふぅ～……強かったー。でも、やっぱ勝つと気持ちいいね！,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+boss_1_defeat,4,ティファ,見事だったわ、クロエ。あなた、本当に頼りになる,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+boss_1_defeat,5,クロエ,えへへ～。あたしのこと、気に入った？,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+boss_1_defeat,6,ティファ,そうね。……また会えるといいわね,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+boss_1_defeat,7,クロエ,えっ、もう行っちゃうの！？,left,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,
+boss_1_defeat,8,ティファ,私には、まだやるべきことがあるから。けど、どこかでまた一緒に戦えるって信じてる,right,./assets/images/backgrounds/ch1_ajito_bg.png,./assets/images/characters/chloe_normal.png,./assets/images/characters/tifa_normal.png
+chapter_2,1,リリィ（受付嬢）,盗賊団を退けたリオンだったが、彼の中で何かが変わり始めていた。,,./assets/images/backgrounds/village.jpg,,
+chapter_2,2,リオン,まだ、戦えるじゃないか...,,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,
+chapter_2,3,リリィ（受付嬢）,ありがとうございます、リオンさん。あなたがいなければ...,,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_confident.png,./assets/images/characters/mayor_grateful.png
+chapter_2,4,リオン,礼には及ばない。だが...何か変だな。,,./assets/images/backgrounds/village.jpg,./assets/images/characters/lion_thinking.png,./assets/images/characters/mayor_grateful.png
+chapter_2,5,リリィ（受付嬢）,その時、遠くから不気味な笑い声が響いた。,,./assets/images/backgrounds/village_evening.jpg,./assets/images/characters/lion_alert.png,./assets/images/characters/mayor_worried.png

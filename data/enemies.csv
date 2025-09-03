@@ -10,7 +10,7 @@ ch1_power_thief_d,怪力盗賊,1,dungeon,80,0,25,12,2,10,25,18,0.2,equipment_fra
 ch1_charm_thief_d,幻惑盗賊,1,dungeon,60,15,19,10,12,20,22,16,0.25,equipment_fragment,ch1_charm_thief_d.png,魅惑的な踊りで敵を翻弄,charm_dance
 ch1_mage_thief_d,魔法盗賊,1,dungeon,55,25,16,8,18,15,25,20,0.3,ether,ch1_mage_thief_d.png,火球と眠りの魔法を使う盗賊,fireball
 ch1_tifa_mid,ティファ,1,mid_boss,150,20,20,18,5,22,80,50,0.5,rare_gem,ch1_tifa_mid.png,格闘技に長けた盗賊団幹部,tifa_1
-ch1_merel_boss,盗賊団の頭目 メレル,1,boss,180,30,28,20,15,18,150,100,1.0,boss_crystal,ch1_merel_boss.png,冷酷で狡猾な盗賊団の頭目,death_kiss
+ch1_merel_boss,盗賊団の頭目 メレル,1,boss,180,30,28,20,15,18,150,100,1,boss_crystal,ch1_merel_boss.png,冷酷で狡猾な盗賊団の頭目,death_kiss
 ch2_mizuclaim_f,ミズクレイム,2,field,65,5,22,10,8,12,18,12,0.3,ether,ch2_mizuclaim_f.png,湿地の粘液モンスター,slimy_bind
 ch2_bandit_remnant_f,野盗の残党,2,field,70,0,25,8,3,20,22,14,0.25,potion,ch2_bandit_remnant_f.png,ボロをまとった生き残りの野盗,poison_blade_combo
 ch2_oldcorton_f,オールドコートン,2,field,85,15,28,15,10,8,25,18,0.2,equipment_fragment,ch2_oldcorton_f.png,魔力で動く旧式人形兵,pile_charge
@@ -21,16 +21,29 @@ ch2_aquaslime_d,アクアスライム,2,dungeon,90,12,22,18,10,10,25,18,0.3,wate
 ch2_siren_fragment_d,セイレーンの欠片,2,dungeon,75,25,20,8,20,16,30,22,0.25,song_fragment,ch2_siren_fragment_d.png,壊れた歌声の音霊,broken_song
 ch2_lyricbug_d,リリックバグ,2,dungeon,70,5,28,6,8,28,22,16,0.35,bug_wing,ch2_lyricbug_d.png,音に敏感な群れ飛行魔物,swarm_attack
 ch2_harmonic_doll_d,ハーモニックドール,2,dungeon,110,30,30,20,25,12,35,25,0.2,ancient_gear,ch2_harmonic_doll_d.png,自動演奏する少女型オートマトン,auto_melody
-ch2_nereia_boss,ネレイア,2,boss,220,50,35,25,30,20,200,150,1.0,water_spirit_core,ch2_nereia_boss.png,封印から目覚めた水の精霊,turbid_aria
-orc,オーク,2,field,80,5,25,12,3,6,20,12,0.25,equipment_fragment,orc.png,筋肉質で攻撃力が高い,heavy_attacker
-skeleton,スケルトン,2,field,40,15,20,10,10,15,18,10,0.3,ether,skeleton.png,魔力を持つアンデッド,magic_user
-dark_elf,ダークエルフ,2,field,90,25,30,15,20,18,35,20,0.2,magic_scroll,dark_elf.png,闇の魔法を操る美しき戦士,magic_attacker
-ogre,オーガ,2,dungeon,150,10,40,20,5,8,50,30,0.15,rare_material,ogre.png,巨大な体躯を持つ鬼族,tank_enemy
-vampire,バンパイア,2,dungeon,100,40,35,18,30,22,45,25,0.3,blood_crystal,vampire.png,血を吸う夜の貴族,life_drainer
-harpy,ハーピー,2,field,75,20,28,12,25,25,40,22,0.25,wind_feather,harpy.png,美しい歌声で誘惑する鳥人,charm_user
-dragon_knight,ドラゴンナイト,3,both,200,50,50,30,35,20,80,50,0.2,dragon_scale,dragon_knight.png,竜の力を宿した騎士,balanced_elite
-succubus,サキュバス,3,dungeon,120,60,25,20,45,20,70,40,0.35,charm_gem,succubus.png,男を魅了する悪魔,charm_specialist
-angel_fallen,堕天使,4,field,250,80,55,35,60,25,120,80,0.2,holy_fragment,angel_fallen.png,天から堕ちた美しき天使,holy_dark_mix
-demon_lord,魔王軍幹部,5,dungeon,400,150,70,45,80,30,200,150,0.15,demon_core,demon_lord.png,魔王軍の強力な幹部,boss_pattern
-final_boss_1,偽りの魔王,6,boss,800,200,90,60,100,35,500,300,1,fake_crown,final_boss_1.png,世界を脅かすとされる魔王,fake_boss
-final_boss_2,真の支配者,7,boss,2000,500,150,100,200,50,1000,500,1,true_power,final_boss_2.png,世界の真の支配者,true_final_boss
+ch2_miola_mid,ミオラ,2,mid_boss,180,35,25,22,28,16,100,60,0.6,spectral_harp,ch2_miola_mid.png,亡霊の吟遊詩人,spectral_songs
+ch2_nereia_boss,ネレイア,2,boss,220,50,35,25,30,20,200,150,1,water_spirit_core,ch2_nereia_boss.png,封印から目覚めた水の精霊,turbid_aria
+ch3_magical_slime_f,マジカルスライム,3,field,95,18,28,15,20,12,30,20,0.25,magic_crystal,ch3_magical_slime_f.png,半透明で青紫色、魔法陣模様が体内に浮かぶスライム,magic_pulse
+ch3_ether_rabbit_f,エーテルラビット,3,field,80,12,32,10,8,28,28,18,0.3,ether,ch3_ether_rabbit_f.png,魔素の影響で巨大化・暴走した白いウサギ型の魔物,rabbit_rush
+ch3_floating_eye_doll_f,浮遊魔眼ドール,3,field,70,25,26,12,22,20,32,22,0.25,eye_crystal,ch3_floating_eye_doll_f.png,空中に浮かぶ少女型の無表情な魔導人形,magic_beam
+ch3_cultist_remnant_f,狂信者の残滓,3,field,100,8,30,18,15,14,35,25,0.2,cursed_fragment,ch3_cultist_remnant_f.png,書庫の魔力に取り憑かれた元人間,berserker_assault
+ch3_exploding_manacaras_f,爆裂マナカラス,3,field,65,30,24,8,25,26,40,28,0.35,volatile_feather,ch3_exploding_manacaras_f.png,鳥型の魔物。近づくと自爆魔法を放ってくる,suicide_explosion
+ch3_magi_guard_d,自動防衛機械,3,dungeon,120,20,35,25,12,18,45,30,0.2,gear_fragment,ch3_magi_guard_d.png,魔力で動く鎧兵器。目に当たる宝玉がコア,defensive_protocol
+ch3_spell_eater_d,スペルイーター,3,dungeon,90,40,20,15,30,22,42,32,0.3,spell_essence,ch3_spell_eater_d.png,空中に浮かぶ黒い触手の集合体,spell_absorption
+ch3_book_guardian_d,本の守護者,3,dungeon,110,28,32,20,18,16,40,28,0.25,ancient_page,ch3_book_guardian_d.png,巨大な書籍に擬態する魔導生物,page_storm
+ch3_mimic_box_d,ミミック魔導箱,3,dungeon,85,35,28,22,25,12,38,35,0.4,rare_material,ch3_mimic_box_d.png,書庫の中の宝箱に擬態していた,binding_spell
+ch3_night_alchemist_d,ナイト・アルケミスト,3,dungeon,105,45,30,18,35,20,50,40,0.25,alchemist_vial,ch3_night_alchemist_d.png,黒い外套をまとった人型錬金術師,explosive_chemistry
+ch3_lily_mid,狂気の司書 リリィ＝オーヴァイン,3,mid_boss,220,60,32,28,40,22,120,80,0.7,grimoire_fragment,ch3_lily_mid.png,書物に取り込まれ不死となった元司書,grimoire_nova
+ch3_meltina_boss,禁書を纏う者メルティナ,3,boss,280,80,40,30,50,25,250,200,1,forbidden_tome,ch3_meltina_boss.png,謎の女魔導士。古代魔導書と一体化,forbidden_magic
+ch4_mistwolf_f,ミストウルフ,4,field,115,25,32,18,20,24,35,25,0.25,mist_fang,ch4_mistwolf_f.png,霧に包まれた幻狼,mist_howl
+ch4_fairy_glass_f,フェイグラス,4,field,90,30,28,12,25,28,38,28,0.3,fairy_dust,ch4_fairy_glass_f.png,ガラスのような透明な妖精,fairy_illusion
+ch4_illusion_slime_f,イリュージョンスライム,4,field,110,20,30,20,18,16,32,22,0.25,illusion_core,ch4_illusion_slime_f.png,幻影を生み出すスライム,slime_reflection
+ch4_shadow_mirror_f,シャドーミラー,4,field,100,35,26,15,30,20,40,30,0.3,shadow_glass,ch4_shadow_mirror_f.png,影を映す魔法の鏡,shadow_mirror
+ch4_reflect_mage_f,リフレクトメイジ,4,field,95,40,24,16,35,22,45,35,0.2,reflect_crystal,ch4_reflect_mage_f.png,反射魔法を操る魔導士,reflect_bolt
+ch4_reflector_girl_d,リフレクターガール,4,dungeon,120,45,30,20,32,26,48,38,0.25,mirror_shard,ch4_reflector_girl_d.png,鏡の中から現れた少女,mirror_girl_dance
+ch4_photon_eater_d,フォトンイーター,4,dungeon,110,50,26,18,38,24,50,40,0.3,light_essence,ch4_photon_eater_d.png,光を喰らう闇の化物,photon_drain
+ch4_mirror_shadow_d,ミラーシャドウ,4,dungeon,105,30,35,22,25,30,45,35,0.3,shadow_fragment,ch4_mirror_shadow_d.png,クロエの鏡に映った幻影,mirror_shadow_strike
+ch4_crystal_maiden_d,クリスタルメイデン,4,dungeon,130,35,32,25,28,20,42,32,0.25,crystal_heart,ch4_crystal_maiden_d.png,水晶でできた美しい少女,crystal_shard
+ch4_dullahan_d,デュラハン,4,dungeon,150,20,40,30,15,18,55,45,0.2,cursed_armor,ch4_dullahan_d.png,首無し騎士の亡霊,headless_charge
+ch4_spectral_queen_mid,スペクトラルクィーン,4,mid_boss,250,70,38,32,45,28,140,100,0.8,spectral_crown,ch4_spectral_queen_mid.png,鏡の世界を統べる亡霊の女王,spectral_wail
+ch4_rizelia_boss,鏡の主 リゼリア,4,boss,320,100,45,35,55,30,300,250,1,mirror_throne,ch4_rizelia_boss.png,鏡の城の真の支配者,mirror_realm

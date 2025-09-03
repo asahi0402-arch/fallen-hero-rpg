@@ -264,7 +264,7 @@ BREAK elegant female thief boss, long silver hair, black corset, red cape, seduc
 酸性の跳躍：防御力ダウン攻撃
 
 プロンプト：
-BBREAK slimy translucent blue-green creature, tentacle-like limbs, soft ripple surface, moist sheen, amphibious texture, BREAK swamp monster, bubbling surface, flexible body, glowing fluid core, open swamp terrain,
+BREAK slimy translucent blue-green creature, tentacle-like limbs, soft ripple surface, moist sheen, amphibious texture, BREAK swamp monster, bubbling surface, flexible body, glowing fluid core, open swamp terrain,
 
 ② クラグレイス
 
@@ -276,7 +276,7 @@ BBREAK slimy translucent blue-green creature, tentacle-like limbs, soft ripple s
 逃走の煙幕：低確率で逃走
 
 プロンプト：
-BBREAK skinny female rogue, wild amber eyes, messy hair, tattered brown cloak, dirty leather wraps, BREAK bandit design, swamp mud-stained clothing, dual daggers, thief aesthetics, agile body stance,
+BREAK skinny female rogue, wild amber eyes, messy hair, tattered brown cloak, dirty leather wraps, BREAK bandit design, swamp mud-stained clothing, dual daggers, thief aesthetics, agile body stance,
 
 ③ オールドコートン
 
@@ -288,7 +288,7 @@ BBREAK skinny female rogue, wild amber eyes, messy hair, tattered brown cloak, d
 魔力過熱：自爆（瀕死時）
 
 プロンプト：
-BBREAK humanoid automaton, cracked porcelain mask, rusted metal joints, long limbs, glowing cracks, BREAK ancient mechanical soldier, magical power leaks, worn-out ceremonial armor, eerie presence,
+BREAK humanoid automaton, cracked porcelain mask, rusted metal joints, long limbs, glowing cracks, BREAK ancient mechanical soldier, magical power leaks, worn-out ceremonial armor, eerie presence,
 
 ④ シアリーハウンド
 
@@ -300,7 +300,7 @@ BBREAK humanoid automaton, cracked porcelain mask, rusted metal joints, long lim
 亡霊牙：確率で防御無視
 
 プロンプト：
-BBREAK ghostly wolf creature, glowing white eyes, semi-transparent fur, ethereal trail, spectral breath, BREAK cursed hound design, ancient ruins background, haunting expression, low mist ground,
+BREAK ghostly wolf creature, glowing white eyes, semi-transparent fur, ethereal trail, spectral breath, BREAK cursed hound design, ancient ruins background, haunting expression, low mist ground,
 
 ⑤ ドレイドワスプ
 種族：大型の毒蜂型魔獣
@@ -311,7 +311,7 @@ BBREAK ghostly wolf creature, glowing white eyes, semi-transparent fur, ethereal
 羽音の暴風：全体微ダメ＋命中率ダウン
 
 プロンプト：
-BBREAK large venomous wasp creature, armored black-purple exoskeleton, glowing red compound eyes, rune pattern on back, 
+BREAK large venomous wasp creature, armored black-purple exoskeleton, glowing red compound eyes, rune pattern on back, 
 BREAK insectoid monster, buzzing wings, swamp vegetation, hostile posture, giant mandibles,
 
 ---------------------------------------------------
@@ -321,31 +321,31 @@ BREAK insectoid monster, buzzing wings, swamp vegetation, hostile posture, giant
 ・ミストレイス（霧の霊体）
 　半透明の女性型霊体。浮遊しながら氷属性魔法を放つ。　
 　プロンプト例　
-　BBREAK ghostly female spirit, ethereal body, glowing eyes, translucent skin,  
+　BREAK ghostly female spirit, ethereal body, glowing eyes, translucent skin,  
 　BREAK tattered robes, icy mist swirling around, chains wrapped loosely, floating posture,
 
 ・アクアスライム（魔力汚染されたスライム）
 　青白く発光しながら、ゆっくりと這い寄ってくる粘液状の魔物。
 　プロンプト例
-　BBREAK gelatinous slime creature, glowing blue core, semi-transparent body,  
+　BREAK gelatinous slime creature, glowing blue core, semi-transparent body,  
 　BREAK slick wet surface, dripping with magical essence, luminous veins, puddle trail,
 
 ・セイレーンの欠片（壊れた精霊体）
 　壊れた歌声を断続的に響かせる、上半身のみの音霊。
 　プロンプト例
-　BBREAK broken siren spirit, fragmented body, fading features, cracked crystal eyes,  
+　BREAK broken siren spirit, fragmented body, fading features, cracked crystal eyes,  
 　BREAK faint glow, tattered silk veil, dissonant musical aura, shimmering vocal wave,
 
 ・リリックバグ（音に反応する昆虫型魔物）
 　音に敏感な飛行魔物。群れで襲いかかる。
 　プロンプト例
-　BBREAK insectoid monster, glowing antennae, iridescent wings, sharp mandibles,  
+　BREAK insectoid monster, glowing antennae, iridescent wings, sharp mandibles,  
 　BREAK armored shell with rune-like markings, surrounded by buzzing noise, rhythmic wingbeat,
 
 ・ハーモニックドール（音楽を模倣する魔導人形）
 　古代文明の遺物で、自動演奏のように動き続ける少女型オートマトン。
 　プロンプト例
-　BBREAK mechanical girl, expressionless face, porcelain features, gear-driven joints,  
+　BREAK mechanical girl, expressionless face, porcelain features, gear-driven joints,  
 　BREAK frilly gothic uniform, music box embedded in chest, winding key on back, metallic ribbons,
 
 ---------------------------------------------------
@@ -359,9 +359,61 @@ BREAK insectoid monster, buzzing wings, swamp vegetation, hostile posture, giant
 ・「沈黙の詩」：行動封印＋MPダメージ
 
 プロンプト例：
-BBREAK elegant water spirit, serene expression, flowing aqua hair, glowing teal eyes,  
+BREAK elegant water spirit, serene expression, flowing aqua hair, glowing teal eyes,  
 BREAK translucent water-dress, liquid tendrils, ornate shell accessories, surrounded by floating musical notes,
 ---------------------------------------------------
+
+【イベントシーン：旧封印の間・封印の扉の前】
+
+クロエ
+「……この扉、他の場所とは雰囲気が違う。誰かが封印していたような……」
+
+（不意に霧が濃くなり、冷たい風が吹き抜ける。幻のように女性のシルエットが現れる）
+
+？？？
+「ふふふ……誰かが、また“音”を聴きに来たのね……」
+
+クロエ
+「誰！？……この感じ、ただの霧じゃない！」
+
+ミオラ（中ボス）
+「私は“ミオラ”。かつてセレネ湖畔で語られた悲劇の詩人。けれど、今はこの地に囚われた亡霊……。あなたが来たということは、封印を破りに来たのよね？」
+
+クロエ
+「封印を……？違う、私はただ依頼でこの遺跡を調査に来ただけ。でも、あなたが邪魔するなら――！」
+
+◆ 中ボス：ミオラ（亡霊の吟遊詩人）
+
+外見特徴プロンプト：
+BREAK ghostly tall woman, long flowing silver hair, melancholic expression, glowing pale skin, translucent body,
+BREAK torn minstrel dress, tattered cape, holding spectral harp, musical notes floating around, glowing chains on ankles,
+
+武器・スキル：
+
+スペクトラルハープ：亡霊の音色でクロエの動きを鈍らせる
+
+断絶の詩：戦闘中ランダムで幻覚状態を付与
+
+嘆きの旋律：自身のHPが減ると自動的に回復（2回のみ）
+
+性格・演出：
+
+落ち着いた口調で淡々と語るが、時折狂気が滲む
+
+話すたびに幻の音楽が聴こえるような演出（テキスト上に ♪ を挿入しても良）
+
+
+◆ 勝利後イベント：
+
+クロエ
+「……消えた……やっぱり、ただの敵じゃなかった……」
+
+（封印の扉がゆっくりと開く）
+
+クロエ
+「これで奥に進める……でも、“封印”って……何を隠してたんだろう？」
+
+
 【ボス前イベント】
 
 （遺跡の奥で、波の音と共に美しい旋律が響く）
@@ -482,6 +534,76 @@ BREAK translucent water-dress, liquid tendrils, ornate shell accessories, surrou
 ぺこら
 「うぇえ、ぺこーら本読むの好きだけど、読んで呪われるのはごめんぺこ……」
 
+
+◆ 中ボス名
+
+リリィ＝オーヴァイン（狂気の司書）
+
+かつて魔導書庫を管理していた司書の魔法使い。
+書庫の崩壊とともに命を落としたが、書物に取り込まれ不死の存在として蘇る。
+現在は膨大な知識と魔力に飲まれ、来訪者すべてを排除対象と見なしている。
+
+◆ イベント：ダンジョン中盤（結界扉前）
+
+（クロエとぺこら、暗い魔導書庫を進んでいる）
+
+ぺこら
+「なんか本が勝手に浮いてるぺこ……魔法の気配、強すぎない！？」
+
+クロエ
+「どこかで魔力の中心が……この先みたい。あの大きな扉の向こうに何かいる。」
+
+（紫の魔法陣とともに、少女のような影が浮かび上がる）
+
+リリィ＝オーヴァイン
+「……また、知識を盗みに来たのね。愚かなる外界の者たち。」
+
+クロエ
+「……あなたは、ここで何を？」
+
+リリィ
+「私はこの書庫の司書。知識を護り、知識と共に生き、知識に喰われた者。ここは、私の聖域――立ち入る者には罰を。」
+
+ぺこら
+「ぺこぺこ言ってる場合じゃないぺこっ！本当に来るぺこーっ！」
+
+◆ 中ボス：リリィ＝オーヴァイン
+
+属性・武器・スキル
+
+属性：闇・魔法
+
+武器：魔導書
+
+スキル：
+
+グリモワール・ノヴァ：禁書から魔力を解放し、全体攻撃
+
+イレースペン：対象の強化効果を消去
+
+ページスウォーム：本の群れを飛ばしてダメージ＋暗闇効果
+
+外見プロンプト：
+BBREAK ghostly librarian girl, pale silver hair, glowing purple eyes, long twin braids, floating above ground,
+BREAK corrupted gothic librarian uniform, arcane runes floating around, shadowy magical aura, holding a massive glowing book,
+
+◆ 撃破後イベント
+
+リリィ（半透明になりながら）
+「……知識は……誰のものでもない……けれど……力が伴わねば……人を……狂わせる……」
+
+（魔導書と共に霧のように消える）
+
+クロエ
+「……危険な魔法が、まだ残されているみたい。奥へ進もう。」
+
+ぺこら
+「うっぅー、なんか嫌な感じがしたぺこ……でも！ここまで来たらやるしかないぺこーっ！」
+
+
+
+
+
 🦹‍♀️ ボス戦直前
 
 ダンジョン最奥、巨大な魔法陣の中心で浮かぶ魔導書と融合した女性が現れる。
@@ -536,35 +658,40 @@ BREAK translucent water-dress, liquid tendrils, ornate shell accessories, surrou
 半透明で青紫色、魔法陣模様が体内に浮かぶスライム
 
 プロンプト:
-BBREAK glowing magical slime, bluish-purple transparent body, magic circles inside, slippery surface, pulsating core, BREAK ambient glow, swirling mist, eerie light reflections, no visible limbs
+BREAK glowing magical slime, bluish-purple transparent body, magic circles inside, slippery surface, pulsating core, 
+BREAK ambient glow, swirling mist, eerie light reflections, no visible limbs
 
 エーテルラビット
 
 魔素の影響で巨大化・暴走した白いウサギ型の魔物。目が真っ赤。
 
 プロンプト:
-BBREAK oversized white rabbit monster, red glowing eyes, twitching ears, chaotic aura, shadowy claws, BREAK corrupted fur, arcane runes etched in skin, floating with magic energy
+BREAK oversized white rabbit monster, red glowing eyes, twitching ears, chaotic aura, shadowy claws, 
+BREAK corrupted fur, arcane runes etched in skin, floating with magic energy
 
 浮遊魔眼ドール
 
 空中に浮かぶ少女型の無表情な魔導人形。瞳から魔弾を発射する。
 
 プロンプト:
-BBREAK doll-like flying girl, blank stare, porcelain skin, single glowing eye, no mouth, BREAK gothic frilly dress, levitating, crystal core, casting magic projectiles
+BREAK doll-like flying girl, blank stare, porcelain skin, single glowing eye, no mouth, 
+BREAK gothic frilly dress, levitating, crystal core, casting magic projectiles
 
 狂信者の残滓
 
 書庫の魔力に取り憑かれた元人間。もはや意思はなく、暴力的に襲いかかる。
 
 プロンプト:
-BBREAK corrupted priest, tattered robes, twisted limbs, exposed veins glowing red, maddened grin, BREAK burnt scripture pages, black chains, holy symbol turned upside-down
+BREAK corrupted priest, tattered robes, twisted limbs, exposed veins glowing red, maddened grin, 
+BREAK burnt scripture pages, black chains, holy symbol turned upside-down
 
 爆裂マナカラス
 
 鳥型の魔物。近づくと自爆魔法を放ってくる。
 
 プロンプト:
-BBREAK mutated crow monster, glowing beak, smoky feathers, floating with mana trails, BREAK magical runes on wings, unstable core, sparks around body
+BREAK mutated crow monster, glowing beak, smoky feathers, floating with mana trails, 
+BREAK magical runes on wings, unstable core, sparks around body
 ---------------------------------------------------
 
 🏛 ダンジョン名：「魔窟の魔道書庫」
@@ -578,35 +705,40 @@ BBREAK mutated crow monster, glowing beak, smoky feathers, floating with mana tr
 魔力で動く鎧兵器。目に当たる宝玉がコア。
 
 プロンプト:
-BBREAK enchanted armor soldier, hollow interior, glowing red crystal eye, steam pipes on back, BREAK arcane engravings on steel plates, magical glow, ancient tech look
+BREAK enchanted armor soldier, hollow interior, glowing red crystal eye, steam pipes on back, 
+BREAK arcane engravings on steel plates, magical glow, ancient tech look
 
 スペルイーター
 
 空中に浮かぶ黒い触手の集合体。魔法を吸収して反撃してくる。
 
 プロンプト:
-BBREAK floating mass of black tentacles, glowing mouths, arcane sigils inside body, BREAK glowing runes orbiting around, unstable magic energy, horror-like texture
+BREAK floating mass of black tentacles, glowing mouths, arcane sigils inside body, 
+BREAK glowing runes orbiting around, unstable magic energy, horror-like texture
 
 本の守護者（ブックキーパー）
 
 巨大な書籍に擬態する魔導生物。ページを剣のように飛ばす。
 
 プロンプト:
-BBREAK giant sentient book monster, open pages with sharp edges, demonic eyes on cover, BREAK leather-bound surface, floating bookmarks, magical glow from text
+BREAK giant sentient book monster, open pages with sharp edges, demonic eyes on cover, 
+BREAK leather-bound surface, floating bookmarks, magical glow from text
 
 ミミック魔導箱
 
 書庫の中の宝箱に擬態していた。魔法で拘束してくる。
 
 プロンプト:
-BBREAK mimic treasure chest monster, long tongue, glowing eyes inside, magical glyphs on lid, BREAK wooden box with metal edges, false loot inside, sinister aura
+BREAK mimic treasure chest monster, long tongue, glowing eyes inside, magical glyphs on lid, 
+BREAK wooden box with metal edges, false loot inside, sinister aura
 
 ナイト・アルケミスト（中型）
 
 黒い外套をまとった人型錬金術師。小型爆弾や毒霧を使う。
 
 プロンプト:
-BBREAK hooded alchemist humanoid, gas mask, smoke vials, belts with potions, silver gloves, BREAK black robes, chemical flasks, glowing green liquids
+BREAK hooded alchemist humanoid, gas mask, smoke vials, belts with potions, silver gloves, 
+BREAK black robes, chemical flasks, glowing green liquids
 
 🦹‍♀️ ボス：「禁書を纏う者メルティナ」
 
@@ -614,12 +746,13 @@ BBREAK hooded alchemist humanoid, gas mask, smoke vials, belts with potions, sil
 
 ボスプロンプト：
 
-BBREAK pale skinned female sorceress, glowing eyes, floating ancient tome, ethereal hair, arcane runes orbiting body, BREAK tattered spellcaster robes, clawed fingers, pages floating like wings, corrupted magical aura
+BREAK pale skinned female sorceress, glowing eyes, floating ancient tome, ethereal hair, arcane runes orbiting body, 
+BREAK tattered spellcaster robes, clawed fingers, pages floating like wings, corrupted magical aura
 
 🧙‍♀️ ゲストキャラ：兎田ぺこら（ルナクレス騎士団）
 プロンプト：
 
-BBREAK petite rabbit girl, long silver hair with twin tails, sharp red eyes, confident expression, BREAK armored battle robe with gold trim, knight insignia, spell holsters, magic firearm with glowing barrel
+BREAK petite rabbit girl, long silver hair with twin tails, sharp red eyes, confident expression, BREAK armored battle robe with gold trim, knight insignia, spell holsters, magic firearm with glowing barrel
 
 タイプ：魔法使い系
 
@@ -672,27 +805,27 @@ BBREAK petite rabbit girl, long silver hair with twin tails, sharp red eyes, con
 【フィールドの敵キャラ5体とプロンプト】
 1. ミストウルフ（幻影獣）
 
-BBREAK ethereal wolf, mist body, glowing cyan eyes, phantasmal fur, semi-transparent legs
+BREAK ethereal wolf, mist body, glowing cyan eyes, phantasmal fur, semi-transparent legs
 BREAK mystical aura, forest shadow camouflage, particle dispersion effect, long spectral tail,
 
 2. フェイグラス（植物型）
 
-BBREAK feminine-shaped flower spirit, vine limbs, glowing petals, semi-humanoid plant creature
+BREAK feminine-shaped flower spirit, vine limbs, glowing petals, semi-humanoid plant creature
 BREAK overgrown forest dress, blooming chest flowers, pollen trail, enchanted flora pattern,
 
 3. イリュージョンスライム
 
-BBREAK translucent slime girl, floating orbs inside body, shifting rainbow glow
+BREAK translucent slime girl, floating orbs inside body, shifting rainbow glow
 BREAK fluid-like magical dress, everchanging armor patterns, refracted light effects,
 
 4. シャドーミラー
 
-BBREAK dark humanoid, mirror-like face, void-black armor, no mouth, eerie aura
+BREAK dark humanoid, mirror-like face, void-black armor, no mouth, eerie aura
 BREAK fragmented plate armor, glimmering with glass edges, echoing silhouette cape,
 
 5. リフレクトメイジ（幻影魔法使い）
 
-BBREAK floating illusionist girl, veiled eyes, twin ponytails of smoke, grinning shadow mask
+BREAK floating illusionist girl, veiled eyes, twin ponytails of smoke, grinning shadow mask
 BREAK layered magician robe, inverted color symbols, glowing glyphs, translucent sleeves,
 
 🛕 ダンジョン：鏡の城
@@ -723,32 +856,32 @@ BREAK layered magician robe, inverted color symbols, glowing glyphs, translucent
 🧟‍♀️ ダンジョンの敵キャラ5体とプロンプト
 1. リフレクターガール
 
-BBREAK humanoid mirror golem, chrome skin, one-eyed reflection orb, no mouth
+BREAK humanoid mirror golem, chrome skin, one-eyed reflection orb, no mouth
 BREAK mirror plate bikini armor, crystal core on chest, jagged reflective crown,
 
 2. フォトンイーター
 
-BBREAK energy-absorbing ghost girl, glowing circuits over pale body, spectral fangs
+BREAK energy-absorbing ghost girl, glowing circuits over pale body, spectral fangs
 BREAK transparent layered suit, photonic ripple effects, anti-light sigils,
 
 3. ミラーシャドウ（クロエの幻影）
 
-BBREAK dark clone of Chloe, reversed eye color, eerie smile, blood mist aura
+BREAK dark clone of Chloe, reversed eye color, eerie smile, blood mist aura
 BREAK cracked adventurer armor, mirrored sword, flowing torn cape,
 
 4. クリスタルメイデン
 
-BBREAK tall glass statue girl, emotionless, glowing inside from core crystal
+BREAK tall glass statue girl, emotionless, glowing inside from core crystal
 BREAK elegant crystal gown, refractive shoulder guards, glass heels, halo crown,
 
 5. スペクトラルクィーン（中ボス）
 
-BBREAK tall magical queen, four arms, glowing mirrored mask, white flowing hair
+BREAK tall magical queen, four arms, glowing mirrored mask, white flowing hair
 BREAK regal transparent gown, glyph tattoos, multiple staff floating behind her,
 
 👑 最終ボス：鏡の主 リゼリア
 
-BBREAK goddess-like mage, one horn, platinum braid, glowing third eye, floating stance
+BREAK goddess-like mage, one horn, platinum braid, glowing third eye, floating stance
 BREAK broken mirror armor, fragmented crystal wings, glowing magical runes on skin,
 
 💬 ボス戦・会話イベント
@@ -816,27 +949,27 @@ BREAK broken mirror armor, fragmented crystal wings, glowing magical runes on sk
 【フィールド敵キャラ5体 & プロンプト】
 1. デューンサーペント（砂蛇）
 
-BBREAK massive serpent girl, sandy skin tone, glowing red eyes, cracked scales
+BREAK massive serpent girl, sandy skin tone, glowing red eyes, cracked scales
 BREAK tribal wrappings, sand-dusted armor plates, coiled lower body, fang earring,
 
 2. サンドシェイド（幽霊兵）
 
-BBREAK desert ghost warrior, hollow armor, glowing eye slits, flowing tattered cape
+BREAK desert ghost warrior, hollow armor, glowing eye slits, flowing tattered cape
 BREAK faded desert garb, rusted scimitar, spectral sand trails, crescent tattoo,
 
 3. スカラベマギ（虫魔導士）
 
-BBREAK humanoid beetle girl, chitinous limbs, golden mandibles, glowing antennae
+BREAK humanoid beetle girl, chitinous limbs, golden mandibles, glowing antennae
 BREAK desert sorceress robes, insect jewelry, scarab-shaped staff, shimmer veil,
 
 4. デザートファタ（蜃気楼妖精）
 
-BBREAK illusion fairy, heat-haze wings, glowing aura, floating barefoot girl
+BREAK illusion fairy, heat-haze wings, glowing aura, floating barefoot girl
 BREAK see-through scarf outfit, gold bangles, mirage shimmer effects, jewel belt,
 
 5. クレストウォーカー（遺跡歩行者）
 
-BBREAK ancient golem girl, sandstone body, carved runes, moss patches
+BREAK ancient golem girl, sandstone body, carved runes, moss patches
 BREAK crumbling temple dress, cragged shoulder plates, jewel-core chest, twin obelisks as arms,
 
 🎀 ゲストキャラ：ララ（ToLOVEる）登場シーン
@@ -873,27 +1006,27 @@ BREAK crumbling temple dress, cragged shoulder plates, jewel-core chest, twin ob
 【ダンジョン内の敵キャラ5体 & プロンプト】
 1. ルナワーデン（神殿守）
 
-BBREAK silver knight girl, crescent helm, glowing white hair, lunar emblem armor
+BREAK silver knight girl, crescent helm, glowing white hair, lunar emblem armor
 BREAK enchanted plate, moonlight cape, radiant halberd, gemstone embedded shield,
 
 2. ミラージュウィッチ
 
-BBREAK elegant moon witch, glowing runes, long flowing hair, face veil
+BREAK elegant moon witch, glowing runes, long flowing hair, face veil
 BREAK moon phase robes, floating star orbs, silver heeled boots, ancient wand,
 
 3. シャインゴーレム（光の幻影）
 
-BBREAK transparent humanoid, refracted glass body, glowing inner core
+BREAK transparent humanoid, refracted glass body, glowing inner core
 BREAK crystal armor, prism blade arms, floating aura crown, shimmering feet,
 
 4. ルナフォックス（幻獣）
 
-BBREAK humanoid fox girl, multiple glowing tails, silver-blue fur, starlight eyes
+BREAK humanoid fox girl, multiple glowing tails, silver-blue fur, starlight eyes
 BREAK celestial garb, spirit beads, veil sash, glowing moon rings,
 
 5. 月蝕の霊姫 ファルティナ（ボス）
 
-BBREAK ethereal princess, pale lavender skin, white hair haloed by crescent moon
+BREAK ethereal princess, pale lavender skin, white hair haloed by crescent moon
 BREAK ceremonial moon dress, glowing chains, runed circlet, ghostly veil cloak,
 
 💬 ボス戦前イベント
@@ -934,7 +1067,7 @@ BREAK ceremonial moon dress, glowing chains, runed circlet, ghostly veil cloak,
 
 🎨 ララの衣装プロンプト
 
-BBREAK cheerful pink-haired girl, alien princess look, sparkling magenta eyes, side ponytail, confident smile
+BREAK cheerful pink-haired girl, alien princess look, sparkling magenta eyes, side ponytail, confident smile
 BREAK sci-fi inspired mage outfit, high-tech spell rod, glowing circuit patterns, white-purple robe with gold trims, floating accessory drones,
 
 
@@ -977,7 +1110,7 @@ BREAK sci-fi inspired mage outfit, high-tech spell rod, glowing circuit patterns
 
 🎨 ネフィアのプロンプト
 
-BBREAK stoic moon guardian girl, pale silver hair, sharp eyes, calm expression, crescent tattoo on cheek
+BREAK stoic moon guardian girl, pale silver hair, sharp eyes, calm expression, crescent tattoo on cheek
 BREAK moonlight armor, mirrored shield, curved halberd, celestial priestess garb, radiant dust floating,
 
 --------------------------------------------------------------------

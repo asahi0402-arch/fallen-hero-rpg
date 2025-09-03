@@ -4,6 +4,7 @@ class TitleScreen {
         this.settings = {
             bgmVolume: 70,
             seVolume: 80,
+            clickVolume: 80,
             messageSpeed: 'normal'
         };
         
@@ -66,6 +67,14 @@ class TitleScreen {
             this.openSettings();
         });
         
+        // デバッグ用章選択ボタン
+        document.querySelectorAll('.chapter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const chapter = parseInt(e.currentTarget.getAttribute('data-chapter'));
+                this.startChapterDebug(chapter);
+            });
+        });
+        
         // ギャラリーモーダル
         document.getElementById('closeGalleryModal').addEventListener('click', () => {
             this.closeGallery();
@@ -86,6 +95,12 @@ class TitleScreen {
         document.getElementById('seVolume').addEventListener('input', (e) => {
             this.settings.seVolume = parseInt(e.target.value);
             document.getElementById('seVolumeValue').textContent = e.target.value + '%';
+            this.saveSettings();
+        });
+        
+        document.getElementById('clickVolume').addEventListener('input', (e) => {
+            this.settings.clickVolume = parseInt(e.target.value);
+            document.getElementById('clickVolumeValue').textContent = e.target.value + '%';
             this.saveSettings();
         });
         
@@ -158,6 +173,84 @@ class TitleScreen {
                 true // OKボタンのみ表示
             );
         }
+    }
+
+    
+    // デバッグ用章選択機能
+    startChapterDebug(chapter) {
+        const chapterNames = {
+            1: '第1章 - 盗賊団の隠れ家',
+            2: '第2章 - 暗黒の森', 
+            3: '第3章 - 魔の洞窟',
+            4: '第4章 - 天空の塔',
+            5: '第5章 - 魔王の城'
+        };
+        
+        const chapterName = chapterNames[chapter] || `第${chapter}章`;
+        
+        this.showGameConfirm(
+            '🔧 デバッグモード',
+            `${chapterName}から開始しますか？\n\n※これはデバッグ機能です。\n通常のセーブデータとは独立します。`,
+            () => {
+                // デバッグ用のゲームステートを作成
+                this.createDebugGameState(chapter);
+                // ゲーム画面に遷移
+                window.location.href = `index.html?debug=true&chapter=${chapter}`;
+            }
+        );
+    }
+    
+    createDebugGameState(chapter) {
+        // 各章の開始時レベル設定
+        const chapterStartLevels = {
+            1: { level: 1, exp: 0 },
+            2: { level: 5, exp: 150 },
+            3: { level: 10, exp: 450 },
+            4: { level: 15, exp: 1000 },
+            5: { level: 20, exp: 1800 }
+        };
+        
+        const startLevel = chapterStartLevels[chapter] || { level: 1, exp: 0 };
+        
+        // デバッグ用ゲームステートを作成（シンプル版）
+        const debugGameState = {
+            // デバッグフラグとレベル調整のみ
+            debug: true,
+            debugChapter: chapter,
+            debugStartLevel: startLevel,
+            // 共有データ
+            shared: {
+                gold: 1000 + (chapter - 1) * 500,
+                inventory: {
+                    potion: 5 + chapter * 2,
+                    ether: 3 + chapter,
+                    equipment_fragment: chapter * 3,
+                    rare_material: Math.max(0, chapter - 2)
+                }
+            },
+            // バトルデータ
+            battle: {
+                chapter: chapter,
+                location: 'field',
+                battleCount: 0,
+                maxBattles: 10,
+                isPlayerTurn: true,
+                battleEnded: false,
+                isAutoMode: false,
+                defeatProcessed: false,
+                storyInProgress: false,
+                guildFirstVisits: {}
+            },
+            // その他の設定
+            settings: this.settings,
+            timestamp: new Date().toISOString(),
+            debug: true,
+            debugChapter: chapter
+        };
+        
+        // デバッグ用のセーブデータとして保存
+        localStorage.setItem('fallenHeroDebugSave', JSON.stringify(debugGameState));
+        console.log(`🔧 デバッグ用ゲームステート作成完了 (第${chapter}章)`);
     }
     
     // ゲーム風確認モーダル表示関数
@@ -243,6 +336,9 @@ class TitleScreen {
             
             document.getElementById('seVolume').value = this.settings.seVolume;
             document.getElementById('seVolumeValue').textContent = this.settings.seVolume + '%';
+            
+            document.getElementById('clickVolume').value = this.settings.clickVolume;
+            document.getElementById('clickVolumeValue').textContent = this.settings.clickVolume + '%';
             
             document.getElementById('messageSpeed').value = this.settings.messageSpeed;
         }

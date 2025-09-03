@@ -246,7 +246,9 @@ class SoundEffects {
         oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(400, this.audioContext.currentTime + 0.1);
         
-        gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+        // AudioManagerのクリック音量設定を使用
+        const clickVolume = audioManager ? audioManager.clickVolume * 0.3 : 0.3;
+        gainNode.gain.setValueAtTime(clickVolume, this.audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
         
         oscillator.start(this.audioContext.currentTime);
@@ -564,8 +566,13 @@ function changeBackground(locationType) {
         backgroundElement.src = imagePath;
         backgroundElement.alt = background.description || locationType;
         
-        // 背景に応じたBGMを再生
-        playLocationBGM(locationType);
+        // 背景に応じたBGMを再生（BGMが変わる場合のみ）
+        const shouldChangeBGM = checkIfBGMShouldChange(locationType);
+        if (shouldChangeBGM) {
+            playLocationBGM(locationType);
+        } else {
+            console.log(`🎵 BGM change skipped for ${locationType} - same BGM category`);
+        }
     } else {
         console.warn(`Background not found for location type: ${locationType}`);
         // フォールバック背景を設定
@@ -575,6 +582,67 @@ function changeBackground(locationType) {
         
         // フォールバック時は街BGMを再生
         playLocationBGM('town');
+    }
+}
+
+// BGMが変更される必要があるかチェック
+function checkIfBGMShouldChange(locationType) {
+    if (!audioManager) return false;
+    
+    // BGM カテゴリーマッピング
+    const bgmCategoryMap = {
+        'town': 'bgm_town',
+        'inn': 'bgm_town',
+        'item_shop': 'bgm_town', 
+        'gacha_shop': 'bgm_town',
+        'tavern': 'bgm_town',
+        'field': 'bgm_field',
+        'plains': 'bgm_field', 
+        'dungeon': 'bgm_dungeon',
+        'cave': 'bgm_dungeon',
+        'dark_forest': 'bgm_dungeon'
+    };
+    
+    const newBgmId = bgmCategoryMap[locationType];
+    const currentBgmId = audioManager.currentBGMId;
+    
+    // BGMが再生されていない場合は変更必要
+    if (!currentBgmId) {
+        console.log(`🎵 No BGM playing, need to start: ${newBgmId}`);
+        return true;
+    }
+    
+    // 現在のBGMと新しいBGMが同じ場合は変更不要
+    if (newBgmId === currentBgmId) {
+        console.log(`🎵 BGM already playing: ${currentBgmId} (no change needed)`);
+        return false;
+    }
+    
+    // BGMが違う場合は変更必要
+    console.log(`🎵 BGM change needed: ${currentBgmId} → ${newBgmId}`);
+    return true;
+}
+
+// イベント用BGMをチェックして再生
+function checkAndPlayEventBGM(eventType, eventId, locationType) {
+    if (!dataManager.loaded) return;
+    
+    // イベントBGMデータを取得
+    const eventBGM = dataManager.getEventBGM(eventType, eventId);
+    
+    if (eventBGM) {
+        console.log(`🎵 Event BGM found: ${eventBGM.bgm_id} for ${eventType}:${eventId}`);
+        
+        // イベント専用BGMを強制再生
+        if (audioManager) {
+            audioManager.playBGM(eventBGM.bgm_id);
+            // 現在の場所も更新して後続のBGMチェックで適切に動作させる
+            audioManager.currentLocationForBGM = locationType;
+        }
+    } else {
+        console.log(`🎵 No special event BGM for ${eventType}:${eventId}, using default location BGM`);
+        // イベント専用BGMがない場合は通常の場所BGMを再生
+        playLocationBGM(locationType);
     }
 }
 
@@ -618,7 +686,7 @@ function playLocationBGM(locationType, forcePlay = false) {
     
     if (bgmId) {
         // 現在再生中のBGMと同じ場合は、強制再生指定がない限り再生しない
-        if (!forcePlay && audioManager.currentBGM === bgmId && audioManager.isPlaying()) {
+        if (!forcePlay && audioManager.currentBGMId === bgmId) {
             console.log(`🎵 BGM ${bgmId} is already playing, skipping restart`);
             return;
         }
@@ -1044,11 +1112,12 @@ function useItem(itemId) {
     }
     
     const isEquipmentItem = itemInfo.effect_type?.startsWith('equip_') || itemInfo.equipment_type;
+    const isPermanentBoostItem = itemInfo.effect_type?.startsWith('boost_');
     
-    // 町状態では装備のみ可能、戦闘中でない場合は通常アイテム使用不可
+    // 町状態では装備アイテムと永続強化アイテムのみ使用可能
     if (gameState.battle.inTown) {
-        if (!isEquipmentItem) {
-            addBattleLog("探索中以外では装備アイテムのみ使用できます");
+        if (!isEquipmentItem && !isPermanentBoostItem) {
+            addBattleLog("街では装備アイテムと永続強化アイテムのみ使用できます");
             return;
         }
     } else {
@@ -1837,17 +1906,17 @@ function nextBattle() {
         addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
         addBattleLog("章クリア！");
         
-        // ボス撃破時のストーリートリガーをチェック
+        // ボス撃破時のストーリーイベントを直接呼び出し
         const defeatedBossId = gameState.enemy.id;
-        if (storyTriggerManager) {
-            const trigger = storyTriggerManager.checkBossDefeat(defeatedBossId);
-            if (trigger) {
-                addBattleLog('📖 ストーリーイベントが発生しました');
-                gameState.battle.storyInProgress = true; // ストーリー開始
-                setTimeout(() => {
-                    storyTriggerManager.triggerStory(trigger.story_id);
-                }, 1000);
-            }
+        if (inGameStoryManager) {
+            const chapter = gameState.battle.chapter;
+            const storyId = `boss_${chapter}_defeat`;
+            
+            addBattleLog('📖 ボス撃破ストーリーイベントが発生しました');
+            gameState.battle.storyInProgress = true;
+            setTimeout(() => {
+                inGameStoryManager.showStory(storyId);
+            }, 1000);
         }
         
         const currentStage = dataManager.getStageInfo(gameState.battle.chapter);
@@ -2034,6 +2103,7 @@ function generateNewEnemy() {
     console.log('🎲 generateNewEnemy関数が呼ばれました');
     console.log('📊 dataManager.loaded:', dataManager.loaded);
     console.log('📖 現在の章:', gameState.battle.chapter);
+    console.log('⚔️ 現在の戦闘数:', gameState.battle.battleCount);
     
     if (!dataManager.loaded) {
         console.log('⚠️ データ未読み込み、敵生成をスキップ');
@@ -2044,12 +2114,15 @@ function generateNewEnemy() {
 
     // 章の最大戦闘数を取得
     gameState.battle.maxBattles = dataManager.getChapterMaxBattles(gameState.battle.chapter);
+    console.log('🎯 章の最大戦闘数:', gameState.battle.maxBattles);
+    console.log('🔍 ボス戦判定:', `${gameState.battle.battleCount} >= ${gameState.battle.maxBattles}`, '=', gameState.battle.battleCount >= gameState.battle.maxBattles);
     
-    // ボス戦の判定
-    if (gameState.battle.battleCount > gameState.battle.maxBattles) {
-        console.log('👑 ボス戦生成中');
+    // ボス戦の判定（最大戦闘数に達したらボス戦発生）
+    if (gameState.battle.battleCount >= gameState.battle.maxBattles) {
+        console.log('👑 ボス戦生成中！！！');
         // ボス敵を生成
         const bossData = dataManager.getBossEnemy(gameState.battle.chapter);
+        console.log('👑 取得したボスデータ:', bossData);
         if (bossData) {
             gameState.enemy = {
                 id: bossData.id,
@@ -2067,24 +2140,35 @@ function generateNewEnemy() {
                 image: bossData.image || 'boss.png',
                 isBoss: true
             };
-            addBattleLog(`${gameState.enemy.name}が現れた！`);
+            addBattleLog(`👑 ${gameState.enemy.name}が現れた！`);
             
-            // ボス戦BGMに切り替え（強制再生）
-            playLocationBGM(gameState.battle.location, true);
+            // ボス戦専用イベントBGMをチェック
+            const bossId = bossData.id;
+            checkAndPlayEventBGM('boss_encounter', bossId, gameState.battle.location);
             
-            // ボス遭遇時のストーリートリガーをチェック
+            // 専用BGMがない場合はボス戦BGMに切り替え（強制再生）
+            if (!dataManager.getEventBGM('boss_encounter', bossId)) {
+                playLocationBGM(gameState.battle.location, true);
+            }
+            
+            // ボス遭遇時のストーリーイベントを直接呼び出し
             setTimeout(() => {
-                if (storyTriggerManager) {
-                    const trigger = storyTriggerManager.checkBossEncounter(bossData.id);
-                    if (trigger) {
-                        addBattleLog('📖 ストーリーイベントが発生しました');
-                        storyTriggerManager.triggerStory(trigger.story_id);
-                    }
+                if (inGameStoryManager) {
+                    const chapter = gameState.battle.chapter;
+                    const storyId = `boss_${chapter}_encounter`;
+                    
+                    addBattleLog('📖 ボス遭遇ストーリーイベントが発生しました');
+                    gameState.battle.storyInProgress = true;
+                    inGameStoryManager.showStory(storyId);
                 }
             }, 1000);
             
             return;
+        } else {
+            console.log('❌ ボスデータが取得できませんでした');
         }
+    } else {
+        console.log('⏳ まだボス戦ではありません');
     }
 
     // 通常敵を生成
@@ -2407,6 +2491,19 @@ function setupEventListeners() {
             seVolumeValue.textContent = volume + '%';
             if (audioManager && audioManager.setSEVolume) {
                 audioManager.setSEVolume(volume / 100);
+            }
+        });
+    }
+
+    // クリック音量スライダー
+    const clickVolumeSlider = document.getElementById('clickVolumeSlider');
+    const clickVolumeValue = document.getElementById('clickVolumeValue');
+    if (clickVolumeSlider && clickVolumeValue) {
+        clickVolumeSlider.addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            clickVolumeValue.textContent = volume + '%';
+            if (audioManager && audioManager.setClickVolume) {
+                audioManager.setClickVolume(volume / 100);
             }
         });
     }
@@ -3502,8 +3599,14 @@ function handleDungeonMidBossEvent(event) {
         // シンプルな敵出現メッセージ（「中ボス」表記なし）
         addBattleLog(`${gameState.enemy.name}が現れた！`);
         
-        // ボス戦BGMに切り替え（強制再生）
-        playLocationBGM(gameState.battle.location, true);
+        // 中ボス戦専用イベントBGMをチェック
+        const midBossId = midBossData.id;
+        checkAndPlayEventBGM('boss_encounter', midBossId, gameState.battle.location);
+        
+        // 専用BGMがない場合はボス戦BGMに切り替え（強制再生）
+        if (!dataManager.getEventBGM('boss_encounter', midBossId)) {
+            playLocationBGM(gameState.battle.location, true);
+        }
         
         // 敵画像を表示
         const enemyImage = document.getElementById('enemyImage');
@@ -4267,6 +4370,15 @@ function updateVolumeSliders() {
         seSlider.value = volume;
         seValue.textContent = volume + '%';
     }
+    
+    // クリック音量スライダーを更新
+    const clickSlider = document.getElementById('clickVolumeSlider');
+    const clickValue = document.getElementById('clickVolumeValue');
+    if (clickSlider && clickValue && audioManager.clickVolume !== undefined) {
+        const volume = Math.round(audioManager.clickVolume * 100);
+        clickSlider.value = volume;
+        clickValue.textContent = volume + '%';
+    }
 }
 
 // ゲーム風確認モーダル表示関数
@@ -4445,6 +4557,85 @@ function loadGameState() {
     }
 }
 
+// デバッグ用ゲームステート読み込み（シンプル版）
+function loadDebugGameState() {
+    try {
+        const debugSaveData = localStorage.getItem('fallenHeroDebugSave');
+        
+        if (!debugSaveData) {
+            console.warn('🔧 デバッグセーブデータが見つかりません');
+            return false;
+        }
+
+        const parsedData = JSON.parse(debugSaveData);
+        console.log('🔧 デバッグデータをロード中:', parsedData);
+
+        // デバッグフラグと基本情報のみ設定
+        gameState.debug = true;
+        gameState.debugChapter = parsedData.debugChapter;
+        gameState.debugStartLevel = parsedData.debugStartLevel;
+
+        // 章とゴールド・アイテムのみ復元
+        if (parsedData.shared) {
+            gameState.shared = { ...gameState.shared, ...parsedData.shared };
+            console.log(`🔧 共有データ復元: Gold ${parsedData.shared.gold}`);
+        }
+
+        if (parsedData.battle) {
+            gameState.battle.chapter = parsedData.battle.chapter;
+            console.log(`🔧 デバッグ章設定: Chapter ${parsedData.battle.chapter}`);
+        }
+
+        console.log('✅ デバッグゲームステート読み込み完了（CSV読み込み後にレベル調整）');
+        return true;
+    } catch (error) {
+        console.error('❌ デバッグゲームステート読み込みエラー:', error);
+        return false;
+    }
+}
+
+// プレイヤーデータ初期化関数
+function initializePlayerData() {
+    const playerData = dataManager.getCharacter('player');
+    if (playerData) {
+        console.log("Player data loaded:", playerData);
+        console.log(`🎭 キャラクタークラス設定: ${playerData.character_class}`);
+        
+        // CSVからベースデータを読み込み
+        gameState.player.name = playerData.name;
+        gameState.player.character_class = playerData.character_class;
+        gameState.player.hp = playerData.base_hp;
+        gameState.player.maxHp = playerData.base_hp;
+        gameState.player.mp = playerData.base_mp;
+        gameState.player.maxMp = playerData.base_mp;
+        gameState.player.attack = playerData.base_attack;
+        gameState.player.defense = playerData.base_defense;
+        gameState.player.magic = playerData.base_magic;
+        gameState.player.speed = playerData.base_speed;
+        
+        // デバッグモードの場合はレベルとステータスを調整
+        if (gameState.debug && gameState.debugStartLevel) {
+            const startLevel = gameState.debugStartLevel;
+            console.log(`🔧 デバッグモード: レベル調整 ${startLevel.level}`);
+            
+            gameState.player.level = startLevel.level;
+            gameState.player.exp = startLevel.exp;
+            gameState.player.hp = playerData.base_hp + (startLevel.level - 1) * 10;
+            gameState.player.maxHp = gameState.player.hp;
+            gameState.player.mp = playerData.base_mp + (startLevel.level - 1) * 5;
+            gameState.player.maxMp = gameState.player.mp;
+            gameState.player.attack = playerData.base_attack + (startLevel.level - 1);
+            gameState.player.defense = playerData.base_defense + (startLevel.level - 1);
+            gameState.player.magic = playerData.base_magic + (startLevel.level - 1);
+            gameState.player.speed = playerData.base_speed + (startLevel.level - 1);
+            
+            console.log(`🔧 デバッグ調整後: Lv${gameState.player.level}, クラス=${gameState.player.character_class}`);
+        }
+        
+        console.log(`🎭 最終設定: gameState.player.character_class = ${gameState.player.character_class}`);
+    }
+}
+
 // ガチャショップ機能
 function openGachaShop() {
     // 背景をガチャショップ用に変更
@@ -4513,13 +4704,18 @@ async function initGame() {
         console.log("🔧 Enemy info overlay hidden on initialization");
     }
     
-    // URLパラメータでロードが指定されているかチェック
+    // URLパラメータをチェック
     const urlParams = new URLSearchParams(window.location.search);
     const shouldLoad = urlParams.get('load') === 'true';
+    const debugMode = urlParams.get('debug') === 'true';
+    const debugChapter = parseInt(urlParams.get('chapter'));
     
     if (shouldLoad) {
         console.log("📁 ロードモードでゲーム開始");
         addBattleLog("セーブデータを読み込み中...");
+    } else if (debugMode && debugChapter) {
+        console.log(`🔧 デバッグモードでゲーム開始 (第${debugChapter}章)`);
+        addBattleLog(`🔧 デバッグモード: 第${debugChapter}章から開始`);
     }
     
     // CSV データ読み込み
@@ -4536,8 +4732,21 @@ async function initGame() {
         console.log("📋 初期インベントリ:", gameState.shared.inventory);
         console.log("📋 インベントリキー:", Object.keys(gameState.shared.inventory));
         
+        // デバッグモード処理
+        if (debugMode && debugChapter) {
+            const debugLoadResult = loadDebugGameState();
+            if (debugLoadResult) {
+                addBattleLog("✅ デバッグデータを読み込みました");
+                console.log("🔧 デバッグデータ読み込み成功");
+            } else {
+                addBattleLog("❌ デバッグデータの読み込みに失敗しました");
+                console.error("🔧 デバッグデータ読み込み失敗 - 初期データで開始");
+                // 失敗時は通常の初期化を実行
+                initializePlayerData();
+            }
+        }
         // セーブデータロード処理
-        if (shouldLoad) {
+        else if (shouldLoad) {
             const loadResult = loadGameState();
             if (loadResult) {
                 addBattleLog("✅ セーブデータを読み込みました");
@@ -4546,38 +4755,11 @@ async function initGame() {
                 addBattleLog("❌ セーブデータの読み込みに失敗しました");
                 console.error("📁 セーブデータ読み込み失敗 - 初期データで開始");
                 // 失敗時は通常の初期化を実行
-                const playerData = dataManager.getCharacter('player');
-                if (playerData) {
-                    gameState.player.name = playerData.name;
-                    gameState.player.character_class = playerData.character_class;
-                    gameState.player.hp = playerData.base_hp;
-                    gameState.player.maxHp = playerData.base_hp;
-                    gameState.player.mp = playerData.base_mp;
-                    gameState.player.maxMp = playerData.base_mp;
-                    gameState.player.attack = playerData.base_attack;
-                    gameState.player.defense = playerData.base_defense;
-                    gameState.player.magic = playerData.base_magic;
-                    gameState.player.speed = playerData.base_speed;
-                }
+                initializePlayerData();
             }
         } else {
             // 新規ゲーム - CSV駆動でプレイヤーデータを初期化
-            const playerData = dataManager.getCharacter('player');
-            if (playerData) {
-                console.log("Player data loaded:", playerData);
-                console.log(`🎭 キャラクタークラス設定: ${playerData.character_class}`);
-                gameState.player.name = playerData.name;
-                gameState.player.character_class = playerData.character_class;
-                gameState.player.hp = playerData.base_hp;
-                gameState.player.maxHp = playerData.base_hp;
-                gameState.player.mp = playerData.base_mp;
-                gameState.player.maxMp = playerData.base_mp;
-                gameState.player.attack = playerData.base_attack;
-                gameState.player.defense = playerData.base_defense;
-                gameState.player.magic = playerData.base_magic;
-                gameState.player.speed = playerData.base_speed;
-                console.log(`🎭 gameState.player.character_class = ${gameState.player.character_class}`);
-            }
+            initializePlayerData();
         }
         
         // プレイヤーメディア（画像/動画）を更新
@@ -4607,8 +4789,13 @@ async function initGame() {
     
     updateUI();
     
-    addBattleLog("ゲームが開始されました");
-    addBattleLog("探索場所を選んで冒険を始めましょう！");
+    if (debugMode && debugChapter) {
+        addBattleLog(`🔧 デバッグモード: 第${debugChapter}章でゲーム開始！`);
+        addBattleLog("探索場所を選んで冒険を始めましょう！");
+    } else {
+        addBattleLog("ゲームが開始されました");
+        addBattleLog("探索場所を選んで冒険を始めましょう！");
+    }
     console.log("🎮 Game initialization complete");
 }
 
@@ -4817,9 +5004,11 @@ function showEnemyAttackEffect() {
 class AudioManager {
     constructor() {
         this.currentBGM = null;
+        this.currentBGMId = null; // 現在再生中のBGM IDを追跡
         this.audioCache = new Map();
         this.bgmVolume = 0.5;
         this.seVolume = 0.8;
+        this.clickVolume = 0.8; // クリック音専用音量
         this.isMuted = false;
     }
 
@@ -4872,6 +5061,7 @@ class AudioManager {
         const audio = this.preloadAudio(audioData);
         audio.volume = (parseFloat(audioData.volume) || 0.5) * this.bgmVolume;
         this.currentBGM = audio;
+        this.currentBGMId = audioId; // BGM IDも保存
         
         audio.play().catch(e => console.log('BGM playback failed:', e));
     }
@@ -4882,6 +5072,7 @@ class AudioManager {
             this.currentBGM.pause();
             this.currentBGM.currentTime = 0;
             this.currentBGM = null;
+            this.currentBGMId = null; // BGM IDもクリア
         }
     }
 
@@ -4919,6 +5110,11 @@ class AudioManager {
     // SE音量設定
     setSEVolume(volume) {
         this.seVolume = Math.max(0, Math.min(1, volume)); // 0-1の範囲に制限
+    }
+    
+    // クリック音量設定
+    setClickVolume(volume) {
+        this.clickVolume = Math.max(0, Math.min(1, volume)); // 0-1の範囲に制限
     }
 
     // ミュート切り替え
@@ -5243,6 +5439,9 @@ function initGuild() {
                 // 初回訪問の場合、フラグをセットしてストーリーイベントを発生
                 gameState.battle.guildFirstVisits[visitKey] = true;
                 console.log(`First guild visit in chapter ${currentChapter}`);
+                
+                // 初回訪問時のイベントBGMをチェック
+                checkAndPlayEventBGM('guild_visit', `chapter_${currentChapter}_first_visit`, 'guild');
                 
                 // ストーリーイベントをチェック
                 if (storyTriggerManager) {
@@ -5740,7 +5939,7 @@ class InGameStoryManager {
         this.setBackground(dialogue.background_image);
         
         // キャラクター立ち絵を設定
-        this.setCharacters(dialogue.left_character, dialogue.right_character, dialogue.speaker);
+        this.setCharacters(dialogue.left_character, dialogue.right_character, dialogue.speaker, dialogue.speaker_side);
         
         // 話者名とセリフを設定
         this.setSpeakerAndText(dialogue.speaker, dialogue.text);
@@ -5761,7 +5960,7 @@ class InGameStoryManager {
     }
     
     // キャラクター立ち絵を設定
-    setCharacters(leftChar, rightChar, speaker) {
+    setCharacters(leftChar, rightChar, speaker, speakerSide) {
         const leftElement = document.getElementById('storyCharacterLeft');
         const rightElement = document.getElementById('storyCharacterRight');
         
@@ -5773,7 +5972,7 @@ class InGameStoryManager {
                 leftElement.className = 'story-character-image';
                 
                 // 話者の場合は光らせる
-                if (this.isSpeakerLeft(speaker)) {
+                if (this.isSpeakerLeft(speakerSide)) {
                     leftElement.classList.add('speaking');
                 } else {
                     leftElement.classList.add('dimmed');
@@ -5791,7 +5990,7 @@ class InGameStoryManager {
                 rightElement.className = 'story-character-image';
                 
                 // 話者の場合は光らせる
-                if (this.isSpeakerRight(speaker)) {
+                if (this.isSpeakerRight(speakerSide)) {
                     rightElement.classList.add('speaking');
                 } else {
                     rightElement.classList.add('dimmed');
@@ -5803,17 +6002,15 @@ class InGameStoryManager {
     }
     
     // 左側キャラクターが話者かチェック
-    isSpeakerLeft(speaker) {
-        // 簡単なロジック：リオンやプレイヤー関連は左側
-        const leftSpeakers = ['リオン', '主人公', 'プレイヤー'];
-        return leftSpeakers.some(name => speaker.includes(name));
+    isSpeakerLeft(speakerSide) {
+        // CSVのspeaker_side列で判定
+        return speakerSide === 'left';
     }
     
     // 右側キャラクターが話者かチェック
-    isSpeakerRight(speaker) {
-        // 簡単なロジック：リリィやNPCは右側
-        const rightSpeakers = ['リリィ', 'クロエ', 'ティファ', 'メレル'];
-        return rightSpeakers.some(name => speaker.includes(name));
+    isSpeakerRight(speakerSide) {
+        // CSVのspeaker_side列で判定
+        return speakerSide === 'right';
     }
     
     // 話者名とセリフを設定
@@ -5923,12 +6120,39 @@ class InGameStoryManager {
     }
 }
 
+// 設定を読み込む
+function loadGameSettings() {
+    const savedSettings = localStorage.getItem('fallenHeroSettings');
+    
+    if (savedSettings) {
+        try {
+            const settings = JSON.parse(savedSettings);
+            
+            // AudioManagerに設定を適用
+            if (audioManager) {
+                audioManager.setBGMVolume(settings.bgmVolume / 100);
+                audioManager.setSEVolume(settings.seVolume / 100);
+                audioManager.setClickVolume((settings.clickVolume || 80) / 100);
+                
+                console.log('🎛️ Settings loaded:', {
+                    bgm: settings.bgmVolume,
+                    se: settings.seVolume,
+                    click: settings.clickVolume || 80
+                });
+            }
+        } catch (error) {
+            console.error('⚠️ Settings load error:', error);
+        }
+    }
+}
+
 // グローバルインスタンス
 let inGameStoryManager = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initGame();
     initGuild();
+    loadGameSettings(); // 設定を読み込み
     
     // データが読み込まれた後でストーリーマネージャーを初期化
     const waitForDataManager = () => {

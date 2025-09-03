@@ -1,9 +1,9 @@
 ﻿id,type,name,file_path,volume,loop,category,description
+bgm_town,bgm,街BGM,assets/audio/bgm/town.mp3,0.5,TRUE,town,街や宿屋での落ち着いたBGM
 bgm_field,bgm,フィールドBGM,assets/audio/bgm/field.mp3,0.7,TRUE,field,フィールドで流れる基本BGM
+bgm_dungeon,bgm,ダンジョンBGM,assets/audio/bgm/dungeon.mp3,0.6,TRUE,dungeon,ダンジョン探索時のBGM
 bgm_battle,bgm,戦闘BGM,assets/audio/bgm/battle.mp3,0.8,TRUE,battle,通常戦闘時のBGM
 bgm_boss,bgm,ボス戦BGM,assets/audio/bgm/boss.mp3,0.9,TRUE,battle,ボス戦時の専用BGM
-bgm_dungeon,bgm,ダンジョンBGM,assets/audio/bgm/dungeon.mp3,0.6,TRUE,dungeon,ダンジョン探索時のBGM
-bgm_town,bgm,街BGM,assets/audio/bgm/town.mp3,0.5,TRUE,town,街や宿屋での落ち着いたBGM
 bgm_victory,bgm,勝利BGM,assets/audio/bgm/victory.mp3,0.8,FALSE,victory,戦闘勝利時の短いファンファーレ
 bgm_gameover,bgm,ゲームオーバーBGM,assets/audio/bgm/gameover.mp3,0.7,FALSE,gameover,ゲームオーバー時のBGM
 se_attack,se,攻撃SE,assets/audio/se/attack_sound.mp3,0.8,FALSE,combat,通常攻撃時の効果音

@@ -205,8 +205,7 @@ class StoryManager {
                     text: d.text,
                     background: d.background_image,
                     leftCharacter: d.left_character,
-                    rightCharacter: d.right_character,
-                    emotion: d.character_emotion
+                    rightCharacter: d.right_character
                 }))
             };
             

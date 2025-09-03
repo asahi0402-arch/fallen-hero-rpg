@@ -117,7 +117,8 @@ class DataManager {
                 this.loadCSV('./data/audio.csv'),
                 this.loadCSV('./data/title_settings.csv'),
                 this.loadCSV('./data/dungeon_events.csv'),
-                this.loadCSV('./data/story_dialogues.csv')
+                this.loadCSV('./data/story_dialogues.csv'),
+                this.loadCSV('./data/event_bgm.csv')
             ];
 
             const results = await Promise.all(loadPromises);
@@ -135,6 +136,7 @@ class DataManager {
             this.data.titleSettings = results[10];
             this.data.dungeonEvents = results[11];
             this.data.storyDialogues = results[12];
+            this.data.eventBgm = results[13];
 
             this.loaded = true;
             console.log('All CSV data loaded successfully');
@@ -546,6 +548,22 @@ class DataManager {
         return this.data.dungeonEvents.filter(event => {
             return parseInt(event.chapter) === chapter && event.location === location;
         });
+    }
+
+    // イベントBGMを取得
+    getEventBGM(eventType, eventId) {
+        if (!this.data.eventBgm) return null;
+        
+        return this.data.eventBgm.find(bgm => 
+            bgm.event_type === eventType && bgm.event_id === eventId
+        );
+    }
+
+    // 特定タイプの全イベントBGMを取得
+    getEventBGMsByType(eventType) {
+        if (!this.data.eventBgm) return [];
+        
+        return this.data.eventBgm.filter(bgm => bgm.event_type === eventType);
     }
 }
 

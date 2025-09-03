@@ -1,3 +1,5 @@
 ﻿chapter,location,event_type,trigger_condition,mid_boss_enemy,event_text,pre_battle_text,victory_text,defeat_text,rewards,story_id
 1,dungeon,mid_boss,on_enter,ch1_tifa_mid,"盗賊団のアジトに侵入した！","「侵入者だ！やっちまえ、ティファ！」","ティファを撃破した！","ティファに敗れた...",experience:50;gold:30,dungeon_1_mid_boss_victory
 1,dungeon,final_boss,max_battles_reached,ch1_merel_boss,"奥の間で盗賊団の頭目と対峙する","「よくもここまで...！覚悟しろ！」","メレルを撃破し、盗賊団を壊滅させた！","メレルに敗れた...",experience:100;gold:80;item:bandit_treasure,
+2,dungeon,mid_boss,on_enter,ch2_miola_mid,"湖畔の旧遺跡に足を踏み入れた瞬間、幽玄な歌声が響く","♪～～～「この地に足を踏み入れし者よ...」","ミオラの亡霊を浄化した！","ミオラの幻想に敗れた...",experience:80;gold:60;item:spectral_harp,dungeon_2_mid_boss_victory
+2,dungeon,final_boss,max_battles_reached,ch2_nereia_boss,"遺跡の最奥で水の精霊と対峙する","「封印を破りし者よ...我が力を見よ！」","ネレイアを撃破し、水の精霊を鎮めた！","ネレイアに敗れた...",experience:120;gold:100;item:water_spirit_core,

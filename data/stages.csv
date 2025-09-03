@@ -1,7 +1,7 @@
 ﻿chapter,stage_name,max_battles,boss_enemy,background_image,bgm,description,unlock_condition,reward_exp,reward_gold,special_rewards
-1,盗賊団の隠れ家,10,merel,plains_bg.jpg,plains_theme.mp3,冒険の始まりとなる平和な平原,,100,50,iron_sword
-2,暗黒の森,12,vampire,dark_forest_bg.jpg,dark_forest_theme.mp3,邪悪な魔物が潜む暗い森,chapter_1_clear,200,100,mage_robe
-3,魔の洞窟,15,dragon_knight,cave_bg.jpg,cave_theme.mp3,古代の秘宝が眠る危険な洞窟,chapter_2_clear,350,200,flame_sword
+1,盗賊団の隠れ家,10,ch1_merel_boss,plains_bg.jpg,plains_theme.mp3,冒険の始まりとなる平和な平原,,100,50,iron_sword
+2,暗黒の森,12,ch2_nereia_boss,dark_forest_bg.jpg,dark_forest_theme.mp3,邪悪な魔物が潜む暗い森,chapter_1_clear,200,100,mage_robe
+3,魔の洞窟,15,ch3_meltina_boss,cave_bg.jpg,cave_theme.mp3,古代の秘宝が眠る危険な洞窟,chapter_2_clear,350,200,flame_sword
 4,天空の塔,18,angel_fallen,sky_tower_bg.jpg,tower_theme.mp3,雲の上にそびえる謎の塔,chapter_3_clear,500,350,holy_armor
 5,魔王の城,20,demon_lord,demon_castle_bg.jpg,demon_castle_theme.mp3,魔王が支配する恐ろしい城,chapter_4_clear,800,600,dragon_slayer
 6,虚無の間,25,final_boss_1,void_space_bg.jpg,final_boss_theme.mp3,全ての真実が明かされる場所,chapter_5_clear,1500,1000,fake_crown
