@@ -30,14 +30,15 @@ let gameState = {
     
     // キャラクター個別データ（各キャラクターのレベル、経験値、装備など）
     characterData: {
-        'player': {
-            name: "主人公",
+        'chloe': {
+            name: "クロエ",
             level: 1,
             exp: 0,
             statPoints: 0,
             baseStats: { hp: 100, mp: 30, attack: 20, defense: 10, magic: 15, speed: 12 },
             equipment: { weapon: null, shield: null, head: null, body: null },
-            clothingState: { isDamaged: false, damageLevel: 0, canRepair: false }
+            clothingState: { isDamaged: false, damageLevel: 0, canRepair: false },
+            learnedSkills: [] // 習得済みスキルリスト
         }
         // 他のキャラクターは酒場で購入時に追加される
     },
@@ -77,14 +78,205 @@ let gameState = {
         fieldMode: false,
         inTown: true,
         storyInProgress: false, // ストーリーイベント進行中フラグ
-        guildFirstVisits: {} // 章ごとのギルド初回訪問記録
+        guildFirstVisits: {}, // 章ごとのギルド初回訪問記録
+        guestCharacter: null // 現在のゲストキャラクター
     },
     characters: {
-        currentCharacter: 'player',
-        purchasedCharacters: ['player']
+        currentCharacter: 'chloe',
+        purchasedCharacters: ['chloe']
     },
     dataLoaded: false
 };;
+
+// ゲストキャラクター定義
+const GUEST_CHARACTERS = {
+    'tifa': {
+        name: 'ティファ',
+        skillName: '掌打ラッシュ',
+        damageRate: 1.1,
+        message: 'ティファの掌打ラッシュ！',
+        chapter: 1
+    },
+    'marine': {
+        name: 'マリン',
+        skillName: '海賊の一撃',
+        damageRate: 1.15,
+        message: 'マリンの海賊の一撃！',
+        chapter: 2
+    },
+    'pekora': {
+        name: 'ぺこら',
+        skillName: '魔法支援射撃',
+        damageRate: 1.05,
+        message: 'ぺこらの魔法支援射撃！',
+        chapter: 3,
+        criticalRate: 0.15 // 15%でクリティカル
+    },
+    'yami': {
+        name: 'ヤミ',
+        skillName: '変身斬撃',
+        damageRate: 1.2,
+        message: 'ヤミの変身斬撃！',
+        chapter: 4
+    },
+    'lala': {
+        name: 'ララ',
+        skillName: '科学爆発',
+        damageRate: 1.12,
+        message: 'ララの科学爆発！',
+        chapter: 5
+    },
+    'eris': {
+        name: 'エリス',
+        skillName: '聖なる光',
+        damageRate: 1.1,
+        message: 'エリスの聖なる光！',
+        chapter: 6,
+        healingRate: 0.1 // ダメージの10%をプレイヤーに回復
+    }
+};
+// バトル会話イベント設定
+const BATTLE_CONVERSATION_EVENTS = {
+    // HP閾値別の会話設定（70%, 50%, 30%）
+    hp_thresholds: [0.7, 0.5, 0.3],
+    
+    // 各敵タイプ別の会話イベント
+    events: {
+        // 中ボス用会話イベント
+        'mid_boss': {
+            70: { // HP 70%以下
+                type: 'guest_comment',
+                priority: 1
+            },
+            50: { // HP 50%以下
+                type: 'enemy_taunt', 
+                priority: 2
+            },
+            30: { // HP 30%以下
+                type: 'desperation_attack',
+                priority: 3
+            }
+        },
+        
+        // 章ボス用会話イベント
+        'chapter_boss': {
+            70: {
+                type: 'boss_warning',
+                priority: 1
+            },
+            50: {
+                type: 'power_unleash',
+                priority: 2
+            },
+            30: {
+                type: 'final_stand',
+                priority: 3
+            }
+        }
+    }
+};
+// バトル会話イベントマネージャー
+const BattleConversationManager = {
+    // 発生済み会話イベントを追跡
+    triggeredEvents: new Set(),
+    
+    // バトル開始時に会話イベント状態をリセット
+    resetBattleEvents() {
+        this.triggeredEvents.clear();
+        console.log('🎭 Battle conversation events reset');
+    },
+    
+    // HP閾値チェックと会話イベント実行
+    checkAndTriggerEvents(enemy) {
+        if (!enemy || enemy.hp <= 0) return;
+        
+        const hpPercentage = enemy.hp / enemy.maxHp;
+        
+        // 敵タイプを判定（中ボスか章ボスか）
+        let enemyType = 'regular';
+        if (enemy.id && (enemy.id.includes('mid_boss') || enemy.id.includes('mid-boss'))) {
+            enemyType = 'mid_boss';
+        } else if (enemy.id && (enemy.id.includes('boss') && !enemy.id.includes('mid'))) {
+            enemyType = 'chapter_boss';
+        }
+        
+        // 通常敵の場合は会話イベントなし
+        if (enemyType === 'regular') return;
+        
+        // HP閾値をチェックして会話イベントをトリガー
+        for (const threshold of BATTLE_CONVERSATION_EVENTS.hp_thresholds) {
+            if (hpPercentage <= threshold) {
+                const eventKey = `${enemy.id}_${Math.floor(threshold * 100)}`;
+                
+                // 既に発生済みのイベントはスキップ
+                if (this.triggeredEvents.has(eventKey)) continue;
+                
+                const eventConfig = BATTLE_CONVERSATION_EVENTS.events[enemyType]?.[Math.floor(threshold * 100)];
+                if (eventConfig) {
+                    this.triggerBattleConversation(enemy, threshold, eventConfig);
+                    this.triggeredEvents.add(eventKey);
+                    break; // 一度に一つのイベントのみ実行
+                }
+            }
+        }
+    },
+    
+    // 会話イベント実行
+    triggerBattleConversation(enemy, threshold, eventConfig) {
+        const thresholdPercent = Math.floor(threshold * 100);
+        console.log(`🎭 Triggering battle conversation: ${enemy.id} at ${thresholdPercent}% HP`);
+        
+        // バトルの進行を一時停止
+        gameState.battle.storyInProgress = true;
+        updateActionButtonsState();
+        
+        // 会話タイプに応じたメッセージを表示
+        let message = '';
+        const enemyName = enemy.name || '敵';
+        const guestName = GuestCharacterManager.currentGuest ? 
+            GUEST_CHARACTERS[GuestCharacterManager.currentGuest]?.name : '';
+        
+        switch (eventConfig.type) {
+            case 'guest_comment':
+                if (guestName) {
+                    message = `${guestName}「${enemyName}、まだまだ強いわね...！」`;
+                } else {
+                    message = `クロエ「${enemyName}、思ったより手強い...！」`;
+                }
+                break;
+                
+            case 'enemy_taunt':
+                message = `${enemyName}「ふん、まだこの程度か...本気を出してやろう！」`;
+                break;
+                
+            case 'desperation_attack':
+                message = `${enemyName}「くっ...ならば、この一撃で決着をつけてやる！」`;
+                break;
+                
+            case 'boss_warning':
+                message = `${enemyName}「甘く見るなよ、小娘...真の力を見せてやる！」`;
+                break;
+                
+            case 'power_unleash':
+                message = `${enemyName}「我が真の姿を見るがいい！」`;
+                break;
+                
+            case 'final_stand':
+                message = `${enemyName}「最後まで諦めはせん...！」`;
+                break;
+        }
+        
+        // バトルログに会話を表示
+        addBattleLog(message, 'conversation');
+        
+        // 短時間後にバトル進行を再開
+        setTimeout(() => {
+            gameState.battle.storyInProgress = false;
+            updateActionButtonsState();
+            console.log('🎭 Battle conversation ended, resuming battle');
+        }, 2000);
+    }
+};
 
 // キャラクター管理ヘルパー関数
 const CharacterManager = {
@@ -147,6 +339,11 @@ const CharacterManager = {
         gameState.player.equipment = { ...characterData.equipment };
         gameState.player.clothingState = { ...characterData.clothingState };
         
+        // スキル習得データが存在しない場合は初期化
+        if (!characterData.learnedSkills) {
+            characterData.learnedSkills = [];
+        }
+        
         console.log(`📥 ${characterData.name}のデータを読み込みました:`, gameState.player);
         return true;
     },
@@ -168,10 +365,257 @@ const CharacterManager = {
                 speed: parseInt(csvData.base_speed) || 12
             },
             equipment: { weapon: null, shield: null, head: null, body: null },
-            clothingState: { isDamaged: false, damageLevel: 0, canRepair: false }
+            clothingState: { isDamaged: false, damageLevel: 0, canRepair: false },
+            learnedSkills: [] // 習得済みスキルリスト
         };
         
         console.log(`🆕 新しいキャラクター ${csvData.name} を初期化しました:`, gameState.characterData[characterId]);
+    }
+};
+
+// ゲストキャラクター管理
+const GuestCharacterManager = {
+    // ダンジョン開始時にゲストキャラクターを設定
+    setGuestCharacter(chapter, location) {
+        // ダンジョンでのみゲストキャラクターが有効
+        if (location !== 'dungeon') {
+            gameState.battle.guestCharacter = null;
+            return;
+        }
+        
+        // 戦闘数に応じてゲストキャラクターを設定
+        this.updateGuestByBattleCount(chapter);
+    },
+    
+    // 戦闘数に応じてゲストキャラクターを更新
+    updateGuestByBattleCount(chapter) {
+        const battleCount = gameState.battle.battleCount;
+        let guestId = null;
+        
+        // 1-6戦目：最初から仲間のキャラのみ
+        if (battleCount <= 6) {
+            if (chapter === 2) guestId = 'marine';
+            else if (chapter === 3) guestId = 'pekora';
+            else if (chapter === 6) guestId = 'eris';
+            // 1章・4章は1-6戦目では仲間なし（中ボス戦後に参戦）
+        }
+        // 7戦目以降：全キャラ参戦
+        else if (battleCount >= 7) {
+            for (const [id, guest] of Object.entries(GUEST_CHARACTERS)) {
+                if (guest.chapter === chapter) {
+                    guestId = id;
+                    break;
+                }
+            }
+        }
+        
+        const previousGuest = gameState.battle.guestCharacter;
+        gameState.battle.guestCharacter = guestId;
+        
+        // 新しく仲間が加わった時のメッセージ
+        if (guestId && guestId !== previousGuest) {
+            const guest = GUEST_CHARACTERS[guestId];
+            console.log(`🤝 ゲストキャラクター設定: ${guest.name} (第${chapter}章, ${battleCount}戦目)`);
+            if (battleCount === 7 && (chapter === 1 || chapter === 4)) {
+                addBattleLog(`🤝 ${guest.name}が仲間として参戦します！`);
+            } else if (battleCount === 1) {
+                addBattleLog(`🤝 ${guest.name}が仲間として参戦します！`);
+            }
+        }
+    },
+    
+    // ゲストキャラクターの攻撃実行
+    executeGuestAttack(playerDamage) {
+        const guestId = gameState.battle.guestCharacter;
+        if (!guestId || !GUEST_CHARACTERS[guestId]) {
+            return 0; // ゲストキャラクターなし
+        }
+        
+        // ゲストキャラクター自身が敵として出現している場合のみブロック
+        const enemyId = gameState.enemy?.id || '';
+        const guestIsEnemy = enemyId.includes('tifa') && guestId === 'tifa' ||
+                           enemyId.includes('yami') && guestId === 'yami';
+        
+        console.log(`🔍 Guest attack check: enemy = ${enemyId}, guest = ${guestId}, guestIsEnemy = ${guestIsEnemy}`);
+        
+        if (guestIsEnemy) {
+            console.log('🚫 Guest attack blocked: Guest character is fighting as enemy');
+            return 0;
+        }
+        
+        console.log('✅ Guest attack allowed: Regular battle');
+        
+        const guest = GUEST_CHARACTERS[guestId];
+        let guestDamage = Math.floor(playerDamage * guest.damageRate);
+        
+        // 特殊効果処理
+        let specialMessage = '';
+        let isCritical = false;
+        
+        // クリティカル判定（ぺこら専用）
+        if (guest.criticalRate && Math.random() < guest.criticalRate) {
+            guestDamage = Math.floor(guestDamage * 1.5);
+            isCritical = true;
+            specialMessage = ' クリティカルヒット！';
+        }
+        
+        // 回復効果（エリス専用）
+        if (guest.healingRate && playerDamage > 0) {
+            const healAmount = Math.floor(guestDamage * guest.healingRate);
+            gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + healAmount);
+            specialMessage += ` HP${healAmount}回復！`;
+        }
+        
+        // ダメージ適用
+        gameState.enemy.hp = Math.max(0, gameState.enemy.hp - guestDamage);
+        
+        // メッセージ表示
+        let message = `${guest.message} ${gameState.enemy.name}に${guestDamage}のダメージ！`;
+        if (isCritical) {
+            message += specialMessage;
+        } else if (specialMessage) {
+            message += specialMessage;
+        }
+        addBattleLog(message);
+        
+        // ゲスト攻撃エフェクトとダメージ数値を表示
+        showGuestAttackEffect(guestId);
+        showDamageNumber(guestDamage, isCritical, true);
+        
+        return guestDamage;
+    },
+    
+    // 現在のゲストキャラクター情報を取得
+    getCurrentGuest() {
+        const guestId = gameState.battle.guestCharacter;
+        return guestId ? GUEST_CHARACTERS[guestId] : null;
+    },
+    
+    // ゲストキャラクター肖像画を表示
+    showGuestPortrait() {
+        const overlay = document.getElementById('guestPortraitOverlay');
+        const image = document.getElementById('guestPortraitImage');
+        const nameLabel = document.getElementById('guestNameLabel');
+        
+        if (!overlay || !image || !nameLabel) {
+            console.warn('⚠️ Guest portrait elements not found');
+            return;
+        }
+        
+        const guestId = gameState.battle.guestCharacter;
+        const guest = GUEST_CHARACTERS[guestId];
+        
+        if (guestId && guest) {
+            // プレイヤーの現在の立ち絵ファイル名から状態を取得
+            const playerMediaContainer = document.getElementById('playerMediaContainer');
+            let currentState = 'portrait'; // デフォルトは通常状態
+            
+            // プレイヤーの立ち絵から現在の状態を取得（HP関係なく完全同期）
+            if (playerMediaContainer) {
+                const playerImg = playerMediaContainer.querySelector('img');
+                const playerVideo = playerMediaContainer.querySelector('video');
+                let currentSrc = '';
+                
+                if (playerImg && playerImg.style.display !== 'none') {
+                    currentSrc = playerImg.src;
+                } else if (playerVideo && playerVideo.style.display !== 'none') {
+                    currentSrc = playerVideo.src;
+                }
+                
+                // ファイル名から状態を抽出（全ての状態を反映）
+                if (currentSrc.includes('defeated')) {
+                    currentState = 'defeated';
+                } else if (currentSrc.includes('damaged_70')) {
+                    currentState = 'damaged_70';
+                } else if (currentSrc.includes('damaged_50')) {
+                    currentState = 'damaged_50';
+                } else if (currentSrc.includes('damaged_30')) {
+                    currentState = 'damaged_30';
+                } else {
+                    currentState = 'portrait';
+                }
+            }
+            
+            // ゲストキャラの画像パスを生成（プレイヤーと同じ状態）
+            let imagePath = `./assets/images/characters/${guestId}_${currentState}.png`;
+            
+            // 肖像画とネームを設定
+            image.src = imagePath;
+            nameLabel.textContent = guest.name;
+            
+            // ダメージ状態のCSSクラスを更新
+            this.updateGuestDamageStateFromPortrait(currentState);
+            
+            // 表示
+            overlay.style.display = 'block';
+            console.log(`🎭 Guest portrait shown: ${guest.name} (State: ${currentState})`);
+        } else {
+            this.hideGuestPortrait();
+        }
+    },
+    
+    // ゲストキャラクター肖像画を隠す
+    hideGuestPortrait() {
+        const overlay = document.getElementById('guestPortraitOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+            console.log('🎭 Guest portrait hidden');
+        }
+    },
+    
+    // プレイヤーの立ち絵状態に基づいてゲストキャラクターのダメージ状態を更新
+    updateGuestDamageStateFromPortrait(portraitState) {
+        const image = document.getElementById('guestPortraitImage');
+        if (!image) return;
+        
+        // 既存のダメージ状態クラスをクリア
+        image.classList.remove('damaged-light', 'damaged-medium', 'damaged-heavy', 'defeated');
+        
+        // 立ち絵状態に応じてダメージ状態クラスを追加
+        // ただし、ダンジョン再挑戦時はdefeated画像でも暗くしない
+        switch (portraitState) {
+            case 'defeated':
+                // defeated画像は使うが、CSSエフェクトは適用しない（復活済みのため）
+                break;
+            case 'damaged_70':
+                image.classList.add('damaged-heavy');
+                break;
+            case 'damaged_50':
+                image.classList.add('damaged-medium');
+                break;
+            case 'damaged_30':
+                image.classList.add('damaged-light');
+                break;
+            case 'portrait':
+            default:
+                // 通常状態（何もクラスを追加しない）
+                break;
+        }
+        
+        console.log(`💔 Guest damage state synced with player: ${portraitState}`);
+    },
+    
+    // 旧メソッドも残しておく（互換性のため）
+    updateGuestDamageState(playerHpPercent) {
+        const image = document.getElementById('guestPortraitImage');
+        if (!image) return;
+        
+        // 既存のダメージ状態クラスをクリア
+        image.classList.remove('damaged-light', 'damaged-medium', 'damaged-heavy', 'defeated');
+        
+        // HP割合に応じてダメージ状態クラスを追加
+        if (playerHpPercent <= 0) {
+            image.classList.add('defeated');
+        } else if (playerHpPercent <= 0.3) {
+            image.classList.add('damaged-heavy');
+        } else if (playerHpPercent <= 0.5) {
+            image.classList.add('damaged-medium');
+        } else if (playerHpPercent <= 0.7) {
+            image.classList.add('damaged-light');
+        }
+        // HP70%以上の場合は何も追加しない（通常状態）
+        
+        console.log(`💔 Guest damage state updated: ${Math.floor(playerHpPercent * 100)}% HP`);
     }
 };
 
@@ -382,11 +826,12 @@ function updateUI() {
         maxBattlesDisplay.textContent = gameState.battle.maxBattles;
     }
     
-    // フィールドでは戦闘数を「∞」で表示
+    // シンプルな章表示（戦闘数は表示しない）
     if (gameState.battle.location === 'field') {
         elements.battleCount.textContent = '∞';
     } else {
-        elements.battleCount.textContent = gameState.battle.battleCount;
+        // ダンジョンでも章のみ表示
+        elements.battleCount.textContent = `${gameState.battle.chapter}章`;
     }
     // 敵名の表示更新（安全チェック付き、ストーリー進行中は非表示）
     if (elements.enemyName) {
@@ -452,6 +897,14 @@ function updateUI() {
             enemyImage.style.display = 'block';
             console.log("👹 Enemy image shown (battle mode)");
         }
+    }
+    
+    // ゲスト肖像画の表示制御（町にいるかダンジョン以外の場合は非表示）
+    if (gameState.battle.inTown || gameState.battle.location !== 'dungeon') {
+        GuestCharacterManager.hideGuestPortrait();
+    } else if (gameState.battle.location === 'dungeon' && gameState.battle.guestCharacter) {
+        // ダンジョンにいる場合は表示し、HP状態も更新
+        GuestCharacterManager.showGuestPortrait();
     }
     
     const playerHpPercent = (gameState.player.hp / gameState.player.maxHp) * 100;
@@ -988,7 +1441,7 @@ function getLocationBackgroundColor(locationType, chapter) {
 }
 
 // ログ追加関数
-function addBattleLog(message) {
+function addBattleLog(message, type = 'normal') {
     // 安全チェック：要素が存在するかと初期化済みかをチェック
     if (!elements.battleLogContent) {
         console.warn('⚠️ battleLogContent not found, skipping log:', message);
@@ -996,7 +1449,7 @@ function addBattleLog(message) {
     }
     
     const logEntry = document.createElement('div');
-    logEntry.className = 'log-entry';
+    logEntry.className = `log-entry ${type === 'conversation' ? 'conversation-log' : ''}`;
     logEntry.textContent = message;
     elements.battleLogContent.appendChild(logEntry);
     elements.battleLogContent.scrollTop = elements.battleLogContent.scrollHeight;
@@ -1294,6 +1747,7 @@ function useItem(itemId) {
             gameState.battle.location = 'field';
             gameState.battle.inTown = true;
             gameState.battle.dungeonFloor = 1; // ダンジョン階層をリセット
+            gameState.battle.guestCharacter = null; // ゲストキャラクターをリセット
             
             // 戦闘終了
             if (!gameState.battle.battleEnded) {
@@ -1567,8 +2021,14 @@ function executeEnemyAttack() {
     }
     addBattleLog(message);
     
-    // HPが変更されたのでプレイヤーメディアを更新
+    // HPが変更されたのでプレイヤーメディアを更新（先に実行）
     updatePlayerMedia();
+    
+    // プレイヤー被ダメージ数値を表示（立ち絵更新後に実行）
+    setTimeout(() => {
+        console.log('🎯 About to call showPlayerDamageNumber with:', result.damage, result.critical);
+        showPlayerDamageNumber(result.damage, result.critical);
+    }, 100); // 立ち絵更新完了後に表示
     
     // プレイヤー敗北チェック
     if (gameState.player.hp <= 0) {
@@ -1638,6 +2098,15 @@ function executeEnemySkill(skill) {
         screenShake(shakeIntensity, 500);
         
         addBattleLog(`${gameState.enemy.name}の${skill.name}！ ${damage}のダメージを受けた！`);
+        
+        // HPが変更されたのでプレイヤーメディアを更新（先に実行）
+        updatePlayerMedia();
+        
+        // プレイヤー被ダメージ数値を表示（立ち絵更新後に実行）
+        setTimeout(() => {
+            console.log('🪄 About to call showPlayerDamageNumber from skill with:', damage, damage >= 30);
+            showPlayerDamageNumber(damage, damage >= 30);
+        }, 100); // 立ち絵更新完了後に表示
         
         // 状態異常効果
         if (skill.status_effect && skill.status_duration > 0) {
@@ -1885,6 +2354,13 @@ function nextBattle() {
             addBattleLog('📖 ストーリーイベントが発生しました');
             gameState.battle.storyInProgress = true; // ストーリー開始
             gameState.battle.midBossDefeated = true; // 中ボス撃破フラグ
+            
+            // 中ボス戦終了：敵をクリアしてからダンジョンBGMに戻す
+            setTimeout(() => {
+                gameState.enemy = null; // 敵情報をクリア
+                playLocationBGM('dungeon', true);
+            }, 500);
+            
             setTimeout(() => {
                 storyTriggerManager.triggerStory(midBossEvent.story_id);
             }, 1000);
@@ -1905,17 +2381,18 @@ function nextBattle() {
     if (gameState.enemy.isBoss) {
         addBattleLog(`${gameState.battle.chapter}章のボスを撃破しました！`);
         addBattleLog("章クリア！");
+        addBattleLog(`🎉 新しい仲間が酒場で雇えるようになりました！`);
         
         // ボス撃破時のストーリーイベントを直接呼び出し
         const defeatedBossId = gameState.enemy.id;
-        if (inGameStoryManager) {
+        if (storyTriggerManager) {
             const chapter = gameState.battle.chapter;
             const storyId = `boss_${chapter}_defeat`;
             
             addBattleLog('📖 ボス撃破ストーリーイベントが発生しました');
             gameState.battle.storyInProgress = true;
             setTimeout(() => {
-                inGameStoryManager.showStory(storyId);
+                storyTriggerManager.triggerStory(storyId);
             }, 1000);
         }
         
@@ -2111,15 +2588,45 @@ function generateNewEnemy() {
         gameState.enemy = null;
         return;
     }
-
-    // 章の最大戦闘数を取得
-    gameState.battle.maxBattles = dataManager.getChapterMaxBattles(gameState.battle.chapter);
-    console.log('🎯 章の最大戦闘数:', gameState.battle.maxBattles);
-    console.log('🔍 ボス戦判定:', `${gameState.battle.battleCount} >= ${gameState.battle.maxBattles}`, '=', gameState.battle.battleCount >= gameState.battle.maxBattles);
     
-    // ボス戦の判定（最大戦闘数に達したらボス戦発生）
-    if (gameState.battle.battleCount >= gameState.battle.maxBattles) {
+    // 戦闘数に応じてゲストキャラクターを更新
+    if (gameState.battle.location === 'dungeon') {
+        GuestCharacterManager.updateGuestByBattleCount(gameState.battle.chapter);
+    }
+    
+    // バトル会話イベントをリセット
+    BattleConversationManager.resetBattleEvents();
+
+    // 新しい戦闘システム：6戦目=中ボス、18戦目=章ボス
+    console.log('🔍 戦闘判定: battleCount =', gameState.battle.battleCount);
+    
+    // 中ボス戦判定（6戦目）
+    if (gameState.battle.battleCount === 6) {
+        console.log('🥊 中ボス戦生成中！');
+        
+        // 戦闘前ストーリーイベントを発生
+        const storyEventId = `mid_boss_${gameState.battle.chapter}_encounter`;
+        console.log('🎬 戦闘前イベント発生:', storyEventId);
+        storyTriggerManager.triggerStory(storyEventId);
+        
+        // 中ボスイベント処理（既存のロジックを流用）
+        const midBossEvent = dataManager.getDungeonEvent(gameState.battle.chapter, 'dungeon', 'mid_boss', 'on_enter');
+        if (midBossEvent) {
+            handleDungeonMidBossEvent(midBossEvent);
+            updateUI();
+            return;
+        }
+    }
+    
+    // 章ボス戦判定（18戦目）
+    if (gameState.battle.battleCount === 18) {
         console.log('👑 ボス戦生成中！！！');
+        
+        // 戦闘前ストーリーイベントを発生
+        const storyEventId = `boss_${gameState.battle.chapter}_encounter`;
+        console.log('🎬 章ボス戦前イベント発生:', storyEventId);
+        storyTriggerManager.triggerStory(storyEventId);
+        
         // ボス敵を生成
         const bossData = dataManager.getBossEnemy(gameState.battle.chapter);
         console.log('👑 取得したボスデータ:', bossData);
@@ -2315,6 +2822,7 @@ function nextChapter() {
     gameState.battle.battleEnded = true;
     gameState.battle.inTown = true;
     gameState.enemy = null;
+    gameState.battle.guestCharacter = null; // ゲストキャラクターをリセット
     
     // 状態異常クリア
     gameState.player.statusEffects = {};
@@ -2359,6 +2867,7 @@ function setupEventListeners() {
     
     elements.skillBtn.addEventListener('click', () => {
         soundEffects.playClick();
+        generateSkillMenu(); // 動的スキルメニューを生成
         elements.skillModal.style.display = 'flex';
     });
     
@@ -2392,15 +2901,7 @@ function setupEventListeners() {
         elements.itemModal.style.display = 'none';
     });
     
-    // スキル選択
-    document.querySelectorAll('.skill-option').forEach(button => {
-        button.addEventListener('click', () => {
-            soundEffects.playClick();
-            const skill = button.dataset.skill;
-            elements.skillModal.style.display = 'none';
-            useSkill(skill);
-        });
-    });
+    // スキル選択（動的に生成されるのでgenerateSkillMenuで処理）
     
     // アイテム選択（動的に生成されるのでupdateItemDisplayで処理）
     
@@ -2993,6 +3494,9 @@ function checkLevelUp() {
         addBattleLog(`レベルアップ！Lv.${gameState.player.level}になりました！`);
         addBattleLog(`ステータスポイントを3獲得しました！`);
         
+        // スキル習得チェック
+        checkSkillLearning();
+        
         // オートモード時の処理分岐
         if (gameState.battle.isAutoMode && gameState.battle.autoLevelUpMode === 'random') {
             // ランダム割り振り
@@ -3029,6 +3533,177 @@ function checkLevelUp() {
             }, 1500);
         }
     }
+}
+
+// キャラクターIDからスキルIDプレフィックスを取得
+function getSkillCharacterId(characterId) {
+    // キャラクターIDが直接スキルIDになる（統一されたため）
+    console.log(`🔍 Using character ID as skill ID: ${characterId}`);
+    return characterId;
+}
+
+// スキル習得システム
+function checkSkillLearning() {
+    const currentCharacterId = gameState.characters.currentCharacter;
+    const currentLevel = gameState.player.level;
+    
+    // レベル5の倍数かチェック
+    if (currentLevel % 5 !== 0 || currentLevel > 60) {
+        return; // スキル習得レベルではない
+    }
+    
+    // キャラクター名からスキルIDプレフィックスを取得
+    const skillCharacterId = getSkillCharacterId(currentCharacterId);
+    if (!skillCharacterId) {
+        console.log(`⚠️ Unknown character for skill learning: ${currentCharacterId}`);
+        return;
+    }
+    
+    const skillId = `${skillCharacterId}_lv${currentLevel}`;
+    
+    // 既に習得済みかチェック
+    const characterData = gameState.characterData[currentCharacterId];
+    if (characterData && characterData.learnedSkills.includes(skillId)) {
+        return; // 既に習得済み
+    }
+    
+    // データマネージャーの状態をチェック
+    console.log(`📋 DataManager status:`, {
+        exists: !!dataManager,
+        skillsExists: !!(dataManager && dataManager.data && dataManager.data.skills),
+        skillsCount: dataManager && dataManager.data && dataManager.data.skills ? dataManager.data.skills.length : 0,
+        dataLoaded: gameState.dataLoaded
+    });
+    
+    // データマネージャーからスキルデータを取得
+    const skillData = dataManager ? dataManager.getSkill(skillId) : null;
+    if (skillData) {
+        
+        // スキルを習得済みリストに追加
+        if (!characterData.learnedSkills) {
+            characterData.learnedSkills = [];
+        }
+        characterData.learnedSkills.push(skillId);
+        
+        // 習得メッセージを表示
+        addBattleLog(`🌟 新しいスキルを覚えました：「${skillData.name}」`);
+        addBattleLog(`${skillData.description}`);
+        
+        console.log(`✨ Skill learned: ${skillId} - ${skillData.name}`);
+    } else {
+        console.log(`⚠️ Skill data not found for: ${skillId}`);
+        
+        // さらに詳細なデバッグ情報
+        if (dataManager && dataManager.skills) {
+            const availableSkills = Object.keys(dataManager.skills).filter(id => id.startsWith('chloe_'));
+            console.log(`📝 Available chloe skills:`, availableSkills);
+        }
+    }
+}
+
+// 動的スキルメニュー生成
+function generateSkillMenu() {
+    const skillList = document.querySelector('.skill-list');
+    if (!skillList) {
+        console.error('⚠️ Skill list container not found');
+        return;
+    }
+    
+    const currentCharacterId = gameState.characters.currentCharacter;
+    const characterData = gameState.characterData[currentCharacterId];
+    
+    // 既存のスキルボタンをクリア
+    skillList.innerHTML = '';
+    
+    // 習得済みスキルがない場合
+    if (!characterData || !characterData.learnedSkills || characterData.learnedSkills.length === 0) {
+        skillList.innerHTML = '<div class="no-skills-message">習得済みスキルがありません<br>レベル5でスキルを習得できます</div>';
+        return;
+    }
+    
+    // 習得済みスキルごとにボタンを生成
+    characterData.learnedSkills.forEach(skillId => {
+        const skillData = dataManager.getSkill(skillId);
+        if (!skillData) {
+            console.warn(`⚠️ Skill data not found for: ${skillId}`);
+            return;
+        }
+        
+        // スキルボタンを作成
+        const skillButton = document.createElement('button');
+        skillButton.className = 'skill-option';
+        skillButton.setAttribute('data-skill-id', skillId);
+        
+        // MP不足チェック
+        const canUse = gameState.player.mp >= skillData.mp_cost;
+        if (!canUse) {
+            skillButton.classList.add('disabled');
+            skillButton.disabled = true;
+        }
+        
+        skillButton.innerHTML = `
+            <div class="skill-name">${skillData.name}</div>
+            <div class="skill-cost">MP: ${skillData.mp_cost}</div>
+            <div class="skill-desc">${skillData.description}</div>
+        `;
+        
+        // クリックイベントを追加
+        skillButton.addEventListener('click', () => {
+            if (!canUse) return;
+            
+            soundEffects.playClick();
+            document.getElementById('skillModal').style.display = 'none';
+            useSkill(skillId); // 既存のuseSkill関数を使用
+        });
+        
+        skillList.appendChild(skillButton);
+    });
+}
+
+// デバッグ用：手動レベル設定関数（テスト用）
+function setPlayerLevel(level) {
+    if (level < 1 || level > 60) {
+        console.log('⚠️ レベルは1～60の間で設定してください');
+        return;
+    }
+    
+    gameState.player.level = level;
+    gameState.player.exp = 0; // 経験値をリセット
+    
+    // キャラクターデータにも反映
+    const currentCharacterId = gameState.characters.currentCharacter;
+    if (gameState.characterData[currentCharacterId]) {
+        gameState.characterData[currentCharacterId].level = level;
+        gameState.characterData[currentCharacterId].exp = 0;
+    }
+    
+    // スキル習得チェック（レベル5の倍数の場合）
+    checkSkillLearning();
+    
+    // UIを更新
+    updateUI();
+    
+    console.log(`✅ プレイヤーレベルを${level}に設定しました`);
+    addBattleLog(`開発者モード：レベル${level}に設定されました`);
+}
+
+// デバッグ用：習得スキル一覧表示
+function showLearnedSkills() {
+    const currentCharacterId = gameState.characters.currentCharacter;
+    const characterData = gameState.characterData[currentCharacterId];
+    
+    if (!characterData || !characterData.learnedSkills || characterData.learnedSkills.length === 0) {
+        console.log('習得済みスキルはありません');
+        return;
+    }
+    
+    console.log('=== 習得済みスキル ===');
+    characterData.learnedSkills.forEach(skillId => {
+        const skillData = dataManager.getSkill(skillId);
+        if (skillData) {
+            console.log(`- ${skillId}: ${skillData.name} (${skillData.description})`);
+        }
+    });
 }
 
 // ステータスポイントをランダムに割り振り
@@ -3554,7 +4229,22 @@ function switchLocation(location) {
     gameState.battle.battleEnded = false;
     gameState.battle.inTown = false; // 探索場所を選んだので町を出る
     
-    // ダンジョン入場時の中ボスイベントをチェック
+    // ゲストキャラクターを設定（ダンジョンでのみ）
+    GuestCharacterManager.setGuestCharacter(gameState.battle.chapter, location);
+    
+    // ゲスト肖像画の表示制御
+    if (location === 'dungeon') {
+        // ダンジョン入場時は状態をリフレッシュしてから表示
+        setTimeout(() => {
+            GuestCharacterManager.showGuestPortrait();
+        }, 100);
+    } else {
+        GuestCharacterManager.hideGuestPortrait();
+    }
+    
+    // ダンジョン入場時の中ボスイベントをチェック（新戦闘システムでは無効化）
+    // 中ボスは6戦目で自動発生するため、入場時の即時トリガーは不要
+    /*
     if (location === 'dungeon' && dataManager.loaded) {
         const midBossEvent = dataManager.getDungeonEvent(gameState.battle.chapter, location, 'mid_boss', 'on_enter');
         if (midBossEvent) {
@@ -3564,6 +4254,7 @@ function switchLocation(location) {
             return; // 通常の敵生成はスキップ
         }
     }
+    */
     
     // 通常の敵を生成（中ボスイベントがない場合のみ）
     generateNewEnemy();
@@ -3666,9 +4357,20 @@ function applyDefeatPenalty() {
     gameState.shared.gold -= goldLoss;
     
     if (gameState.battle.location === 'dungeon') {
-        // ダンジョンでの敗北：1階からやり直し
-        gameState.battle.dungeonFloor = 1;
-        addBattleLog(`💀 敗北... 所持金${goldLoss}Gを失い、ダンジョン1階からやり直しです`);
+        // ダンジョンでの敗北：新しい戦闘システム対応
+        const currentBattleCount = gameState.battle.battleCount;
+        
+        if (currentBattleCount >= 7) {
+            // 7戦目以降で敗北：7戦目から再開（中ボス撃破済み扱い）
+            gameState.battle.battleCount = 7;
+            gameState.battle.dungeonFloor = 1;
+            addBattleLog(`💀 敗北... 所持金${goldLoss}Gを失い、中ボス撃破後から再開です`);
+        } else {
+            // 1-6戦目で敗北：1戦目からやり直し
+            gameState.battle.battleCount = 1;
+            gameState.battle.dungeonFloor = 1;
+            addBattleLog(`💀 敗北... 所持金${goldLoss}Gを失い、ダンジョン1戦目からやり直しです`);
+        }
     } else {
         // フィールドでの敗北：現在の場所で継続
         addBattleLog(`💀 敗北... 所持金${goldLoss}Gを失いました`);
@@ -3806,9 +4508,14 @@ function populateAvailableCharacters() {
         const purchasableCheck = (char.is_purchasable === 'true' || char.is_purchasable === 'TRUE');
         const alreadyOwnedCheck = !gameState.characters.purchasedCharacters.includes(char.id);
         
-        console.log(`🍺 ${char.name}: type=${char.type}(${typeCheck}), purchasable=${char.is_purchasable}(${purchasableCheck}), notOwned=${alreadyOwnedCheck}`);
+        // 章クリアチェック（unlock_chapterが0なら常に購入可能、1以上ならその章をクリア済みか確認）
+        const unlockChapter = parseInt(char.unlock_chapter) || 0;
+        const clearedChapters = gameState.battle.chapter - 1; // 現在章-1がクリア済み章数
+        const chapterUnlocked = unlockChapter === 0 || clearedChapters >= unlockChapter;
         
-        return typeCheck && purchasableCheck && alreadyOwnedCheck;
+        console.log(`🍺 ${char.name}: type=${char.type}(${typeCheck}), purchasable=${char.is_purchasable}(${purchasableCheck}), notOwned=${alreadyOwnedCheck}), unlockChapter=${unlockChapter}, chapterUnlocked=${chapterUnlocked}`);
+        
+        return typeCheck && purchasableCheck && alreadyOwnedCheck && chapterUnlocked;
     });
     
     console.log('🍺 Available characters:', characters);
@@ -4893,6 +5600,136 @@ function showPlayerAttackEffect() {
     }
 }
 
+// ゲストキャラクター攻撃エフェクト
+function showGuestAttackEffect(guestId) {
+    console.log(`🌟 Guest attack effect: ${guestId}`);
+    const attackEffect = document.getElementById('attackEffect');
+    if (attackEffect) {
+        // ゲスト専用のエフェクトクラスを追加
+        attackEffect.classList.add('show', 'guest-attack');
+        
+        // ゲストキャラクター別のエフェクト色とSE
+        const guestColors = {
+            'tifa': 'guest-attack-orange',
+            'marine': 'guest-attack-blue', 
+            'pekora': 'guest-attack-purple',
+            'yami': 'guest-attack-red',
+            'lala': 'guest-attack-green',
+            'eris': 'guest-attack-gold'
+        };
+        
+        const guestSounds = {
+            'tifa': 'se_punch',        // 打撃音
+            'marine': 'se_slash',      // 斬撃音
+            'pekora': 'se_magic',      // 魔法音
+            'yami': 'se_slash',        // 変身斬撃音
+            'lala': 'se_explosion',    // 爆発音
+            'eris': 'se_heal'          // 聖なる音
+        };
+        
+        const colorClass = guestColors[guestId] || 'guest-attack-default';
+        const soundEffect = guestSounds[guestId] || 'se_attack';
+        
+        attackEffect.classList.add(colorClass);
+        
+        // ゲスト専用SEを再生
+        if (audioManager) {
+            audioManager.playSE(soundEffect);
+            console.log(`🔊 Playing guest SE: ${soundEffect} for ${guestId}`);
+        }
+        
+        setTimeout(() => {
+            attackEffect.classList.remove('show', 'guest-attack', colorClass);
+            console.log(`✅ Guest attack effect ended: ${guestId}`);
+        }, 800); // プレイヤーより少し長め
+    } else {
+        console.error('❌ attackEffect element not found for guest attack!');
+    }
+}
+
+// ダメージ数値表示エフェクト
+function showDamageNumber(damage, isCritical = false, isGuest = false) {
+    const enemyContainer = document.querySelector('.enemy-container');
+    if (!enemyContainer) {
+        console.error('❌ Enemy container not found for damage number!');
+        return;
+    }
+    
+    // ダメージ数値要素を作成
+    const damageNumber = document.createElement('div');
+    damageNumber.className = `damage-number ${isCritical ? 'critical' : ''} ${isGuest ? 'guest-damage' : 'player-damage'}`;
+    damageNumber.textContent = damage;
+    
+    // 敵キャラの上部に表示
+    const randomX = Math.random() * 160 - 80; // -80px ~ +80px（横幅を広く）
+    
+    damageNumber.style.left = `50%`;
+    damageNumber.style.top = `15%`; // 敵の上部（15%の位置）
+    damageNumber.style.transform = `translate(calc(-50% + ${randomX}px), 0)`;
+    
+    // 敵コンテナに追加
+    enemyContainer.appendChild(damageNumber);
+    
+    // アニメーション開始
+    setTimeout(() => {
+        damageNumber.classList.add('animate');
+    }, 10);
+    
+    // 1秒後に削除
+    setTimeout(() => {
+        if (damageNumber.parentNode) {
+            damageNumber.parentNode.removeChild(damageNumber);
+        }
+    }, 1000);
+    
+    console.log(`💥 Damage number shown: ${damage} (Critical: ${isCritical}, Guest: ${isGuest})`);
+}
+
+// プレイヤー被ダメージ数値表示エフェクト
+function showPlayerDamageNumber(damage, isCritical = false) {
+    console.log('💔 showPlayerDamageNumber called with:', damage, isCritical);
+    
+    const playerMediaContainer = document.getElementById('playerMediaContainer');
+    console.log('🔍 playerMediaContainer found:', !!playerMediaContainer);
+    
+    if (!playerMediaContainer) {
+        console.error('❌ Player media container not found for damage number!');
+        return;
+    }
+    
+    // プレイヤー被ダメージ数値要素を作成
+    const damageNumber = document.createElement('div');
+    damageNumber.className = `player-damage-number ${isCritical ? 'critical' : ''}`;
+    damageNumber.textContent = `-${damage}`;
+    
+    // プレイヤー立ち絵の上部にランダム配置
+    const randomX = Math.random() * 120 - 60; // -60px ~ +60px
+    
+    damageNumber.style.left = `50%`;
+    damageNumber.style.top = `10%`; // 立ち絵の上部
+    damageNumber.style.transform = `translate(calc(-50% + ${randomX}px), 0)`;
+    
+    // プレイヤーコンテナに追加
+    console.log('➕ Adding damage number to container');
+    playerMediaContainer.appendChild(damageNumber);
+    console.log('✅ Damage number added successfully');
+    
+    // アニメーション開始
+    setTimeout(() => {
+        console.log('🎬 Starting damage number animation');
+        damageNumber.classList.add('animate');
+    }, 10);
+    
+    // 1秒後に削除
+    setTimeout(() => {
+        if (damageNumber.parentNode) {
+            damageNumber.parentNode.removeChild(damageNumber);
+        }
+    }, 1000);
+    
+    console.log(`💔 Player damage number shown: -${damage} (Critical: ${isCritical})`);
+}
+
 function showEnemyAttackEffect() {
     console.log('👹👹👹 敵攻撃エフェクト実行！ 👹👹👹');
     console.log('🔧 現在のDOM状態をチェック中...');
@@ -5593,7 +6430,47 @@ function playerAttack() {
         }
         addBattleLog(message);
         
-        // 敵撃破チェック
+        // プレイヤーダメージ数値を表示
+        showDamageNumber(result.damage, result.critical, false);
+        
+        // HP閾値チェック（ダメージ後）
+        BattleConversationManager.checkAndTriggerEvents(gameState.enemy);
+        
+        // ゲストキャラクターの追加攻撃（敵が生存している場合のみ）
+        if (gameState.enemy.hp > 0) {
+            setTimeout(() => {
+                const guestDamage = GuestCharacterManager.executeGuestAttack(result.damage);
+                updateUI(); // UIを更新してダメージを反映
+                
+                // ゲストキャラクター攻撃後のHP閾値チェック
+                if (gameState.enemy.hp > 0) {
+                    BattleConversationManager.checkAndTriggerEvents(gameState.enemy);
+                }
+                
+                // ゲストキャラクターの攻撃で敵撃破チェック
+                if (gameState.enemy.hp <= 0) {
+                    addBattleLog(`${gameState.enemy.name}を倒した！`);
+                    gameState.battle.battleEnded = true;
+                    gameState.battle.actionInProgress = false; // アクション完了
+                    
+                    // 次の戦闘への移行
+                    setTimeout(nextBattle, 1500);
+                    return;
+                }
+                
+                // 敵が生存している場合、敵のターンへ移行
+                gameState.battle.isPlayerTurn = false;
+                gameState.battle.actionInProgress = false; // アクション完了
+                updateUI();
+                
+                setTimeout(() => {
+                    processEnemyTurn();
+                }, 1000);
+            }, 700); // プレイヤー攻撃エフェクト終了後にゲストキャラクター攻撃
+            return; // ここでreturnして通常の処理をスキップ
+        }
+        
+        // 敵撃破チェック（プレイヤー攻撃のみで倒した場合）
         if (gameState.enemy.hp <= 0) {
             addBattleLog(`${gameState.enemy.name}を倒した！`);
             gameState.battle.battleEnded = true;
